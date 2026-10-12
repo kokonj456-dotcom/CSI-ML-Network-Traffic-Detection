@@ -1,10 +1,11 @@
+
 # Python environments
 .venv/
-node_modules/
-.playwright-cli/
 venv/
 env/
 ENV/
+node_modules/
+.playwright-cli/
 
 # Python cache and build artifacts
 __pycache__/
@@ -17,7 +18,7 @@ dist/
 # Jupyter temporary files
 .ipynb_checkpoints/
 
-# Temporary speech segments and build intermediates for the Isolation Forest video
+# Temporary speech segments and build intermediates
 webapp/.narration_build/
 
 # Local secrets and machine-specific configuration
@@ -30,6 +31,7 @@ dataset/rawdata/
 data-pipeline/output/
 
 # Trained model artifacts and experiment logs
+# Ignore model artifacts by default
 *.pkl
 *.pickle
 *.joblib
@@ -38,6 +40,12 @@ data-pipeline/output/
 *.onnx
 *.pt
 *.pth
+
+# Allow required Autoencoder model artifacts
+!model/autoencoder/scaler.pkl
+!model/autoencoder/autoencoder.pth
+
+# Experiment logs
 mlruns/
 wandb/
 
