@@ -4,6 +4,7 @@
   "epochs": 25,
   "batch_size": 256,
   "learning_rate": 0.001,
+  "seed": 42,
   "class_names": [
     "Normal",
     "DoS",
@@ -11,6 +12,15 @@
     "R2L",
     "U2R"
   ],
+  "run_metadata": {
+    "run_id": "MLP_20261013_003032_multiclass",
+    "started_at": "2026-10-13T00:30:32.707193+07:00",
+    "finished_at": "2026-10-13T00:32:20.505256+07:00",
+    "duration_seconds": 107.8,
+    "duration_minutes": 1.8,
+    "device": "cpu",
+    "best_val_macro_f1": 0.9321355119470903
+  },
   "kdd_test_plus": {
     "name": "KDDTest+",
     "accuracy": 0.7636621717530163,

@@ -4,10 +4,20 @@
   "epochs": 25,
   "batch_size": 256,
   "learning_rate": 0.001,
+  "seed": 42,
   "class_names": [
     "Normal",
     "Attack"
   ],
+  "run_metadata": {
+    "run_id": "MLP_20261013_003220_binary",
+    "started_at": "2026-10-13T00:32:20.560217+07:00",
+    "finished_at": "2026-10-13T00:34:17.565632+07:00",
+    "duration_seconds": 117.01,
+    "duration_minutes": 1.95,
+    "device": "cpu",
+    "best_val_macro_f1": 0.9987636049227022
+  },
   "kdd_test_plus": {
     "name": "KDDTest+",
     "accuracy": 0.7963981547196594,
