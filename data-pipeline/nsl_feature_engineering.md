@@ -19,9 +19,9 @@ Feature ที่สร้างเป็นตัวเลือกที่ม
 
 Notebook อ่านข้อมูลจาก:
 
-    data-pipeline/output/NSL-KDD/KDDTrain_clean.csv
-    data-pipeline/output/NSL-KDD/KDDTest_clean.csv
-    data-pipeline/output/NSL-KDD/KDDTest-21_clean.csv
+    data-pipeline/output/NSL-KDD/clean/KDDTrain_clean.csv
+    data-pipeline/output/NSL-KDD/clean/KDDTest_clean.csv
+    data-pipeline/output/NSL-KDD/clean/KDDTest-21_clean.csv
 
 ผลลัพธ์ถูกเขียนลงโฟลเดอร์ใหม่:
 
@@ -143,32 +143,11 @@ Notebook สร้างตัวบ่งชี้ เช่น:
 
 การใช้ signed log เก็บทิศทางไว้ แต่ลดความต่างระหว่างค่าขนาดใหญ่
 
-### Bytes เทียบกับ duration
-
-    log_byte_duration_ratio = log1p(total_bytes) - log1p(duration)
-
-คุณสมบัติของ log ทำให้ค่านี้เทียบได้กับ log ของอัตราส่วนแบบบวกหนึ่งโดยไม่ต้องหารตรง ๆ จึงลดปัญหาหารด้วยศูนย์
-
 ## 7. Connection และ service features
 
-### สัดส่วน connection ที่ใช้ service เดียวกัน
+`count` และ `srv_count` นับ connection ตามเงื่อนไขคนละแบบ จึงไม่ควรนำมาลบหรือหารแล้วตีความเป็น “จำนวน connection ของ service อื่น” หรือ “สัดส่วนของ service” โดยตรง ด้วยเหตุนี้ notebook จึงไม่สร้าง `connection_service_gap` และ `srv_to_connection_ratio` ในชุด feature ปัจจุบัน
 
-    srv_to_connection_ratio = srv_count / (count + 1)
-
-ตัวอย่าง:
-
-    count = 9, srv_count = 8
-    ratio = 8 / (9 + 1) = 0.8
-
-ค่านี้เป็นดัชนีเปรียบเทียบ ไม่ใช่ probability และอาจมากกว่า 1 ได้ เพราะ count กับ srv_count เป็นค่าที่วัดแยกกัน ไม่ได้ถูกจำกัดให้ตัวหนึ่งเป็นส่วนย่อยของอีกตัวหนึ่ง สำหรับข้อมูลชุดนี้พบค่ามากกว่า 1 ได้
-
-บวก 1 ที่ตัวหารเพื่อไม่ให้หารด้วยศูนย์ ผลต่างนี้อาจติดลบได้ถ้า srv_count มากกว่า count
-
-### ส่วนต่างระหว่าง connection กับ service เดียวกัน
-
-    connection_service_gap = count - srv_count
-
-ถ้า count = 30 และ srv_count = 5, gap เท่ากับ 25 ซึ่งอาจช่วยบอกการกระจายของ traffic
+หากต้องการทดลองดัชนีเปรียบเทียบจากสองค่านี้ ให้ทำเป็น ablation แยกต่างหาก ตรวจการกระจายและระบุให้ชัดว่าไม่ใช่สัดส่วนที่จำเป็นต้องอยู่ระหว่าง 0–1
 
 ## 8. Error-rate aggregates
 
@@ -202,7 +181,7 @@ Notebook สร้างค่าเฉลี่ย:
     dst_host_count = 199
     host_service_count_ratio = 100 / 200 = 0.5
 
-กลุ่มนี้ช่วยเปรียบเทียบพฤติกรรมของ connection ปัจจุบันกับ pattern ที่เห็นใน host ปลายทาง ค่า host_service_count_ratio ก็อาจเกิน 1 ได้เช่นกัน จึงให้มองเป็นดัชนีเปรียบเทียบ ไม่ใช่สัดส่วนที่ถูกจำกัดระหว่าง 0 ถึง 1
+กลุ่มนี้เปรียบเทียบพฤติกรรมระดับ host กับระดับ connection/service ควรตรวจนิยามของตัวนับและอัตราแต่ละตัวก่อนตีความ ส่วน `host_service_rate_gap` เป็นดัชนีทดลองจากอัตราที่วัดคนละบริบท ไม่ใช่ความต่างเชิงเหตุและผล
 
 ## 10. Categorical features และ One-Hot Encoding
 

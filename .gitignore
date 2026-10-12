@@ -1,5 +1,7 @@
 # Python environments
 .venv/
+node_modules/
+.playwright-cli/
 venv/
 env/
 ENV/
@@ -14,6 +16,9 @@ dist/
 
 # Jupyter temporary files
 .ipynb_checkpoints/
+
+# Temporary speech segments and build intermediates for the Isolation Forest video
+webapp/.narration_build/
 
 # Local secrets and machine-specific configuration
 .env
