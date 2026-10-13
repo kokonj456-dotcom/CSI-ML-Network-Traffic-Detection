@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-10-13T19:33:21.170750+00:00",
+  "model_name": "MLP (COMMON Binary)",
+  "family": "MLP",
+  "run_id": "mlp-common-binary-2026-10-13T19-33-21-145Z",
+  "mode": "binary",
+  "dataset": "common",
+  "hyperparameters": {
+    "epochs": 3,
+    "hidden_dim": 64,
+    "learning_rate": 0.001,
+    "dropout_rate": 0.2,
+    "depth": 2
+  },
+  "kddtest_metrics": {
+    "accuracy": 0.8415099361249113,
+    "balanced_accuracy": 0.8521456848017982,
+    "f1": 0.8412403424928129,
+    "precision": 0.8464814379699248,
+    "recall": 0.8521456848017982,
+    "false_positive_rate": 0.07105344454742045,
+    "confusion_matrix": [
+      [
+        9021,
+        690
+      ],
+      [
+        2883,
+        9950
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "kddtest21_metrics": {
+    "accuracy": 0.743201495098974,
+    "balanced_accuracy": 0.7241110721435333,
+    "f1": 0.7255090587429203,
+    "precision": 0.7632528921533481,
+    "recall": 0.7241110721435333,
+    "false_positive_rate": 0.450686133887093,
+    "confusion_matrix": [
+      [
+        25659,
+        21052
+      ],
+      [
+        5880,
+        52285
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "common_test_metrics": {
+    "accuracy": 0.743201495098974,
+    "balanced_accuracy": 0.7241110721435333,
+    "f1": 0.7255090587429203,
+    "precision": 0.7632528921533481,
+    "recall": 0.7241110721435333,
+    "false_positive_rate": 0.450686133887093,
+    "confusion_matrix": [
+      [
+        25659,
+        21052
+      ],
+      [
+        5880,
+        52285
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "confusion_matrix_kddtest": [
+    [
+      9021,
+      690
+    ],
+    [
+      2883,
+      9950
+    ]
+  ],
+  "confusion_matrix_kddtest21": [
+    [
+      25659,
+      21052
+    ],
+    [
+      5880,
+      52285
+    ]
+  ],
+  "classes": [
+    "Normal",
+    "Attack"
+  ],
+  "elapsed_seconds": 0.9
+}

@@ -57,11 +57,7 @@ data-pipeline/NSL-KDD/output/model_runs/mlp/plots/*
 # Autoencoder artifacts explicitly tracked for the team.
 !model/autoencoder/scaler.pkl
 !model/autoencoder/autoencoder.pth
-model/isolation-forest/backup/
-model/autoencoder/backup/
-model/mlp/backup/
-model/mlp/Backup/
-model/xgboost/backup/
+
 # Experiment logs
 mlruns/
 wandb/

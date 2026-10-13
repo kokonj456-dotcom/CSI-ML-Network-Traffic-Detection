@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-10-13T19:33:21.506725+00:00",
+  "model_name": "MLP (COMMON Binary)",
+  "family": "MLP",
+  "run_id": "mlp-common-binary-2026-10-13T19-33-21-480Z",
+  "mode": "binary",
+  "dataset": "common",
+  "hyperparameters": {
+    "epochs": 3,
+    "hidden_dim": 64,
+    "learning_rate": 0.003,
+    "dropout_rate": 0.2,
+    "depth": 2
+  },
+  "kddtest_metrics": {
+    "accuracy": 0.8651969481902059,
+    "balanced_accuracy": 0.8735902435846763,
+    "f1": 0.8647038427879843,
+    "precision": 0.8665409143952403,
+    "recall": 0.8735902435846763,
+    "false_positive_rate": 0.06580166821130677,
+    "confusion_matrix": [
+      [
+        9072,
+        639
+      ],
+      [
+        2400,
+        10433
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "kddtest21_metrics": {
+    "accuracy": 0.7609748655555132,
+    "balanced_accuracy": 0.7411736397057369,
+    "f1": 0.7433214359577353,
+    "precision": 0.7879603733782978,
+    "recall": 0.7411736397057369,
+    "false_positive_rate": 0.44013187471901694,
+    "confusion_matrix": [
+      [
+        26152,
+        20559
+      ],
+      [
+        4509,
+        53656
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "common_test_metrics": {
+    "accuracy": 0.7609748655555132,
+    "balanced_accuracy": 0.7411736397057369,
+    "f1": 0.7433214359577353,
+    "precision": 0.7879603733782978,
+    "recall": 0.7411736397057369,
+    "false_positive_rate": 0.44013187471901694,
+    "confusion_matrix": [
+      [
+        26152,
+        20559
+      ],
+      [
+        4509,
+        53656
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "confusion_matrix_kddtest": [
+    [
+      9072,
+      639
+    ],
+    [
+      2400,
+      10433
+    ]
+  ],
+  "confusion_matrix_kddtest21": [
+    [
+      26152,
+      20559
+    ],
+    [
+      4509,
+      53656
+    ]
+  ],
+  "classes": [
+    "Normal",
+    "Attack"
+  ],
+  "elapsed_seconds": 0.31
+}

@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-10-13T19:33:24.919232+00:00",
+  "model_name": "MLP (COMMON Binary)",
+  "family": "MLP",
+  "run_id": "mlp-common-binary-2026-10-13T19-33-24-892Z",
+  "mode": "binary",
+  "dataset": "common",
+  "hyperparameters": {
+    "epochs": 3,
+    "hidden_dim": 256,
+    "learning_rate": 0.001,
+    "dropout_rate": 0.2,
+    "depth": 2
+  },
+  "kddtest_metrics": {
+    "accuracy": 0.8742459190915542,
+    "balanced_accuracy": 0.8815886057903297,
+    "f1": 0.8736432014723414,
+    "precision": 0.8742705376808797,
+    "recall": 0.8815886057903297,
+    "false_positive_rate": 0.06538976418494491,
+    "confusion_matrix": [
+      [
+        9076,
+        635
+      ],
+      [
+        2200,
+        10633
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "kddtest21_metrics": {
+    "accuracy": 0.7916396506350356,
+    "balanced_accuracy": 0.775741415318107,
+    "f1": 0.7799706238232129,
+    "precision": 0.810826776343053,
+    "recall": 0.775741415318107,
+    "false_positive_rate": 0.36982723555479435,
+    "confusion_matrix": [
+      [
+        29436,
+        17275
+      ],
+      [
+        4577,
+        53588
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "common_test_metrics": {
+    "accuracy": 0.7916396506350356,
+    "balanced_accuracy": 0.775741415318107,
+    "f1": 0.7799706238232129,
+    "precision": 0.810826776343053,
+    "recall": 0.775741415318107,
+    "false_positive_rate": 0.36982723555479435,
+    "confusion_matrix": [
+      [
+        29436,
+        17275
+      ],
+      [
+        4577,
+        53588
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "confusion_matrix_kddtest": [
+    [
+      9076,
+      635
+    ],
+    [
+      2200,
+      10633
+    ]
+  ],
+  "confusion_matrix_kddtest21": [
+    [
+      29436,
+      17275
+    ],
+    [
+      4577,
+      53588
+    ]
+  ],
+  "classes": [
+    "Normal",
+    "Attack"
+  ],
+  "elapsed_seconds": 1.28
+}

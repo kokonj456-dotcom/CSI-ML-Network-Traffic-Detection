@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-10-13T19:33:22.431584+00:00",
+  "model_name": "MLP (COMMON Binary)",
+  "family": "MLP",
+  "run_id": "mlp-common-binary-2026-10-13T19-33-22-406Z",
+  "mode": "binary",
+  "dataset": "common",
+  "hyperparameters": {
+    "epochs": 3,
+    "hidden_dim": 128,
+    "learning_rate": 0.001,
+    "dropout_rate": 0.2,
+    "depth": 2
+  },
+  "kddtest_metrics": {
+    "accuracy": 0.8636887863733144,
+    "balanced_accuracy": 0.8718521774249712,
+    "f1": 0.8631663502570408,
+    "precision": 0.8648018228169525,
+    "recall": 0.8718521774249712,
+    "false_positive_rate": 0.06919987642879209,
+    "confusion_matrix": [
+      [
+        9039,
+        672
+      ],
+      [
+        2401,
+        10432
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "kddtest21_metrics": {
+    "accuracy": 0.7645123765208437,
+    "balanced_accuracy": 0.7454526178050809,
+    "f1": 0.7480066667022781,
+    "precision": 0.7894522060644449,
+    "recall": 0.7454526178050809,
+    "false_positive_rate": 0.4290638179443814,
+    "confusion_matrix": [
+      [
+        26669,
+        20042
+      ],
+      [
+        4655,
+        53510
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "common_test_metrics": {
+    "accuracy": 0.7645123765208437,
+    "balanced_accuracy": 0.7454526178050809,
+    "f1": 0.7480066667022781,
+    "precision": 0.7894522060644449,
+    "recall": 0.7454526178050809,
+    "false_positive_rate": 0.4290638179443814,
+    "confusion_matrix": [
+      [
+        26669,
+        20042
+      ],
+      [
+        4655,
+        53510
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "confusion_matrix_kddtest": [
+    [
+      9039,
+      672
+    ],
+    [
+      2401,
+      10432
+    ]
+  ],
+  "confusion_matrix_kddtest21": [
+    [
+      26669,
+      20042
+    ],
+    [
+      4655,
+      53510
+    ]
+  ],
+  "classes": [
+    "Normal",
+    "Attack"
+  ],
+  "elapsed_seconds": 0.58
+}

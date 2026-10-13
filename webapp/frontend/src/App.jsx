@@ -1777,6 +1777,233 @@ export default function App() {
               </div>
             </div>
 
+            {/* Cross-Dataset Overview & Imbalance Comparison Section */}
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-5">
+              <div className="border-b border-slate-800/80 pb-3">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
+                    Dataset Imbalance & Multi-Split Comparison (ภาพรวมและการเปรียบเทียบชุดข้อมูล)
+                  </h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
+                    NSL-KDD vs UNSW-NB15
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  การเปรียบเทียบขนาดระเบียน สัดส่วน Normal vs Attack และความหลากหลายของประเภทภัยคุกคามข้ามชุดข้อมูล
+                </p>
+              </div>
+
+              {/* Comparison Summary Table */}
+              <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/70">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-900/90 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                      <th className="py-2.5 px-4 font-semibold">Dataset / Split</th>
+                      <th className="py-2.5 px-3 font-semibold text-right">Total Rows</th>
+                      <th className="py-2.5 px-3 font-semibold text-right text-emerald-400">Normal Rows</th>
+                      <th className="py-2.5 px-3 font-semibold text-right text-rose-400">Attack Rows</th>
+                      <th className="py-2.5 px-4 font-semibold text-right">Attack Ratio (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 font-mono text-xs">
+                    <tr className="hover:bg-slate-900/40">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                        NSL-KDD Train
+                      </td>
+                      <td className="py-2.5 px-3 text-right text-slate-300">125,973</td>
+                      <td className="py-2.5 px-3 text-right text-emerald-400">67,343</td>
+                      <td className="py-2.5 px-3 text-right text-rose-400">58,630</td>
+                      <td className="py-2.5 px-4 text-right font-bold text-rose-300">46.54%</td>
+                    </tr>
+                    <tr className="hover:bg-slate-900/40">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+                        NSL-KDD Test
+                      </td>
+                      <td className="py-2.5 px-3 text-right text-slate-300">22,544</td>
+                      <td className="py-2.5 px-3 text-right text-emerald-400">9,711</td>
+                      <td className="py-2.5 px-3 text-right text-rose-400">12,833</td>
+                      <td className="py-2.5 px-4 text-right font-bold text-rose-300">56.92%</td>
+                    </tr>
+                    <tr className="hover:bg-slate-900/40">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                        UNSW-NB15 Train
+                      </td>
+                      <td className="py-2.5 px-3 text-right text-slate-300">175,341</td>
+                      <td className="py-2.5 px-3 text-right text-emerald-400">56,000</td>
+                      <td className="py-2.5 px-3 text-right text-rose-400">119,341</td>
+                      <td className="py-2.5 px-4 text-right font-bold text-rose-400">68.06%</td>
+                    </tr>
+                    <tr className="hover:bg-slate-900/40">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-sky-400"></span>
+                        UNSW-NB15 Test
+                      </td>
+                      <td className="py-2.5 px-3 text-right text-slate-300">82,332</td>
+                      <td className="py-2.5 px-3 text-right text-emerald-400">37,000</td>
+                      <td className="py-2.5 px-3 text-right text-rose-400">45,332</td>
+                      <td className="py-2.5 px-4 text-right font-bold text-rose-300">55.06%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Key Analytical Insights Callout */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">
+                    1. Imbalance & Distribution Shift
+                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    สัดส่วน Attack ระหว่าง Train และ Test แตกต่างกัน: NSL-KDD มีสัดส่วนการโจมตีเพิ่มขึ้นใน Test (46.5% ไปเป็น 56.9%) ในขณะที่ UNSW-NB15 มีสัดส่วนลดลงใน Test (68.1% ไปเป็น 55.1%)
+                  </p>
+                </div>
+                <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400 block">
+                    2. Attack Diversity in UNSW-NB15
+                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    UNSW-NB15 บรรจุภัยคุกคามสมัยใหม่หลากหลายประเภท เช่น Generic, Exploits, Fuzzers, DoS, Reconnaissance, Backdoor, Shellcode, Analysis, และ Worms
+                  </p>
+                </div>
+                <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
+                    3. Schema & Label Discrepancy
+                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    NSL-KDD และ UNSW-NB15 มีโครงสร้างคอลัมน์และคำเรียก Label ต่างกัน จึงต้องผ่านกระบวนการ Harmonization และสร้าง Common Dataset เพื่อให้ประเมินข้ามโมเดลได้สมบูรณ์
+                  </p>
+                </div>
+              </div>
+
+              {/* Comparative Charts: Split Stacked Bar & UNSW Attack Breakdown */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+                {/* Chart 1: Normal vs Attack Stacked per Split */}
+                <div className="bg-slate-950/80 border border-slate-800 p-4 rounded-xl flex flex-col">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                      Normal vs Attack by Split (จำนวนระเบียนแยกตามชุด)
+                    </h4>
+                    <span className="text-[10px] font-mono text-slate-500">Stacked Bar</span>
+                  </div>
+                  <div className="relative flex-1 min-h-[260px]">
+                    <Bar
+                      data={{
+                        labels: ['NSL Train', 'NSL Test', 'UNSW Train', 'UNSW Test'],
+                        datasets: [
+                          {
+                            label: 'Normal',
+                            data: [67343, 9711, 56000, 37000],
+                            backgroundColor: '#10b981',
+                            borderRadius: 4,
+                          },
+                          {
+                            label: 'Attack',
+                            data: [58630, 12833, 119341, 45332],
+                            backgroundColor: '#f43f5e',
+                            borderRadius: 4,
+                          }
+                        ]
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                          x: {
+                            stacked: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                          },
+                          y: {
+                            stacked: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: {
+                              color: '#94a3b8',
+                              font: { size: 10 },
+                              callback: (v) => v.toLocaleString()
+                            }
+                          }
+                        },
+                        plugins: {
+                          legend: {
+                            position: 'top',
+                            labels: { color: '#cbd5e1', font: { size: 11 } }
+                          },
+                          tooltip: {
+                            callbacks: {
+                              label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toLocaleString()} rows`
+                            }
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Chart 2: UNSW-NB15 Attack Category Breakdown */}
+                <div className="bg-slate-950/80 border border-slate-800 p-4 rounded-xl flex flex-col">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                      UNSW-NB15 Attack Categories Breakdown (Train & Test)
+                    </h4>
+                    <span className="text-[10px] font-mono text-slate-500">Attack Counts</span>
+                  </div>
+                  <div className="relative flex-1 min-h-[260px]">
+                    <Bar
+                      data={{
+                        labels: ['Generic', 'Exploits', 'Fuzzers', 'DoS', 'Recon', 'Analysis', 'Backdoor', 'Shellcode', 'Worms'],
+                        datasets: [
+                          {
+                            label: 'Train Attack Rows',
+                            data: [40000, 33393, 18184, 12264, 10491, 2000, 1746, 1133, 130],
+                            backgroundColor: '#38bdf8',
+                            borderRadius: 4,
+                          },
+                          {
+                            label: 'Test Attack Rows',
+                            data: [18871, 11132, 6062, 4089, 3496, 677, 583, 378, 44],
+                            backgroundColor: '#818cf8',
+                            borderRadius: 4,
+                          }
+                        ]
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                          x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { size: 9 } }
+                          },
+                          y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: {
+                              color: '#94a3b8',
+                              font: { size: 10 },
+                              callback: (v) => v.toLocaleString()
+                            }
+                          }
+                        },
+                        plugins: {
+                          legend: {
+                            position: 'top',
+                            labels: { color: '#cbd5e1', font: { size: 11 } }
+                          },
+                          tooltip: {
+                            callbacks: {
+                              label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toLocaleString()} rows`
+                            }
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {edaLoading ? (
               <div className="py-16 text-center text-xs text-slate-500">Loading full dataset EDA analytics...</div>
             ) : edaData && !edaData.error ? (

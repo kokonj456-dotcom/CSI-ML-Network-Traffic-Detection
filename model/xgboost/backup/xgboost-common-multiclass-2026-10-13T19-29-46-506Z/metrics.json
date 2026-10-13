@@ -1,0 +1,401 @@
+{
+  "timestamp": "2026-10-13T19:29:46.544061+00:00",
+  "model_name": "XGBoost (COMMON Multiclass)",
+  "family": "XGBoost",
+  "run_id": "xgboost-common-multiclass-2026-10-13T19-29-46-506Z",
+  "mode": "multiclass",
+  "dataset": "common",
+  "hyperparameters": {
+    "n_estimators": 10,
+    "max_depth": 2,
+    "learning_rate": 0.005,
+    "subsample": 0.5,
+    "random_state": 202
+  },
+  "kddtest_metrics": {
+    "accuracy": 0.43075762952448543,
+    "balanced_accuracy": 0.2,
+    "f1": 0.12042784064486127,
+    "precision": 0.08615152590489708,
+    "recall": 0.2,
+    "false_positive_rate": 0.0,
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2885,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        7460,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        67,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        9711,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2421,
+        0
+      ]
+    ],
+    "classes": [
+      "Botnet/Backdoor",
+      "Brute-force/R2L",
+      "DoS/DDoS",
+      "Exploit/U2R",
+      "Generic/Fuzzer",
+      "Normal",
+      "Probe/Recon"
+    ]
+  },
+  "kddtest21_metrics": {
+    "accuracy": 0.4453926541820817,
+    "balanced_accuracy": 0.14285714285714285,
+    "f1": 0.08804185055446707,
+    "precision": 0.06362752202601167,
+    "recall": 0.14285714285714285,
+    "false_positive_rate": 0.0,
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        627,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2885,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        11549,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        11577,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        25610,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        46711,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        5917,
+        0
+      ]
+    ],
+    "classes": [
+      "Botnet/Backdoor",
+      "Brute-force/R2L",
+      "DoS/DDoS",
+      "Exploit/U2R",
+      "Generic/Fuzzer",
+      "Normal",
+      "Probe/Recon"
+    ]
+  },
+  "common_test_metrics": {
+    "accuracy": 0.4453926541820817,
+    "balanced_accuracy": 0.14285714285714285,
+    "f1": 0.08804185055446707,
+    "precision": 0.06362752202601167,
+    "recall": 0.14285714285714285,
+    "false_positive_rate": 0.0,
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        627,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2885,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        11549,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        11577,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        25610,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        46711,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        5917,
+        0
+      ]
+    ],
+    "classes": [
+      "Botnet/Backdoor",
+      "Brute-force/R2L",
+      "DoS/DDoS",
+      "Exploit/U2R",
+      "Generic/Fuzzer",
+      "Normal",
+      "Probe/Recon"
+    ]
+  },
+  "confusion_matrix_kddtest": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      2885,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      7460,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      67,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      9711,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      2421,
+      0
+    ]
+  ],
+  "confusion_matrix_kddtest21": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      627,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      2885,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      11549,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      11577,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      25610,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      46711,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      5917,
+      0
+    ]
+  ],
+  "classes": [
+    "Botnet/Backdoor",
+    "Brute-force/R2L",
+    "DoS/DDoS",
+    "Exploit/U2R",
+    "Generic/Fuzzer",
+    "Normal",
+    "Probe/Recon"
+  ],
+  "elapsed_seconds": 0.15
+}

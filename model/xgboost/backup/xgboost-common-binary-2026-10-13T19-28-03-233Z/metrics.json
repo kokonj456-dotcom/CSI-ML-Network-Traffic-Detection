@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-10-13T19:28:03.260671+00:00",
+  "model_name": "XGBoost (COMMON Binary)",
+  "family": "XGBoost",
+  "run_id": "xgboost-common-binary-2026-10-13T19-28-03-233Z",
+  "mode": "binary",
+  "dataset": "common",
+  "hyperparameters": {
+    "n_estimators": 60,
+    "max_depth": 6,
+    "learning_rate": 0.03,
+    "subsample": 0.9,
+    "random_state": 42
+  },
+  "kddtest_metrics": {
+    "accuracy": 0.8487402413058907,
+    "balanced_accuracy": 0.8613524162405576,
+    "f1": 0.8486197594994078,
+    "precision": 0.8568252991213896,
+    "recall": 0.8613524162405576,
+    "false_positive_rate": 0.047574915044794566,
+    "confusion_matrix": [
+      [
+        9249,
+        462
+      ],
+      [
+        2948,
+        9885
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "kddtest21_metrics": {
+    "accuracy": 0.8081353217132614,
+    "balanced_accuracy": 0.7920251825164173,
+    "f1": 0.7970200301946577,
+    "precision": 0.8311780817947061,
+    "recall": 0.7920251825164173,
+    "false_positive_rate": 0.35548371903834214,
+    "confusion_matrix": [
+      [
+        30106,
+        16605
+      ],
+      [
+        3517,
+        54648
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "common_test_metrics": {
+    "accuracy": 0.8081353217132614,
+    "balanced_accuracy": 0.7920251825164173,
+    "f1": 0.7970200301946577,
+    "precision": 0.8311780817947061,
+    "recall": 0.7920251825164173,
+    "false_positive_rate": 0.35548371903834214,
+    "confusion_matrix": [
+      [
+        30106,
+        16605
+      ],
+      [
+        3517,
+        54648
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "confusion_matrix_kddtest": [
+    [
+      9249,
+      462
+    ],
+    [
+      2948,
+      9885
+    ]
+  ],
+  "confusion_matrix_kddtest21": [
+    [
+      30106,
+      16605
+    ],
+    [
+      3517,
+      54648
+    ]
+  ],
+  "classes": [
+    "Normal",
+    "Attack"
+  ],
+  "elapsed_seconds": 0.19
+}

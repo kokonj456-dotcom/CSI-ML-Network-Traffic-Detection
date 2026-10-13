@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-10-13T19:34:50.183560+00:00",
+  "model_name": "Autoencoder (COMMON Binary)",
+  "family": "Autoencoder",
+  "run_id": "autoencoder-common-binary-2026-10-13T19-34-50-159Z",
+  "mode": "binary",
+  "dataset": "common",
+  "hyperparameters": {
+    "epochs": 3,
+    "threshold_percentile": 72.0,
+    "learning_rate": 0.003,
+    "bottleneck_dim": 6,
+    "computed_threshold": 0.1386881321668625
+  },
+  "kddtest_metrics": {
+    "accuracy": 0.9076472675656494,
+    "balanced_accuracy": 0.9060419087551697,
+    "f1": 0.9058790267266654,
+    "precision": 0.9057199926398416,
+    "recall": 0.9060419087551697,
+    "false_positive_rate": 0.10555040675522603,
+    "confusion_matrix": [
+      [
+        8686,
+        1025
+      ],
+      [
+        1057,
+        11776
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "kddtest21_metrics": {
+    "accuracy": 0.7346390022502766,
+    "balanced_accuracy": 0.7321312078009197,
+    "f1": 0.7317979799528763,
+    "precision": 0.7315241336797755,
+    "recall": 0.7321312078009197,
+    "false_positive_rate": 0.2908308535462739,
+    "confusion_matrix": [
+      [
+        33126,
+        13585
+      ],
+      [
+        14245,
+        43920
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "common_test_metrics": {
+    "accuracy": 0.7346390022502766,
+    "balanced_accuracy": 0.7321312078009197,
+    "f1": 0.7317979799528763,
+    "precision": 0.7315241336797755,
+    "recall": 0.7321312078009197,
+    "false_positive_rate": 0.2908308535462739,
+    "confusion_matrix": [
+      [
+        33126,
+        13585
+      ],
+      [
+        14245,
+        43920
+      ]
+    ],
+    "classes": [
+      "Normal",
+      "Attack"
+    ]
+  },
+  "confusion_matrix_kddtest": [
+    [
+      8686,
+      1025
+    ],
+    [
+      1057,
+      11776
+    ]
+  ],
+  "confusion_matrix_kddtest21": [
+    [
+      33126,
+      13585
+    ],
+    [
+      14245,
+      43920
+    ]
+  ],
+  "classes": [
+    "Normal",
+    "Attack"
+  ],
+  "elapsed_seconds": 0.09
+}
