@@ -1,0 +1,9 @@
+{
+  "name": "Autoencoder0",
+  "threshold_percentile": 95.0,
+  "mode": "existing",
+  "epochs": 20,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "dataset": "KDDTest"
+}

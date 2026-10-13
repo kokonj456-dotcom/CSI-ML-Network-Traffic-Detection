@@ -1,0 +1,223 @@
+﻿method,threshold_percentile,attack_label,total,detected,missed,recall,unseen_by_label
+Baseline (all features MSE),90,apache2,737,735,2,0.9972862957937585,True
+Baseline (all features MSE),90,back,359,355,4,0.9888579387186629,False
+Baseline (all features MSE),90,buffer_overflow,20,20,0,1.0,False
+Baseline (all features MSE),90,ftp_write,3,3,0,1.0,False
+Baseline (all features MSE),90,guess_passwd,1231,1231,0,1.0,False
+Baseline (all features MSE),90,httptunnel,133,132,1,0.9924812030075187,True
+Baseline (all features MSE),90,imap,1,1,0,1.0,False
+Baseline (all features MSE),90,ipsweep,141,141,0,1.0,False
+Baseline (all features MSE),90,land,7,7,0,1.0,False
+Baseline (all features MSE),90,loadmodule,2,2,0,1.0,False
+Baseline (all features MSE),90,mailbomb,293,74,219,0.2525597269624573,True
+Baseline (all features MSE),90,mscan,996,995,1,0.998995983935743,True
+Baseline (all features MSE),90,multihop,18,17,1,0.9444444444444444,False
+Baseline (all features MSE),90,named,17,15,2,0.8823529411764706,True
+Baseline (all features MSE),90,neptune,4657,4656,1,0.999785269486794,False
+Baseline (all features MSE),90,nmap,73,73,0,1.0,False
+Baseline (all features MSE),90,perl,2,2,0,1.0,False
+Baseline (all features MSE),90,phf,2,2,0,1.0,False
+Baseline (all features MSE),90,pod,41,41,0,1.0,False
+Baseline (all features MSE),90,portsweep,157,157,0,1.0,False
+Baseline (all features MSE),90,processtable,685,685,0,1.0,True
+Baseline (all features MSE),90,ps,15,14,1,0.9333333333333333,True
+Baseline (all features MSE),90,rootkit,13,7,6,0.5384615384615384,False
+Baseline (all features MSE),90,saint,319,319,0,1.0,True
+Baseline (all features MSE),90,satan,735,735,0,1.0,False
+Baseline (all features MSE),90,sendmail,14,14,0,1.0,True
+Baseline (all features MSE),90,smurf,665,665,0,1.0,False
+Baseline (all features MSE),90,snmpgetattack,178,2,176,0.011235955056179775,True
+Baseline (all features MSE),90,snmpguess,331,6,325,0.01812688821752266,True
+Baseline (all features MSE),90,sqlattack,2,2,0,1.0,True
+Baseline (all features MSE),90,teardrop,12,11,1,0.9166666666666666,False
+Baseline (all features MSE),90,udpstorm,2,2,0,1.0,True
+Baseline (all features MSE),90,warezmaster,944,904,40,0.9576271186440678,False
+Baseline (all features MSE),90,worm,2,2,0,1.0,True
+Baseline (all features MSE),90,xlock,9,9,0,1.0,True
+Baseline (all features MSE),90,xsnoop,4,4,0,1.0,True
+Baseline (all features MSE),90,xterm,13,12,1,0.9230769230769231,True
+10 Selected Features only,90,apache2,737,552,185,0.7489823609226595,True
+10 Selected Features only,90,back,359,359,0,1.0,False
+10 Selected Features only,90,buffer_overflow,20,16,4,0.8,False
+10 Selected Features only,90,ftp_write,3,3,0,1.0,False
+10 Selected Features only,90,guess_passwd,1231,1132,99,0.9195775792038993,False
+10 Selected Features only,90,httptunnel,133,132,1,0.9924812030075187,True
+10 Selected Features only,90,imap,1,1,0,1.0,False
+10 Selected Features only,90,ipsweep,141,141,0,1.0,False
+10 Selected Features only,90,land,7,7,0,1.0,False
+10 Selected Features only,90,loadmodule,2,2,0,1.0,False
+10 Selected Features only,90,mailbomb,293,29,264,0.09897610921501707,True
+10 Selected Features only,90,mscan,996,839,157,0.8423694779116466,True
+10 Selected Features only,90,multihop,18,18,0,1.0,False
+10 Selected Features only,90,named,17,17,0,1.0,True
+10 Selected Features only,90,neptune,4657,4493,164,0.964784195834228,False
+10 Selected Features only,90,nmap,73,73,0,1.0,False
+10 Selected Features only,90,perl,2,2,0,1.0,False
+10 Selected Features only,90,phf,2,0,2,0.0,False
+10 Selected Features only,90,pod,41,41,0,1.0,False
+10 Selected Features only,90,portsweep,157,157,0,1.0,False
+10 Selected Features only,90,processtable,685,685,0,1.0,True
+10 Selected Features only,90,ps,15,12,3,0.8,True
+10 Selected Features only,90,rootkit,13,9,4,0.6923076923076923,False
+10 Selected Features only,90,saint,319,319,0,1.0,True
+10 Selected Features only,90,satan,735,735,0,1.0,False
+10 Selected Features only,90,sendmail,14,12,2,0.8571428571428571,True
+10 Selected Features only,90,smurf,665,665,0,1.0,False
+10 Selected Features only,90,snmpgetattack,178,9,169,0.05056179775280899,True
+10 Selected Features only,90,snmpguess,331,5,326,0.015105740181268883,True
+10 Selected Features only,90,sqlattack,2,2,0,1.0,True
+10 Selected Features only,90,teardrop,12,10,2,0.8333333333333334,False
+10 Selected Features only,90,udpstorm,2,2,0,1.0,True
+10 Selected Features only,90,warezmaster,944,600,344,0.635593220338983,False
+10 Selected Features only,90,worm,2,2,0,1.0,True
+10 Selected Features only,90,xlock,9,6,3,0.6666666666666666,True
+10 Selected Features only,90,xsnoop,4,3,1,0.75,True
+10 Selected Features only,90,xterm,13,13,0,1.0,True
+Hybrid (alpha=0.25),90,apache2,737,698,39,0.9470827679782904,True
+Hybrid (alpha=0.25),90,back,359,359,0,1.0,False
+Hybrid (alpha=0.25),90,buffer_overflow,20,19,1,0.95,False
+Hybrid (alpha=0.25),90,ftp_write,3,3,0,1.0,False
+Hybrid (alpha=0.25),90,guess_passwd,1231,1228,3,0.9975629569455727,False
+Hybrid (alpha=0.25),90,httptunnel,133,132,1,0.9924812030075187,True
+Hybrid (alpha=0.25),90,imap,1,1,0,1.0,False
+Hybrid (alpha=0.25),90,ipsweep,141,141,0,1.0,False
+Hybrid (alpha=0.25),90,land,7,7,0,1.0,False
+Hybrid (alpha=0.25),90,loadmodule,2,2,0,1.0,False
+Hybrid (alpha=0.25),90,mailbomb,293,20,273,0.06825938566552901,True
+Hybrid (alpha=0.25),90,mscan,996,952,44,0.9558232931726908,True
+Hybrid (alpha=0.25),90,multihop,18,18,0,1.0,False
+Hybrid (alpha=0.25),90,named,17,17,0,1.0,True
+Hybrid (alpha=0.25),90,neptune,4657,4619,38,0.9918402404981748,False
+Hybrid (alpha=0.25),90,nmap,73,73,0,1.0,False
+Hybrid (alpha=0.25),90,perl,2,2,0,1.0,False
+Hybrid (alpha=0.25),90,phf,2,1,1,0.5,False
+Hybrid (alpha=0.25),90,pod,41,41,0,1.0,False
+Hybrid (alpha=0.25),90,portsweep,157,157,0,1.0,False
+Hybrid (alpha=0.25),90,processtable,685,685,0,1.0,True
+Hybrid (alpha=0.25),90,ps,15,13,2,0.8666666666666667,True
+Hybrid (alpha=0.25),90,rootkit,13,9,4,0.6923076923076923,False
+Hybrid (alpha=0.25),90,saint,319,319,0,1.0,True
+Hybrid (alpha=0.25),90,satan,735,735,0,1.0,False
+Hybrid (alpha=0.25),90,sendmail,14,14,0,1.0,True
+Hybrid (alpha=0.25),90,smurf,665,665,0,1.0,False
+Hybrid (alpha=0.25),90,snmpgetattack,178,9,169,0.05056179775280899,True
+Hybrid (alpha=0.25),90,snmpguess,331,5,326,0.015105740181268883,True
+Hybrid (alpha=0.25),90,sqlattack,2,2,0,1.0,True
+Hybrid (alpha=0.25),90,teardrop,12,10,2,0.8333333333333334,False
+Hybrid (alpha=0.25),90,udpstorm,2,2,0,1.0,True
+Hybrid (alpha=0.25),90,warezmaster,944,618,326,0.6546610169491526,False
+Hybrid (alpha=0.25),90,worm,2,2,0,1.0,True
+Hybrid (alpha=0.25),90,xlock,9,8,1,0.8888888888888888,True
+Hybrid (alpha=0.25),90,xsnoop,4,4,0,1.0,True
+Hybrid (alpha=0.25),90,xterm,13,13,0,1.0,True
+Baseline (all features MSE),95,apache2,737,731,6,0.9918588873812755,True
+Baseline (all features MSE),95,back,359,355,4,0.9888579387186629,False
+Baseline (all features MSE),95,buffer_overflow,20,20,0,1.0,False
+Baseline (all features MSE),95,ftp_write,3,2,1,0.6666666666666666,False
+Baseline (all features MSE),95,guess_passwd,1231,1185,46,0.9626320064987814,False
+Baseline (all features MSE),95,httptunnel,133,126,7,0.9473684210526315,True
+Baseline (all features MSE),95,imap,1,1,0,1.0,False
+Baseline (all features MSE),95,ipsweep,141,137,4,0.9716312056737588,False
+Baseline (all features MSE),95,land,7,7,0,1.0,False
+Baseline (all features MSE),95,loadmodule,2,2,0,1.0,False
+Baseline (all features MSE),95,mailbomb,293,0,293,0.0,True
+Baseline (all features MSE),95,mscan,996,946,50,0.9497991967871486,True
+Baseline (all features MSE),95,multihop,18,8,10,0.4444444444444444,False
+Baseline (all features MSE),95,named,17,14,3,0.8235294117647058,True
+Baseline (all features MSE),95,neptune,4657,4639,18,0.9961348507622934,False
+Baseline (all features MSE),95,nmap,73,73,0,1.0,False
+Baseline (all features MSE),95,perl,2,2,0,1.0,False
+Baseline (all features MSE),95,phf,2,2,0,1.0,False
+Baseline (all features MSE),95,pod,41,39,2,0.9512195121951219,False
+Baseline (all features MSE),95,portsweep,157,157,0,1.0,False
+Baseline (all features MSE),95,processtable,685,685,0,1.0,True
+Baseline (all features MSE),95,ps,15,12,3,0.8,True
+Baseline (all features MSE),95,rootkit,13,7,6,0.5384615384615384,False
+Baseline (all features MSE),95,saint,319,250,69,0.7836990595611285,True
+Baseline (all features MSE),95,satan,735,698,37,0.9496598639455782,False
+Baseline (all features MSE),95,sendmail,14,14,0,1.0,True
+Baseline (all features MSE),95,smurf,665,594,71,0.8932330827067669,False
+Baseline (all features MSE),95,snmpgetattack,178,0,178,0.0,True
+Baseline (all features MSE),95,snmpguess,331,2,329,0.006042296072507553,True
+Baseline (all features MSE),95,sqlattack,2,2,0,1.0,True
+Baseline (all features MSE),95,teardrop,12,3,9,0.25,False
+Baseline (all features MSE),95,udpstorm,2,1,1,0.5,True
+Baseline (all features MSE),95,warezmaster,944,641,303,0.6790254237288136,False
+Baseline (all features MSE),95,worm,2,2,0,1.0,True
+Baseline (all features MSE),95,xlock,9,9,0,1.0,True
+Baseline (all features MSE),95,xsnoop,4,4,0,1.0,True
+Baseline (all features MSE),95,xterm,13,12,1,0.9230769230769231,True
+10 Selected Features only,95,apache2,737,516,221,0.7001356852103121,True
+10 Selected Features only,95,back,359,353,6,0.9832869080779945,False
+10 Selected Features only,95,buffer_overflow,20,11,9,0.55,False
+10 Selected Features only,95,ftp_write,3,3,0,1.0,False
+10 Selected Features only,95,guess_passwd,1231,979,252,0.7952883834281073,False
+10 Selected Features only,95,httptunnel,133,128,5,0.9624060150375939,True
+10 Selected Features only,95,imap,1,1,0,1.0,False
+10 Selected Features only,95,ipsweep,141,141,0,1.0,False
+10 Selected Features only,95,land,7,7,0,1.0,False
+10 Selected Features only,95,loadmodule,2,2,0,1.0,False
+10 Selected Features only,95,mailbomb,293,0,293,0.0,True
+10 Selected Features only,95,mscan,996,559,437,0.5612449799196787,True
+10 Selected Features only,95,multihop,18,14,4,0.7777777777777778,False
+10 Selected Features only,95,named,17,17,0,1.0,True
+10 Selected Features only,95,neptune,4657,4229,428,0.9080953403478634,False
+10 Selected Features only,95,nmap,73,73,0,1.0,False
+10 Selected Features only,95,perl,2,2,0,1.0,False
+10 Selected Features only,95,phf,2,0,2,0.0,False
+10 Selected Features only,95,pod,41,41,0,1.0,False
+10 Selected Features only,95,portsweep,157,157,0,1.0,False
+10 Selected Features only,95,processtable,685,685,0,1.0,True
+10 Selected Features only,95,ps,15,11,4,0.7333333333333333,True
+10 Selected Features only,95,rootkit,13,3,10,0.23076923076923078,False
+10 Selected Features only,95,saint,319,318,1,0.9968652037617555,True
+10 Selected Features only,95,satan,735,732,3,0.9959183673469387,False
+10 Selected Features only,95,sendmail,14,6,8,0.42857142857142855,True
+10 Selected Features only,95,smurf,665,665,0,1.0,False
+10 Selected Features only,95,snmpgetattack,178,4,174,0.02247191011235955,True
+10 Selected Features only,95,snmpguess,331,5,326,0.015105740181268883,True
+10 Selected Features only,95,sqlattack,2,2,0,1.0,True
+10 Selected Features only,95,teardrop,12,8,4,0.6666666666666666,False
+10 Selected Features only,95,udpstorm,2,2,0,1.0,True
+10 Selected Features only,95,warezmaster,944,501,443,0.5307203389830508,False
+10 Selected Features only,95,worm,2,2,0,1.0,True
+10 Selected Features only,95,xlock,9,6,3,0.6666666666666666,True
+10 Selected Features only,95,xsnoop,4,3,1,0.75,True
+10 Selected Features only,95,xterm,13,13,0,1.0,True
+Hybrid (alpha=0.25),95,apache2,737,516,221,0.7001356852103121,True
+Hybrid (alpha=0.25),95,back,359,353,6,0.9832869080779945,False
+Hybrid (alpha=0.25),95,buffer_overflow,20,18,2,0.9,False
+Hybrid (alpha=0.25),95,ftp_write,3,3,0,1.0,False
+Hybrid (alpha=0.25),95,guess_passwd,1231,1006,225,0.8172217709179529,False
+Hybrid (alpha=0.25),95,httptunnel,133,127,6,0.9548872180451128,True
+Hybrid (alpha=0.25),95,imap,1,1,0,1.0,False
+Hybrid (alpha=0.25),95,ipsweep,141,141,0,1.0,False
+Hybrid (alpha=0.25),95,land,7,7,0,1.0,False
+Hybrid (alpha=0.25),95,loadmodule,2,2,0,1.0,False
+Hybrid (alpha=0.25),95,mailbomb,293,0,293,0.0,True
+Hybrid (alpha=0.25),95,mscan,996,783,213,0.786144578313253,True
+Hybrid (alpha=0.25),95,multihop,18,14,4,0.7777777777777778,False
+Hybrid (alpha=0.25),95,named,17,17,0,1.0,True
+Hybrid (alpha=0.25),95,neptune,4657,4342,315,0.9323598883401332,False
+Hybrid (alpha=0.25),95,nmap,73,73,0,1.0,False
+Hybrid (alpha=0.25),95,perl,2,2,0,1.0,False
+Hybrid (alpha=0.25),95,phf,2,1,1,0.5,False
+Hybrid (alpha=0.25),95,pod,41,41,0,1.0,False
+Hybrid (alpha=0.25),95,portsweep,157,157,0,1.0,False
+Hybrid (alpha=0.25),95,processtable,685,685,0,1.0,True
+Hybrid (alpha=0.25),95,ps,15,11,4,0.7333333333333333,True
+Hybrid (alpha=0.25),95,rootkit,13,3,10,0.23076923076923078,False
+Hybrid (alpha=0.25),95,saint,319,318,1,0.9968652037617555,True
+Hybrid (alpha=0.25),95,satan,735,731,4,0.9945578231292517,False
+Hybrid (alpha=0.25),95,sendmail,14,14,0,1.0,True
+Hybrid (alpha=0.25),95,smurf,665,665,0,1.0,False
+Hybrid (alpha=0.25),95,snmpgetattack,178,4,174,0.02247191011235955,True
+Hybrid (alpha=0.25),95,snmpguess,331,5,326,0.015105740181268883,True
+Hybrid (alpha=0.25),95,sqlattack,2,2,0,1.0,True
+Hybrid (alpha=0.25),95,teardrop,12,8,4,0.6666666666666666,False
+Hybrid (alpha=0.25),95,udpstorm,2,2,0,1.0,True
+Hybrid (alpha=0.25),95,warezmaster,944,496,448,0.5254237288135594,False
+Hybrid (alpha=0.25),95,worm,2,2,0,1.0,True
+Hybrid (alpha=0.25),95,xlock,9,6,3,0.6666666666666666,True
+Hybrid (alpha=0.25),95,xsnoop,4,4,0,1.0,True
+Hybrid (alpha=0.25),95,xterm,13,13,0,1.0,True
