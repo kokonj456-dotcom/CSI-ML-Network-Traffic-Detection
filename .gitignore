@@ -14,7 +14,7 @@ __pycache__/
 build/
 dist/
 *.egg-info/
-
+.pytest_cache/
 # Jupyter temporary files
 .ipynb_checkpoints/
 
@@ -27,9 +27,23 @@ webapp/.narration_build/
 !.env.example
 
 # Downloaded NSL-KDD source files and generated pipeline outputs
+data-pipeline/**/raw/
+data-pipeline/**/output/
+# Keep source data and generated output from the old layout ignored as well.
 dataset/rawdata/
 data-pipeline/output/
-
+# Keep the existing MLP reports and plots tracked at their new location.
+!data-pipeline/NSL-KDD/output/
+data-pipeline/NSL-KDD/output/*
+!data-pipeline/NSL-KDD/output/model_runs/
+data-pipeline/NSL-KDD/output/model_runs/*
+!data-pipeline/NSL-KDD/output/model_runs/mlp/
+data-pipeline/NSL-KDD/output/model_runs/mlp/*
+!data-pipeline/NSL-KDD/output/model_runs/mlp/results_binary.json
+!data-pipeline/NSL-KDD/output/model_runs/mlp/results_multiclass.json
+!data-pipeline/NSL-KDD/output/model_runs/mlp/plots/
+data-pipeline/NSL-KDD/output/model_runs/mlp/plots/*
+!data-pipeline/NSL-KDD/output/model_runs/mlp/plots/*.png
 # Trained model artifacts and experiment logs
 # Ignore model artifacts by default
 *.pkl
@@ -40,11 +54,10 @@ data-pipeline/output/
 *.onnx
 *.pt
 *.pth
-
-# Allow required Autoencoder model artifacts
+# Autoencoder artifacts explicitly tracked for the team.
 !model/autoencoder/scaler.pkl
 !model/autoencoder/autoencoder.pth
-
+model/isolation-forest/backup/
 # Experiment logs
 mlruns/
 wandb/

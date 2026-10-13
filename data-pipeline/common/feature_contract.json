@@ -1,0 +1,35 @@
+{
+  "contract_version": 2,
+  "record_key": "record_id",
+  "supported_datasets": ["NSL-KDD", "UNSW-NB15"],
+  "table_separation": {
+    "features": "model inputs only plus record_id; drop record_id before fit/predict",
+    "labels": ["record_id", "label_raw", "label_source_category", "attack_category", "label_binary"],
+    "metadata": ["record_id", "source_dataset", "orig_row_id", "source_split", "capture_time", "split_group", "sample_weight", "dedup_flag", "availability masks", "invalid-value flags", "data_split", "is_kddtest21_view"]
+  },
+  "candidate_features": {
+    "duration": {"type": "numeric", "unit": "seconds", "transform": "log1p", "sources": {"NSL-KDD": "duration", "UNSW-NB15": "dur"}},
+    "protocol": {"type": "categorical", "categories": ["tcp", "udp", "icmp", "other"], "transform": "OneHotEncoder(handle_unknown=ignore), fit on train only", "sources": {"NSL-KDD": "protocol_type", "UNSW-NB15": "proto"}},
+    "bytes_forward": {"type": "numeric", "unit": "bytes", "transform": "log1p", "sources": {"NSL-KDD": "src_bytes", "UNSW-NB15": "sbytes"}},
+    "bytes_backward": {"type": "numeric", "unit": "bytes", "transform": "log1p", "sources": {"NSL-KDD": "dst_bytes", "UNSW-NB15": "dbytes"}}
+  },
+  "source_dependent_extensions": {
+    "service_group": {"type": "categorical", "sources": {"NSL-KDD": "service", "UNSW-NB15": "service"}, "mapping": "Map verified service names to shared groups; unknown values become other"},
+    "conn_state_group": {"type": "categorical", "sources": {"NSL-KDD": "flag", "UNSW-NB15": "state"}, "mapping": "Conservative mapping to established/reset/no-reply/other; retain source-specific categories in labels/metadata as needed"},
+    "packets_forward/packets_backward": {"type": "numeric", "unit": "packets", "sources": {"UNSW-NB15": "spkts/dpkts", "NSL-KDD": null}},
+    "mean_packet_size": {"type": "numeric", "unit": "bytes/packet", "formula": "(bytes_forward + bytes_backward) / (packets_forward + packets_backward), only when packet count > 0", "availability": "UNSW-NB15 only"},
+    "ttl_forward/ttl_backward": {"type": "numeric", "unit": "TTL", "sources": {"UNSW-NB15": "sttl/dttl", "NSL-KDD": null}},
+    "tcp_window_forward/tcp_window_backward": {"type": "numeric", "unit": "source window units", "sources": {"UNSW-NB15": "swin/dwin", "NSL-KDD": null}},
+    "nsl_hot/nsl_logged_in/nsl_failed_logins/nsl_root_shell": {"type": "numeric", "sources": {"NSL-KDD": "hot/logged_in/num_failed_logins/root_shell", "UNSW-NB15": null}},
+    "nsl_count_2s/nsl_srv_count_2s/nsl_same_srv_rate_2s/nsl_serror_rate_2s": {"type": "numeric", "sources": {"NSL-KDD": "original 2-second connection-window fields", "UNSW-NB15": null}, "note": "Not treated as equivalent to an UNSW feature without matching window definitions"}
+  },
+  "derived_candidates": {
+    "log_total_bytes": "log1p(bytes_forward + bytes_backward)",
+    "log_bytes_ratio": "log1p(bytes_forward / (bytes_backward + 1))",
+    "log_bytes_per_second": "log1p((bytes_forward + bytes_backward) / max(duration, epsilon_seconds))"
+  },
+  "never_model_features": ["source_dataset", "orig_row_id", "capture_time", "split_group", "sample_weight", "dedup_flag", "label_raw", "attack_category", "label_binary", "difficulty_level", "raw IP addresses", "Flow ID", "raw timestamp", "availability masks"],
+  "availability_masks": ["has_duration", "has_protocol", "has_directional_bytes", "has_capture_time", "has_service", "has_connection_state", "has_packet_stats", "has_tcp_details", "has_nsl_content", "has_nsl_window"],
+  "quality_flags": ["invalid_duration", "invalid_bytes_forward", "invalid_bytes_backward"],
+  "policy": "The core profile is limited to NSL-KDD and UNSW-NB15 and is admitted only when both datasets have verified, semantically compatible fields with usable values. Source-dependent extensions stay in the harmonized table with nulls where unavailable; masks remain metadata and are not automatically passed to a model."
+}

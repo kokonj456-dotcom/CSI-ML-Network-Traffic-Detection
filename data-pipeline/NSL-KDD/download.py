@@ -1,4 +1,6 @@
 import argparse
+import csv
+import hashlib
 from pathlib import Path
 
 from urllib.request import urlopen
@@ -12,8 +14,8 @@ FILES = [
     "KDDTest-21.txt",
 ]
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DOWNLOAD_DIR = PROJECT_ROOT / "dataset" / "rawdata" / "NSL-KDD"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_DOWNLOAD_DIR = Path(__file__).resolve().parent / "raw"
 
 
 def download_file(filename: str, download_dir: Path, force: bool = False) -> Path:
@@ -46,9 +48,17 @@ def download_file(filename: str, download_dir: Path, force: bool = False) -> Pat
         temporary_path.unlink(missing_ok=True)
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Download the NSL-KDD source files into the project dataset folder."
+        description="Download the NSL-KDD source files beside this pipeline."
     )
     parser.add_argument(
         "--output-dir",
@@ -78,7 +88,20 @@ def main() -> None:
     if missing_files:
         raise RuntimeError(f"Download verification failed: {missing_files}")
 
+    manifest_dir = PROJECT_ROOT / "data-pipeline" / "NSL-KDD" / "output" / "reports"
+    manifest_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path = manifest_dir / "source_manifest.csv"
+    with manifest_path.open("w", newline="", encoding="utf-8") as manifest_file:
+        writer = csv.DictWriter(manifest_file, fieldnames=["dataset", "source_url", "file", "bytes", "sha256"])
+        writer.writeheader()
+        for filename in FILES:
+            path = download_dir / filename
+            writer.writerow({"dataset": "NSL-KDD", "source_url": BASE_URL + "/" + filename,
+                             "file": filename, "bytes": path.stat().st_size,
+                             "sha256": sha256_file(path)})
+
     print(f"\nNSL-KDD dataset is ready at: {download_dir}")
+    print(f"Checksum manifest: {manifest_path}")
 
 
 if __name__ == "__main__":
