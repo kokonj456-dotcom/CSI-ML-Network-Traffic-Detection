@@ -151,16 +151,19 @@ Harmonization ไม่ใช่แค่เปลี่ยนชื่อคอ
 
 `common/feature_engineering.ipynb` อ่านรายงานความเข้ากันได้ก่อนเลือกฟิลด์ เมื่อมีเพียง dataset เดียวพร้อม ผลจะติดสถานะ `source_local_diagnostic`; จะไม่อ้างว่า feature ผ่านการยืนยันข้าม NSL-KDD และ UNSW-NB15 แล้ว
 
-สำหรับฟิลด์ที่เลือก ระบบสร้าง candidates เช่น:
+โปรไฟล์ `joint_v1` สร้าง model features 19 คอลัมน์:
 
-| Feature ใหม่ | สูตรตัวอย่าง | ทำไปเพื่ออะไร / ผลที่คาด |
+| กลุ่ม | คอลัมน์ | ทำไปเพื่ออะไร |
 |---|---|---|
-| `log_duration` | `log1p(duration)` | บีบช่วงค่าระยะเวลาที่สูงมาก |
-| `log_total_bytes` | `log1p(bytes_forward + bytes_backward)` | สรุปปริมาณข้อมูลรวมสองทิศทาง |
-| `log_bytes_ratio` | `log1p(bytes_forward / (bytes_backward + 1))` | แสดงความไม่สมดุลของทิศทางโดยลดปัญหาตัวหารศูนย์ |
-| `log_bytes_per_second` | `log1p(total_bytes / max(duration, 1e-6))` | สรุปปริมาณ bytes ต่อเวลาโดยป้องกันหารศูนย์ |
+| ปริมาณตัวเลข | `log_duration`, `log_bytes_forward`, `log_bytes_backward` | ลดช่วงหางยาวของ duration และ bytes |
+| ทิศทาง bytes | `signed_log_bytes_ratio` | `log1p(forward) - log1p(backward)`; ค่าบวก/ลบแสดงว่าทิศทางใดมี bytes มากกว่า |
+| Protocol | 4 คอลัมน์ `protocol_*` | เข้ารหัส tcp/udp/icmp/other แบบ one-hot |
+| Service | 7 คอลัมน์ `service_*` | เพิ่มบริบทบริการ เช่น HTTP, DNS, SSH และ other |
+| Connection state | 4 คอลัมน์ `conn_state_*` | เพิ่มบริบท established/no-reply/reset/other |
 
-ตัวอย่างจำลอง: `duration=2`, `bytes_forward=120`, `bytes_backward=30` จะได้ `log_duration=ln(3)≈1.099` และ `log_total_bytes=ln(151)≈5.017` ค่าเหล่านี้เป็นการคำนวณจากตัวอย่าง ไม่ใช่ผลสถิติจาก dataset
+ตัวอย่างจำลอง: ถ้า `bytes_forward=120` และ `bytes_backward=30`, signed ratio จะได้ `ln(121)-ln(31)≈1.36`; เมื่อสลับ bytes สองทิศทางจะได้ค่าประมาณ `-1.36` จึงแสดงความไม่สมดุลได้สองด้าน
+
+โปรไฟล์หลักพัก `log_total_bytes` ไว้เพราะซ้ำกับ bytes สองทิศทาง และพัก `log_bytes_per_second` เพราะ duration ศูนย์ที่แทนด้วย epsilon อาจทำให้ความหมายของอัตราคลาดเคลื่อน รายละเอียดชื่อฟีเจอร์และ vocabulary อยู่ใน `common/feature_contract.json`.
 
 `StandardScaler` และ `OneHotEncoder` เรียนรู้จาก `train` เท่านั้น แล้วใช้ transformer ชุดเดิมแปลง `train_full`, `validation` และ `test` เพื่อไม่ให้ชุดประเมินมีอิทธิพลต่อค่าที่เรียนรู้ หาก feature ที่เลือกมี missing/infinite ระบบหยุดพร้อมรายงาน ไม่เติมศูนย์หรือลบแถวเงียบ ๆ
 

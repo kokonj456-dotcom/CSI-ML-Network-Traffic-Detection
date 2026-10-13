@@ -26,6 +26,18 @@ This experiment uses Isolation Forest as an **unsupervised anomaly scorer** and 
 
 The scripts resolve data paths from their own locations. To start one while the current directory is elsewhere, invoke the Python file by its absolute path.
 
+## Run the common-dataset comparison
+
+After the common pipeline has created its split and `joint_v1` feature files, run:
+
+```powershell
+python model/isolation-forest/train_common.py
+```
+
+This separate experiment compares the previous 10-feature `joint_v0` profile with the 19-feature `joint_v1` profile, then evaluates `joint_v1` in both NSL-KDD → UNSW-NB15 and UNSW-NB15 → NSL-KDD directions. It uses 300 trees, seed 42, and a threshold set from the 95th percentile of training anomaly scores by default. Labels are read only for post-score evaluation; they are not used to fit Isolation Forest or choose the threshold. Results are split out by dataset and saved with the combined `joint_v1` model under `model/isolation-forest/backup/`.
+
+Optional arguments are `--estimators`, `--seed`, and `--alert-rate` (for example, `--alert-rate 0.05`). This does not change the original NSL-KDD trainer above.
+
 ## Code layout
 
 - `train.py`: command-line entry point and options.

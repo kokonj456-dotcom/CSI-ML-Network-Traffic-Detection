@@ -30,7 +30,7 @@ flowchart LR
 | ---------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | ต้นทาง UNSW            | `dur=2`, `sbytes=120`, `dbytes=30`, `label=1`, `attack_cat=DoS`                             | แต่ละชุดตั้งชื่อคอลัมน์ต่างกัน; label เป็นคำตอบอ้างอิง                                                                             |
 | หลัง harmonization       | `duration=2`, `bytes_forward=120`, `bytes_backward=30`; label ย้ายไปตาราง `labels` | สูตรกลางอ่านชื่อเดียวกันได้; ค่า`label=1` ไม่กลายเป็น feature                                                                         |
-| หลัง feature engineering | `log_duration=ln(3)≈1.099`; `log_total_bytes=ln(151)≈5.017`                                     | log บีบค่าขนาดใหญ่ให้ช่วงแคบลง; ไม่ได้เพิ่มข้อมูลจาก sensor และต้องทดสอบว่าช่วยโมเดลจริงหรือไม่ |
+| หลัง feature engineering | `log_duration=ln(3)≈1.099`; `signed_log_bytes_ratio=ln(121)-ln(31)≈1.36` | log บีบช่วงค่าที่ยาว และ signed ratio เก็บว่าทิศทางขาใดมี bytes มากกว่า |
 | ตอนประเมิน         | โมเดลให้ score ก่อน แล้วค่อย join`label_binary` ด้วย `record_id`          | วัดผลได้โดยไม่ให้คำตอบรั่วเข้า`fit()`                                                                                                            |
 
 ตัวอย่างนี้สมมติว่าทิศทาง bytes ผ่านการตรวจสอบตาม contract แล้ว ค่า `record_id`/metadata จะช่วยระบุแถวและแหล่งที่มา แต่ต้องไม่ป้อนเข้า `X`
@@ -104,24 +104,28 @@ y = labels["label_binary"]        # เก็บไว้ประเมิน�
 
 ทั้งสี่เป็น **ผู้สมัคร** สำหรับ profile ร่วม ไม่ใช่คำยืนยันว่าความหมายตรงกันแล้วโดยอัตโนมัติ ต้องตรวจหน่วย ทิศทาง และนิยามจากเอกสารจริงทั้งสองชุด และตรวจว่าไม่มี missing ในแหล่งที่เข้าร่วม
 
-### Derived features ที่สร้างในรอบกลาง
+### Feature Engineering ที่ส่งเข้าโมเดล
 
-| ชื่อ                 | สูตร                                              | ตัวอย่างความหมาย                                                                          |
-| ------------------------ | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `log_duration`         | `log1p(duration)`                                   | ถ้า duration = 9 วินาที จะได้`ln(10)`; ลดอิทธิพลของค่าที่ใหญ่มาก |
-| `log_bytes_forward`    | `log1p(bytes_forward)`                              | ลดช่วงค่าจำนวน bytes ขาออก                                                             |
-| `log_bytes_backward`   | `log1p(bytes_backward)`                             | ลดช่วงค่าจำนวน bytes ขากลับ                                                           |
-| `log_total_bytes`      | `log1p(forward + backward)`                         | สรุปปริมาณข้อมูลทั้งสองทิศทาง                                                |
-| `log_bytes_ratio`      | `log1p(forward / (backward + 1))`                   | ค่าใหญ่ขึ้นเมื่อ traffic ขาออกมากกว่าขากลับอย่างชัดเจน       |
-| `log_bytes_per_second` | `log1p((forward + backward) / max(duration, 1e-6))` | สรุปความหนาแน่นของ byte ต่อเวลาและป้องกันหารด้วยศูนย์      |
+โปรไฟล์ `joint_v1` สร้าง model features 19 คอลัมน์ และเก็บ `record_id` เพิ่มอีกหนึ่งคอลัมน์ไว้เชื่อมตาราง:
 
-หลังได้ numeric features แล้ว `StandardScaler` จะ fit จาก `train` เท่านั้น และ `OneHotEncoder` สำหรับ protocol ก็ fit จาก Train เช่นกัน ตัวแปลงชุดเดิมถูกนำไปใช้กับ `validation`, `test` และ `train_full` เพื่อป้องกันข้อมูลจากชุดประเมินมีอิทธิพลต่อการเรียนรู้ preprocessing
+| กลุ่ม | คอลัมน์ | สูตร/ตัวอย่างความหมาย |
+|---|---|---|
+| ปริมาณตัวเลข | `log_duration`, `log_bytes_forward`, `log_bytes_backward` | ใช้ `log1p` ลดช่วงหางยาว เช่น 9 วินาที → `ln(10)` |
+| ความไม่สมดุลของทิศทาง | `signed_log_bytes_ratio` | `log1p(bytes_forward) - log1p(bytes_backward)`; ค่าบวกแปลว่าขาไปมากกว่า ค่าลบแปลว่าขากลับมากกว่า |
+| Protocol | `protocol_tcp/udp/icmp/other` | One-hot ทำให้ protocol แต่ละหมวดเป็น 0/1 โดยไม่สร้างลำดับปลอม |
+| Service | `service_dns/ftp/http/https_ssl/smtp/ssh/other` | One-hot จาก `service_group`; ค่าใหม่ที่ไม่รู้จักจัดเป็น `other` |
+| สถานะเชื่อมต่อ | `conn_state_established`, `conn_state_no_reply`, `conn_state_reset`, `conn_state_other` | One-hot จาก `conn_state_group`; หมวด `no-reply` ใช้ `_` ในชื่อคอลัมน์ |
+
+ตัวอย่าง: ถ้า bytes ขาไป = 120 และขากลับ = 30, signed ratio คือ `ln(121) - ln(31) ≈ 1.36` ซึ่งเป็นค่าบวกเพราะขาไปมากกว่า; เมื่อสลับค่าเป็น 30 กับ 120 ผลจะเป็นค่าลบประมาณ `-1.36` จึงเก็บทิศทางได้สมมาตร
+
+โปรไฟล์หลักพัก `log_total_bytes` ไว้เพราะเป็นผลรวมที่คำนวณซ้ำจาก bytes สองทิศทาง และพัก `log_bytes_per_second` เพราะการแทน duration ศูนย์ด้วย epsilon อาจสร้างอัตราที่สูงเกินความหมายของข้อมูล ฟีเจอร์ทั้งสองนำกลับมาทดลองแบบ ablation ได้ภายหลัง
+
+`StandardScaler` และ One-hot encoders ใช้หมวดมาตรฐานที่กำหนดใน contract และ fit จาก `train` เท่านั้น ตัวแปลงชุดเดียวกันใช้กับ `train_full`, `validation` และ `test`; ค่าหมวดที่ไม่รู้จักกลายเป็น `other`, แต่ค่าว่างในฟีเจอร์บังคับทำให้กระบวนการหยุดพร้อมรายงาน ไม่เติมศูนย์และไม่ลบแถวเงียบ ๆ
 
 ## 5. Extensions ที่ไม่ควรยัดเข้าฟีเจอร์ร่วมทันที
 
 | กลุ่ม             | คอลัมน์กลาง                                                                   | มีในชุดใดตาม contract                                                           | วิธีจัดการ                                                                                                                         |
 | ---------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Service / state        | `service_group`, `conn_state_group`                                                  | ทั้งสองชุดมีแหล่งตั้งต้น แต่ schema/หมวดแตกต่างกัน | map แบบระมัดระวัง; unknown เป็น other; ตรวจ mapping ก่อนใช้งาน                                                |
 | Packet counts          | `packets_forward`, `packets_backward`                                                | UNSW มี`spkts`/`dpkts`; NSL ไม่มีค่าที่เทียบตรง                    | เก็บค่า UNSW และ null ใน NSL พร้อม`has_packet_stats`; ไม่เข้า core profile โดยอัตโนมัติ                |
 | Packet size            | `mean_packet_size`                                                                     | คำนวณจาก UNSW bytes และ packet counts                                            | หารเฉพาะเมื่อ packet count > 0; UNSW-only extension                                                                             |
 | TTL / TCP window       | `ttl_forward/backward`, `tcp_window_forward/backward`                                | UNSW-only (`sttl/dttl`, `swin/dwin`)                                                    | คงไว้ตรวจวิเคราะห์; ต้องมีโปรไฟล์เฉพาะหรือข้อมูลเทียบเคียงก่อนรวม model input |

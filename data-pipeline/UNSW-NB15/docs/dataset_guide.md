@@ -23,7 +23,7 @@ flowchart LR
 |---|---|---|
 | Raw | `dur=2s`, `sbytes=120`, `dbytes=30`, `proto=tcp`, `label=1`, `attack_cat=DoS` | ต้นฉบับแยกข้อมูลพฤติกรรมออกจากคำตอบ |
 | Harmonized | `duration=2`, `protocol=tcp`, `bytes_forward=120`, `bytes_backward=30` | ใช้ชื่อ field กลาง เพื่อให้สูตรเขียนครั้งเดียวได้; ค่าดิบที่แปลงไม่ได้จะเป็น missing + quality flag ไม่ถูกแทนเป็น 0 |
-| Engineered | `log_duration=ln(3)≈1.099`; `log_total_bytes=ln(151)≈5.017`; `log_bytes_per_second=ln(76)≈4.331` | บีบช่วงตัวเลขหางยาว; จะเปลี่ยนระยะ/สเกลที่โมเดลเห็น จึงต้องเปรียบเทียบผลก่อนนำเข้าโมเดล |
+| Engineered | `log_duration=ln(3)≈1.099`; `signed_log_bytes_ratio=ln(121)-ln(31)≈1.36` | บีบช่วงตัวเลขหางยาว และเก็บทิศทางที่ bytes ไหลมากกว่า; ค่านี้เป็นเพียง feature ไม่ใช่ข้อสรุปว่าเป็น attack |
 | Labels/Metadata | `label_binary=1`, `attack_category=DoS/DDoS`; `orig_row_id` แยกอีกตาราง | ประเมินย้อนหลังและตามรอยต้นทางได้ โดยไม่ส่ง label หรือรหัส record เข้า `X` |
 
 ถ้าตัวอย่างนี้มี `spkts=3`, `dpkts=2` จะได้ `mean_packet_size=(120+30)/(3+2)=30` bytes/packet; ถ้า packet count ไม่มี จะเป็น missing ไม่ใช่ 0 เพราะ “ไม่มีการวัด” ไม่เท่ากับ “วัดแล้วพบศูนย์”
@@ -97,17 +97,19 @@ data-pipeline/UNSW-NB15/raw/
 
 `mean_packet_size` คำนวณจาก `(bytes_forward + bytes_backward) / (packets_forward + packets_backward)` เฉพาะเมื่อจำนวน packet รวมมากกว่า 0 ถ้าคำนวณไม่ได้จะเป็น missing ไม่แทนด้วยศูนย์ ฟีเจอร์นี้เป็น UNSW-only ในสัญญาปัจจุบัน
 
-ฟีเจอร์กลางคำนวณต่อจาก core ที่ผ่านการตรวจแล้ว:
+ฟีเจอร์กลางคำนวณต่อจาก core ที่ผ่านการตรวจแล้ว โดย profile `joint_v1` ใช้คอลัมน์ต่อไปนี้ร่วมกันกับ NSL-KDD:
 
-| ฟีเจอร์ | สูตร | สิ่งที่ช่วยสรุป |
+| กลุ่ม | คอลัมน์ | สิ่งที่ช่วยสรุป |
 |---|---|---|
-| `log_duration` | `log1p(duration)` | ลดความต่างของ duration ที่มีหางยาว |
-| `log_bytes_forward` / `log_bytes_backward` | `log1p(bytes)` | บีบช่วงจำนวน bytes โดยยังเก็บค่าศูนย์ได้ |
-| `log_total_bytes` | `log1p(bytes_forward + bytes_backward)` | ปริมาณรับส่งรวม |
-| `log_bytes_ratio` | `log1p(bytes_forward / (bytes_backward + 1))` | ความไม่สมดุลของ bytes สองทิศทาง |
-| `log_bytes_per_second` | `log1p(total_bytes / max(duration, 1e-6))` | ความหนาแน่นของ bytes ต่อเวลา; epsilon ป้องกันหารศูนย์ |
+| ปริมาณตัวเลข | `log_duration`, `log_bytes_forward`, `log_bytes_backward` | `log1p` ลดช่วงหางยาว โดยยังเก็บค่าศูนย์ได้ |
+| ความไม่สมดุลของทิศทาง | `signed_log_bytes_ratio` | `log1p(bytes_forward) - log1p(bytes_backward)`; เครื่องหมายบอกว่าทิศทางใดมี bytes มากกว่า |
+| Protocol | `protocol_tcp`, `protocol_udp`, `protocol_icmp`, `protocol_other` | แปลงหมวด protocol เป็นตัวเลข 0/1 โดยไม่สร้างลำดับปลอม |
+| Service | `service_dns`, `service_ftp`, `service_http`, `service_https_ssl`, `service_smtp`, `service_ssh`, `service_other` | ระบุประเภทบริการของ traffic ด้วย vocabulary ร่วม |
+| Connection state | `conn_state_established`, `conn_state_no_reply`, `conn_state_reset`, `conn_state_other` | เก็บหมวดสถานะการเชื่อมต่อที่ harmonize แล้ว; ชื่อ output ใช้ `_` แทน `-` |
 
-สูตรเหล่านี้เป็นตัวแทนอีกแบบของข้อมูลต้นทาง ไม่ใช่ข้อมูลใหม่จาก sensor และไม่ยืนยันว่า record เป็น attack
+รวมทั้งหมด 19 model features; `StandardScaler` และ `OneHotEncoder` fit จาก `train` เท่านั้น แล้วนำ transformer เดิมไปใช้กับ split อื่น ค่า category ที่ไม่รู้จัก map เป็น `other`; ค่าที่จำเป็นแต่ missing จะหยุดพร้อมรายงานแทนการเติมศูนย์หรือลบแถว สูตรเหล่านี้เป็นการแทนข้อมูลต้นทางอีกแบบ ไม่ใช่ข้อมูลใหม่จาก sensor และไม่ยืนยันว่า record เป็น attack
+
+โปรไฟล์ปัจจุบันไม่ใช้ `log_total_bytes` (ข้อมูลซ้ำกับ bytes สองทิศทาง) และพัก `log_bytes_per_second` ไว้ก่อน เพราะการแทน duration ศูนย์ด้วย epsilon อาจทำให้ความหมายของอัตราคลาดเคลื่อน
 
 ## 5. ฟิลด์อื่นในไฟล์ต้นทาง
 
