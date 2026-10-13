@@ -1,63 +1,78 @@
-# NSL-KDD Dashboard
+# NIDS Multi-Dataset Pipeline & Benchmark Dashboard
 
-เว็บ Dashboard สำหรับสำรวจ EDA, สถิติเชิงพรรณนา, คุณภาพข้อมูลจาก cleansing และผล feature engineering
+เว็บ Dashboard สำหรับสำรวจ EDA, สถิติเชิงพรรณนา, คุณภาพข้อมูลจาก cleansing, ผล feature engineering และการเปรียบเทียบผลลัพธ์โมเดลแบบครบวงจร
 
-> หมายเหตุ: ใน checkout ปัจจุบันมีเฉพาะคู่มือเตรียม Dashboard นี้; source code ของ `backend/` และ `frontend/` ยังไม่ได้อยู่ใน repository
+รองรับ 3 มุมมองชุดข้อมูล:
+1. NSL-KDD
+2. UNSW-NB15
+3. Common (Harmonized Merged Dataset)
 
-## โครงสร้าง
+---
+
+## โครงสร้างโปรเจกต์
 
 ```text
 webapp/
 ├── backend/
-│   ├── app/                 # FastAPI, data loading, filter logic, analytics
-│   ├── tests/               # ทดสอบ filter และข้อมูลที่ API ส่งให้หน้าเว็บ
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py          # FastAPI application, routing, CORS
+│   │   └── data_loader.py   # Multi-dataset loader, hybrid sampling, metrics aggregation
 │   └── requirements.txt
 └── frontend/
-    ├── src/                 # React UI, tabs, shared filters, Plotly charts
+    ├── src/
+    │   ├── App.jsx          # React application, multi-tab layout, 2-tier model comparator
+    │   ├── main.jsx
+    │   └── index.css
+    ├── index.html
     ├── package.json
-    └── vite.config.js       # ส่ง /api ไปยัง FastAPI ระหว่างพัฒนา
+    └── vite.config.js       # Reverse proxy /api ไปยัง FastAPI พอร์ต 8000
 ```
 
-## เตรียมข้อมูล
+---
 
-Dashboard อ่านไฟล์ที่ pipeline สร้างไว้ ไม่แก้ไขข้อมูลและไม่รัน notebook ให้อัตโนมัติ หากข้อมูลยังไม่มี ให้ทำตามนี้จากโฟลเดอร์รากของ repository:
+## ฟังก์ชันการทำงานหลัก
 
-```powershell
-python data-pipeline/NSL-KDD/download.py
+1. Multi-Dataset Switcher:
+   - สลับมุมมองข้อมูลระหว่าง Common Merged, NSL-KDD และ UNSW-NB15 ได้จากเมนูด้านบน
+2. EDA & Distributions (100% Full Dataset Processing):
+   - คำนวณสถิติและแจกแจงจากข้อมูลเต็ม 100% ครบทุกแถว (Common: 406,190 แถว, NSL-KDD: 148,517 แถว, UNSW-NB15: 257,673 แถว)
+   - กรองตาม Split จริง (เช่น KDDTrain, KDDTest, KDDTest-21, Train/Val/Test)
+   - สถิติ Normal vs Attack, Attack Categories และ Protocols สะท้อนยอดรวมจริงทั้งหมด
+   - ปรับการเรนเดอร์ Scatter Plot ให้เสถียรด้วย uniform sampling 1,000 จุดป้องกันการแล็กของเบราว์เซอร์
+3. Data Cleansing & Quality:
+   - สรุปผลการตรวจสอบความสมบูรณ์ของข้อมูล, นโยบายการจัดการค่าสูญหาย และรายงาน cleansing audit
+4. Feature Engineering & Contract:
+   - สำรวจ Candidate Features จาก feature_contract.json และรายการฟิลด์ที่ตัดออกเพื่อป้องกัน Data Leakage
+5. Models & Comparison (Full Evaluation Integration):
+   - รองรับผลการทดลองจริงจาก 4 สถาปัตยกรรมโมเดล: XGBoost, MLP, Autoencoder, Isolation Forest
+   - ระบบ 2-Tier Selector:
+     - ขั้นตอนที่ 1: เลือก Model Family หลัก
+     - ขั้นตอนที่ 2: เลือก Checkpoint Run ของ Family นั้น
+   - ตารางเปรียบเทียบค่า Delta Diff (+Δ% / -Δ%) พร้อมระบุฝ่ายที่ได้เปรียบ
+   - Confusion Matrix Face-Off แบบเคียงข้างกัน และสลับดูผลได้ทั้ง KDDTest+ และ KDDTest-21
+   - Hyperparameter Inspection & Comparison: ตารางเปรียบเทียบพารามิเตอร์การเทรนของ Model A และ Model B แบบเคียงข้างกัน
+6. Model Training Studio (On-Demand Training Engine):
+   - เลือกสถาปัตยกรรมโมเดลที่ต้องการเทรนได้ทั้ง 4 ตระกูล: XGBoost, MLP (PyTorch), Autoencoder (PyTorch), Isolation Forest
+   - เลือกชุดข้อมูลที่ต้องการใช้เทรนและทดสอบ: Common Harmonized (406k rows), NSL-KDD (148k rows), หรือ UNSW-NB15 (257k rows)
+   - ปรับแต่ง Hyperparameters ผ่าน UI ได้แบบยืดหยุ่น (Estimators, Depth, Learning Rate, Epochs, Batch Size, Threshold, Contamination ฯลฯ)
+   - สั่งเทรนสดผ่านระบบ Live API และบันทึก Checkpoint ลงระบบอัตโนมัติ
+   - แสดงผลประเมินทันทีหลังเทรนเสร็จ พร้อมปุ่มส่งผลลัพธ์เข้า 2-Tier Comparator ทันที
+   - ตาราง Training History & Hyperparameter Audit Log บันทึกประวัติและพารามิเตอร์ของทุกการทดลอง
+
+---
+
+## วิธีเปิดใช้งาน
+
+1. เริ่มต้น FastAPI Backend:
+```bash
+python -m uvicorn app.main:app --app-dir webapp/backend --host 127.0.0.1 --port 8000
 ```
+- API Docs: http://127.0.0.1:8000/docs
 
-จากนั้นรัน `data-pipeline/NSL-KDD/eda.ipynb`, `cleansing.ipynb` และ `feature_engineering.ipynb` เพื่อเตรียมหน้าสำรวจ NSL-KDD แบบเดิม หากต้องการสร้างตารางกลาง ให้รัน `data-pipeline/NSL-KDD/harmonization.ipynb` แล้วตามด้วย `data-pipeline/common/build_dataset.ipynb` และ `feature_engineering.ipynb` ตามคู่มือ [`data-pipeline/README.md`](../data-pipeline/README.md)
-
-## เปิดใช้งานในเครื่อง
-
-เปิด PowerShell หน้าต่างแรกจากโฟลเดอร์รากของ repository:
-
-```powershell
-python -m pip install -r webapp/backend/requirements.txt
-python -m uvicorn app.main:app --app-dir webapp/backend --reload --host 127.0.0.1 --port 8000
-```
-
-เปิด PowerShell หน้าต่างที่สอง:
-
-```powershell
+2. เริ่มต้น Vite React Frontend:
+```bash
 cd webapp/frontend
-npm install
-npm run dev
+npm run dev -- --host 127.0.0.1 --port 5173
 ```
-
-เปิด URL ที่ Vite แสดงใน terminal (ปกติคือ `http://127.0.0.1:5173`) เอกสาร API อยู่ที่ `http://127.0.0.1:8000/docs`
-
-หน้าเว็บมีตัวกรองร่วมแบบ sticky; การคลิกกลุ่มบนกราฟหรือเลือก filter จะอัปเดตทุกแท็บ EDA, Descriptive, Cleansing และ Feature Engineering โดยเลือกทุก split เป็นค่าเริ่มต้น หน้า Models & Comparison เป็นพื้นที่เตรียมไว้และยังไม่แสดงผล evaluation
-
-## การตรวจสอบ
-
-```powershell
-python -m pip install -r webapp/backend/requirements-dev.txt
-python -m pytest webapp/backend/tests
-```
-
-```powershell
-cd webapp/frontend
-npm run build
-npm test
-```
+- Web Application: http://127.0.0.1:5173

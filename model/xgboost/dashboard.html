@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XGBoost NIDS Experiment Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .glassmorphism {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-lg">
+          ⚡
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white flex items-center gap-2">
+            XGBoost NIDS Dashboard
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800/60">NSL-KDD</span>
+          </h1>
+          <p class="text-xs text-slate-400">Network Intrusion Detection System · Supervised Classifier</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="refreshBtn" onclick="loadBackups()" class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          Refresh Backups
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Column: Controls & Previous Runs (4 Cols) -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Run New Experiment Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+            <h2 class="font-semibold text-slate-100 flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+              Train New Model
+            </h2>
+            <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">CLI / API</span>
+          </div>
+
+          <form id="trainForm" onsubmit="triggerTraining(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Target Formulation</label>
+              <select id="mode" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                <option value="binary" selected>Binary (Normal vs Attack)</option>
+                <option value="multiclass">Multiclass (5 Attack Families)</option>
+                <option value="both">Both (Sequential Run)</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">n_estimators</label>
+                <input type="number" id="n_estimators" value="220" min="10" max="1000" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">max_depth</label>
+                <input type="number" id="max_depth" value="7" min="2" max="15" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">learning_rate</label>
+                <input type="number" step="0.01" id="learning_rate" value="0.05" min="0.001" max="1.0" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">cv_folds</label>
+                <input type="number" id="cv_folds" value="5" min="0" max="10" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">subsample</label>
+                <input type="number" step="0.05" id="subsample" value="0.65" min="0.1" max="1.0" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">colsample</label>
+                <input type="number" step="0.05" id="colsample_bytree" value="0.60" min="0.1" max="1.0" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full mt-2 py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span>Train & Backup Model</span>
+            </button>
+          </form>
+
+          <!-- Training Status Banner -->
+          <div id="statusBanner" class="hidden mt-4 p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs">
+            <div class="flex items-center gap-2 mb-1">
+              <div id="statusSpinner" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></div>
+              <span id="statusTitle" class="font-medium text-slate-200">Training In Progress...</span>
+            </div>
+            <p id="statusMsg" class="text-slate-400 font-mono text-[11px] break-all"></p>
+          </div>
+        </div>
+
+        <!-- Previous Results Explorer (model/xgboost/backup) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+            <h2 class="font-semibold text-slate-100 flex items-center gap-2 text-sm">
+              <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Previous Experiments
+            </h2>
+            <span id="backupCountBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-800">0 Runs</span>
+          </div>
+
+          <!-- Controls: Filter & Sort -->
+          <div class="space-y-2 mb-3">
+            <!-- Mode Filter Toggle Buttons -->
+            <div class="flex items-center rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+              <button type="button" id="filterAll" onclick="setModeFilter('all')" class="flex-1 py-1 rounded text-center font-medium transition bg-slate-800 text-white shadow">All</button>
+              <button type="button" id="filterBinary" onclick="setModeFilter('binary')" class="flex-1 py-1 rounded text-center font-medium text-slate-400 hover:text-slate-200 transition">Binary</button>
+              <button type="button" id="filterMulticlass" onclick="setModeFilter('multiclass')" class="flex-1 py-1 rounded text-center font-medium text-slate-400 hover:text-slate-200 transition">Multi</button>
+            </div>
+
+            <!-- Sort By Selector -->
+            <div class="flex items-center justify-between gap-2 text-xs">
+              <span class="text-slate-400 text-[11px] flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
+                Sort by:
+              </span>
+              <select id="sortOrder" onchange="applyFiltersAndRender()" class="bg-slate-950 border border-slate-700 rounded-md px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="date_desc">Latest Date (Newest first)</option>
+                <option value="acc_desc" selected>Accuracy (High to Low)</option>
+                <option value="acc_asc">Accuracy (Low to High)</option>
+                <option value="date_asc">Oldest Date</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="backupList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+            <div class="text-center py-6 text-slate-500 text-xs">Loading backup runs...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Results Display & Visualizations (8 Cols) -->
+      <div class="lg:col-span-8 space-y-6">
+
+        <!-- Selected Run Banner -->
+        <div class="bg-gradient-to-r from-slate-900 to-slate-900/80 border border-slate-800 rounded-xl p-5 shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="runBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold uppercase">BINARY</span>
+                <h3 id="runTitle" class="text-lg font-bold text-white font-mono">Select a run</h3>
+              </div>
+              <p id="runSubtitle" class="text-xs text-slate-400 mt-1">Saved checkpoint: <span id="modelFilePath" class="text-slate-300 font-mono">xgboost_model.joblib</span></p>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-slate-400">Total Run Time</div>
+              <div id="runElapsed" class="text-base font-semibold text-white font-mono">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hyperparameters Section in View Result -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
+          <div class="flex items-center justify-between mb-2 pb-2 border-b border-slate-800/80">
+            <h4 class="font-semibold text-slate-200 text-xs flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              Hyperparameters Used
+            </h4>
+            <span id="paramObjective" class="text-[10px] font-mono text-slate-400">objective: -</span>
+          </div>
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-xs">
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">n_estimators</span>
+              <span id="hp_estimators" class="font-mono font-bold text-white text-sm">-</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">max_depth</span>
+              <span id="hp_depth" class="font-mono font-bold text-white text-sm">-</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">learning_rate</span>
+              <span id="hp_lr" class="font-mono font-bold text-emerald-400 text-sm">-</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">subsample</span>
+              <span id="hp_subsample" class="font-mono font-bold text-sky-400 text-sm">-</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">colsample</span>
+              <span id="hp_colsample" class="font-mono font-bold text-purple-400 text-sm">-</span>
+            </div>
+            <div class="bg-slate-950/70 p-2 rounded-lg border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">random_state</span>
+              <span id="hp_seed" class="font-mono font-bold text-slate-300 text-sm">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Decision Threshold Slider (Binary Mode) -->
+        <div id="thresholdSliderContainer" class="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/40 border border-slate-800 rounded-xl p-4 shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-800/80">
+            <div class="flex items-center gap-2">
+              <span class="p-1 rounded bg-indigo-500/20 text-indigo-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+              </span>
+              <div>
+                <h4 class="font-semibold text-slate-100 text-xs">Decision Threshold Tuning (Binary Attack Probability)</h4>
+                <p class="text-[11px] text-slate-400">Slide to lower decision boundary for novel attacks without sacrificing precision</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">Current Threshold:</span>
+              <span id="sliderValueBadge" class="font-mono font-bold text-sm px-2.5 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-700">0.50</span>
+              <button type="button" onclick="resetThreshold()" class="text-[10px] text-slate-400 hover:text-slate-200 underline ml-1">Reset (0.50)</button>
+            </div>
+          </div>
+
+          <div class="space-y-2 mt-3">
+            <div class="flex items-center gap-4">
+              <span class="text-[10px] font-mono text-slate-400">0.01 (High Recall)</span>
+              <input type="range" id="thresholdSlider" min="0.01" max="0.99" step="0.01" value="0.50" oninput="onThresholdChange(this.value)" class="flex-1 h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+              <span class="text-[10px] font-mono text-slate-400">0.99 (High Precision)</span>
+            </div>
+
+            <!-- Quick Preset Pills -->
+            <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+              <span class="text-slate-400 text-[10px]">Quick Presets:</span>
+              <button type="button" onclick="setThreshold(0.05)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 transition">🚀 Max Accuracy & Recall (0.05)</button>
+              <button type="button" onclick="setThreshold(0.15)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 transition">⚖️ Balanced Security (0.15)</button>
+              <button type="button" onclick="setThreshold(0.30)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 transition">🛡️ Conservative Attack (0.30)</button>
+              <button type="button" onclick="setThreshold(0.50)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">Standard Default (0.50)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <!-- KDDTest+ Accuracy -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div class="text-xs text-slate-400 mb-1">KDDTest+ Accuracy</div>
+            <div id="metricAcc" class="text-2xl font-bold text-white">-</div>
+            <div class="text-[10px] text-slate-500 mt-1">Full benchmark set</div>
+          </div>
+          <!-- KDDTest+ Macro F1 -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div class="text-xs text-slate-400 mb-1">KDDTest+ Macro F1</div>
+            <div id="metricF1" class="text-2xl font-bold text-emerald-400">-</div>
+            <div class="text-[10px] text-slate-500 mt-1">Harmonic mean across classes</div>
+          </div>
+          <!-- Precision -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div class="text-xs text-slate-400 mb-1">Precision (Attack)</div>
+            <div id="metricPrecision" class="text-2xl font-bold text-sky-400">-</div>
+            <div class="text-[10px] text-slate-500 mt-1">Low false alarm rate</div>
+          </div>
+          <!-- Recall -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div class="text-xs text-slate-400 mb-1">Recall (Attack)</div>
+            <div id="metricRecall" class="text-2xl font-bold text-amber-400">-</div>
+            <div class="text-[10px] text-slate-500 mt-1">Novel attacks included</div>
+          </div>
+        </div>
+
+        <!-- Difficult Set KDDTest-21 Comparison -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-semibold text-slate-200 text-sm flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-400"></span>
+              Hard Benchmark: KDDTest-21 (Filtered Out Easy Detections)
+            </h4>
+            <span class="text-xs text-slate-400">11,850 Records</span>
+          </div>
+          <div class="grid grid-cols-3 gap-4 bg-slate-950/60 p-3 rounded-lg border border-slate-800/80">
+            <div>
+              <div class="text-xs text-slate-400">Accuracy</div>
+              <div id="metric21Acc" class="text-lg font-bold text-white font-mono mt-0.5">-</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400">Precision</div>
+              <div id="metric21Precision" class="text-lg font-bold text-sky-400 font-mono mt-0.5">-</div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400">Recall</div>
+              <div id="metric21Recall" class="text-lg font-bold text-amber-400 font-mono mt-0.5">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts: Feature Importance & Confusion Matrix -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Top Feature Importance Bar Chart -->
+          <div id="featureChartWrapper" class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-semibold text-slate-200 text-sm">Top Feature Importance</h4>
+              <span class="text-[10px] text-slate-400">Gain Score</span>
+            </div>
+            <div class="relative flex-1 min-h-[260px]">
+              <canvas id="featureChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Confusion Matrix Heatmap / Table -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-semibold text-slate-200 text-sm">Confusion Matrix (KDDTest+)</h4>
+              <span class="text-[10px] text-slate-400">True vs Predicted</span>
+            </div>
+            <div id="confusionMatrixContainer" class="flex-1 flex items-center justify-center overflow-x-auto min-h-[260px]">
+              <span class="text-xs text-slate-500">Loading matrix...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Per-Class Metrics Table (Multiclass) -->
+        <div id="perClassSection" class="hidden bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl">
+          <h4 class="font-semibold text-slate-200 text-sm mb-3">Per-Class Detailed Evaluation</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">Class Family</th>
+                  <th class="py-2.5 px-3">Precision</th>
+                  <th class="py-2.5 px-3">Recall</th>
+                  <th class="py-2.5 px-3">F1-Score</th>
+                  <th class="py-2.5 px-3">Support</th>
+                </tr>
+              </thead>
+              <tbody id="perClassTableBody" class="divide-y divide-slate-800 font-mono">
+                <!-- Rows injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let featureChartInstance = null;
+    let currentBackups = [];
+
+    let currentModeFilter = 'all';
+
+    function setModeFilter(mode) {
+      currentModeFilter = mode;
+      
+      const btnAll = document.getElementById('filterAll');
+      const btnBin = document.getElementById('filterBinary');
+      const btnMulti = document.getElementById('filterMulticlass');
+
+      [btnAll, btnBin, btnMulti].forEach(b => {
+        b.className = 'flex-1 py-1 rounded text-center font-medium text-slate-400 hover:text-slate-200 transition';
+      });
+
+      if (mode === 'all') btnAll.className = 'flex-1 py-1 rounded text-center font-medium transition bg-slate-800 text-white shadow';
+      else if (mode === 'binary') btnBin.className = 'flex-1 py-1 rounded text-center font-medium transition bg-emerald-950 text-emerald-400 border border-emerald-800 shadow';
+      else if (mode === 'multiclass') btnMulti.className = 'flex-1 py-1 rounded text-center font-medium transition bg-purple-950 text-purple-400 border border-purple-800 shadow';
+
+      applyFiltersAndRender();
+    }
+
+    function applyFiltersAndRender() {
+      const sortOrder = document.getElementById('sortOrder').value;
+
+      // Filter by mode
+      let filtered = currentBackups.filter(b => {
+        const isBin = b.name.includes('binary') || b.mode === 'binary';
+        if (currentModeFilter === 'binary') return isBin;
+        if (currentModeFilter === 'multiclass') return !isBin;
+        return true;
+      });
+
+      // Sort
+      filtered.sort((a, b) => {
+        const accA = a.accuracy ?? -1;
+        const accB = b.accuracy ?? -1;
+        if (sortOrder === 'acc_desc') return accB - accA;
+        if (sortOrder === 'acc_asc') return accA - accB;
+        if (sortOrder === 'date_asc') return a.name.localeCompare(b.name);
+        return b.name.localeCompare(a.name); // date_desc
+      });
+
+      const countBadge = document.getElementById('backupCountBadge');
+      countBadge.innerText = `${filtered.length} Runs`;
+
+      const listContainer = document.getElementById('backupList');
+      listContainer.innerHTML = '';
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">No runs found for filter "${currentModeFilter}"</div>`;
+        return;
+      }
+
+      filtered.forEach((b, idx) => {
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-lg border cursor-pointer transition flex items-center justify-between ${
+          idx === 0 ? 'bg-slate-800/80 border-emerald-500/50 shadow-md' : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+        }`;
+        
+        const isBinary = b.name.includes('binary') || b.mode === 'binary';
+        const badgeClass = isBinary ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-purple-950 text-purple-400 border-purple-800';
+        const badgeLabel = isBinary ? 'BINARY' : 'MULTICLASS';
+
+        item.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ${badgeClass}">${badgeLabel}</span>
+              <span class="text-xs font-mono font-medium text-slate-200">${b.name}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">${b.timestamp ? (b.timestamp.split('T')[0] + ' ' + (b.timestamp.split('T')[1] || '').substring(0, 8)) : 'Ready'}</div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-semibold text-emerald-400 font-mono">${b.accuracy ? (b.accuracy * 100).toFixed(2) + '%' : '-'}</span>
+          </div>
+        `;
+        item.onclick = () => selectRun(b.name, item);
+        listContainer.appendChild(item);
+      });
+
+      // Auto select first match if available
+      if (filtered.length > 0) {
+        selectRun(filtered[0].name, listContainer.children[0]);
+      }
+    }
+
+    async function loadBackups() {
+      try {
+        const res = await fetch('/api/backups');
+        const data = await res.json();
+        currentBackups = data.backups || [];
+        applyFiltersAndRender();
+      } catch (err) {
+        console.error('Failed to load backups:', err);
+        document.getElementById('backupList').innerHTML = `<div class="text-center py-6 text-red-400 text-xs">Error loading backups: ${err.message}</div>`;
+      }
+    }
+
+    async function selectRun(runName, element) {
+      // Highlight selected
+      if (element) {
+        Array.from(document.getElementById('backupList').children).forEach(el => {
+          el.className = 'p-3 rounded-lg border cursor-pointer transition flex items-center justify-between bg-slate-950/60 border-slate-800 hover:border-slate-700';
+        });
+        element.className = 'p-3 rounded-lg border cursor-pointer transition flex items-center justify-between bg-slate-800/80 border-emerald-500/50 shadow-md';
+      }
+
+      try {
+        const res = await fetch(`/api/run-details?run=${encodeURIComponent(runName)}`);
+        const data = await res.json();
+        renderRunDetails(data, runName);
+      } catch (err) {
+        console.error('Error fetching run details:', err);
+      }
+    }
+
+    function renderRunDetails(data, runName) {
+      document.getElementById('runTitle').innerText = runName;
+      document.getElementById('runBadge').innerText = (data.mode || 'BINARY').toUpperCase();
+      document.getElementById('runElapsed').innerText = data.elapsed_seconds ? `${data.elapsed_seconds}s` : '-';
+      document.getElementById('modelFilePath').innerText = `${runName}/${data.model_file || 'xgboost_model.joblib'}`;
+
+      // Hyperparameters
+      const hp = data.hyperparameters || {};
+      document.getElementById('hp_estimators').innerText = hp.n_estimators ?? '-';
+      document.getElementById('hp_depth').innerText = hp.max_depth ?? '-';
+      document.getElementById('hp_lr').innerText = hp.learning_rate ?? '-';
+      document.getElementById('hp_subsample').innerText = hp.subsample ?? '-';
+      document.getElementById('hp_colsample').innerText = hp.colsample_bytree ?? '-';
+      document.getElementById('hp_seed').innerText = hp.random_state ?? '-';
+      document.getElementById('paramObjective').innerText = `objective: ${hp.objective || '-'}`;
+
+      // Global store for active run
+      window.activeRunData = data;
+
+      // Handle Threshold Slider Container visibility & setup
+      const sliderContainer = document.getElementById('thresholdSliderContainer');
+      const slider = document.getElementById('thresholdSlider');
+      const badge = document.getElementById('sliderValueBadge');
+
+      if (data.mode === 'binary' && data.threshold_curve && data.threshold_curve.length > 0) {
+        sliderContainer.classList.remove('hidden');
+        slider.value = 0.50;
+        badge.innerText = '0.50';
+      } else {
+        sliderContainer.classList.add('hidden');
+      }
+
+      // Metrics
+      updateMetricsDisplay(data.kddtest_metrics, data.kddtest21_metrics, data.confusion_matrix_kddtest, data.classes);
+
+      // Feature Importance Chart
+      renderFeatureChart(data.top_features || {});
+
+      // Per class table if multiclass
+      const perClassSec = document.getElementById('perClassSection');
+      const tableBody = document.getElementById('perClassTableBody');
+      tableBody.innerHTML = '';
+
+      if (data.mode === 'multiclass' && data.kddtest_metrics?.per_class) {
+        perClassSec.classList.remove('hidden');
+        for (const [cls, stats] of Object.entries(data.kddtest_metrics.per_class)) {
+          if (cls === 'accuracy' || cls === 'macro avg' || cls === 'weighted avg') continue;
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40';
+          tr.innerHTML = `
+            <td class="py-2 px-3 text-slate-200 font-semibold">${cls}</td>
+            <td class="py-2 px-3 text-sky-400">${(stats.precision * 100).toFixed(2)}%</td>
+            <td class="py-2 px-3 text-amber-400">${(stats.recall * 100).toFixed(2)}%</td>
+            <td class="py-2 px-3 text-emerald-400 font-bold">${stats['f1-score'].toFixed(4)}</td>
+            <td class="py-2 px-3 text-slate-400">${stats.support}</td>
+          `;
+          tableBody.appendChild(tr);
+        }
+      } else {
+        perClassSec.classList.add('hidden');
+      }
+    }
+
+    function updateMetricsDisplay(m, m21, confusionMatrix, classes) {
+      m = m || {};
+      m21 = m21 || {};
+      classes = classes || ['Normal', 'Attack'];
+
+      document.getElementById('metricAcc').innerText = m.accuracy ? `${(m.accuracy * 100).toFixed(2)}%` : '-';
+      document.getElementById('metricF1').innerText = m.macro_f1 ? m.macro_f1.toFixed(4) : (m.f1 ? m.f1.toFixed(4) : '-');
+      document.getElementById('metricPrecision').innerText = m.precision ? `${(m.precision * 100).toFixed(2)}%` : (m.macro_precision ? `${(m.macro_precision * 100).toFixed(2)}%` : '-');
+      document.getElementById('metricRecall').innerText = m.recall ? `${(m.recall * 100).toFixed(2)}%` : (m.macro_recall ? `${(m.macro_recall * 100).toFixed(2)}%` : '-');
+
+      document.getElementById('metric21Acc').innerText = m21.accuracy ? `${(m21.accuracy * 100).toFixed(2)}%` : '-';
+      document.getElementById('metric21Precision').innerText = m21.precision ? `${(m21.precision * 100).toFixed(2)}%` : '-';
+      document.getElementById('metric21Recall').innerText = m21.recall ? `${(m21.recall * 100).toFixed(2)}%` : '-';
+
+      renderConfusionMatrix(confusionMatrix || [], classes);
+    }
+
+    function onThresholdChange(val) {
+      const th = parseFloat(val);
+      document.getElementById('sliderValueBadge').innerText = th.toFixed(2);
+      
+      const data = window.activeRunData;
+      if (!data || !data.threshold_curve) return;
+
+      // Find closest threshold point
+      let closest = data.threshold_curve[0];
+      let minDiff = 999;
+      for (const pt of data.threshold_curve) {
+        const diff = Math.abs(pt.threshold - th);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closest = pt;
+        }
+      }
+
+      if (closest) {
+        const updatedM = {
+          accuracy: closest.accuracy,
+          macro_f1: closest.f1,
+          f1: closest.f1,
+          precision: closest.precision,
+          recall: closest.recall
+        };
+        const updatedM21 = {
+          accuracy: closest.test21_accuracy,
+          precision: closest.test21_precision,
+          recall: closest.test21_recall
+        };
+        updateMetricsDisplay(updatedM, updatedM21, closest.confusion_matrix, data.classes);
+      }
+    }
+
+    function setThreshold(val) {
+      const slider = document.getElementById('thresholdSlider');
+      slider.value = val;
+      onThresholdChange(val);
+    }
+
+    function resetThreshold() {
+      setThreshold(0.50);
+    }
+
+    function renderFeatureChart(featuresObj) {
+      const labels = Object.keys(featuresObj).slice(0, 10);
+      const scores = Object.values(featuresObj).slice(0, 10);
+
+      const ctx = document.getElementById('featureChart').getContext('2d');
+      if (featureChartInstance) featureChartInstance.destroy();
+
+      featureChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Relative Gain',
+            data: scores,
+            backgroundColor: '#10b981',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              grid: { color: 'rgba(51, 65, 85, 0.4)' },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function renderConfusionMatrix(matrix, classes) {
+      const container = document.getElementById('confusionMatrixContainer');
+      if (!matrix || matrix.length === 0) {
+        container.innerHTML = '<span class="text-xs text-slate-500">No matrix available</span>';
+        return;
+      }
+
+      let html = '<table class="border-collapse text-center text-xs">';
+      html += '<thead><tr><th class="p-1.5 text-slate-400 font-normal">True \\ Pred</th>';
+      classes.forEach(c => {
+        html += `<th class="p-1.5 px-3 font-semibold text-slate-300 border-b border-slate-700">${c}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      matrix.forEach((row, i) => {
+        html += `<tr><td class="p-1.5 px-3 font-semibold text-slate-300 border-r border-slate-700 text-left">${classes[i] || i}</td>`;
+        const rowSum = row.reduce((a, b) => a + b, 0) || 1;
+        row.forEach((val, j) => {
+          const isDiag = i === j;
+          const pct = Math.round((val / rowSum) * 100);
+          const bg = isDiag ? `rgba(16, 185, 129, ${Math.max(0.2, pct / 100)})` : `rgba(239, 68, 68, ${Math.min(0.6, (val / rowSum) * 0.8)})`;
+          html += `<td style="background-color: ${bg};" class="p-2 border border-slate-800 font-mono text-white">
+            <div class="font-bold">${val.toLocaleString()}</div>
+            <div class="text-[9px] text-slate-300">${pct}%</div>
+          </td>`;
+        });
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    async function triggerTraining(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const banner = document.getElementById('statusBanner');
+      const statusMsg = document.getElementById('statusMsg');
+
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+      banner.classList.remove('hidden');
+      statusMsg.innerText = 'Submitting training parameters to background engine...';
+
+      const payload = {
+        mode: document.getElementById('mode').value,
+        n_estimators: parseInt(document.getElementById('n_estimators').value),
+        max_depth: parseInt(document.getElementById('max_depth').value),
+        learning_rate: parseFloat(document.getElementById('learning_rate').value),
+        cv_folds: parseInt(document.getElementById('cv_folds').value),
+        subsample: parseFloat(document.getElementById('subsample').value),
+        colsample_bytree: parseFloat(document.getElementById('colsample_bytree').value)
+      };
+
+      try {
+        const res = await fetch('/api/train', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        statusMsg.innerText = result.message || 'Training finished successfully.';
+        
+        // Reload backups and select the newest
+        setTimeout(async () => {
+          await loadBackups();
+          banner.classList.add('hidden');
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }, 1500);
+
+      } catch (err) {
+        statusMsg.innerText = 'Error: ' + err.message;
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', loadBackups);
+  </script>
+</body>
+</html>
+

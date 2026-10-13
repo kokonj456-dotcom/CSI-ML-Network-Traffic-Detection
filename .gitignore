@@ -58,6 +58,10 @@ data-pipeline/NSL-KDD/output/model_runs/mlp/plots/*
 !model/autoencoder/scaler.pkl
 !model/autoencoder/autoencoder.pth
 model/isolation-forest/backup/
+model/autoencoder/backup/
+model/mlp/backup/
+model/mlp/Backup/
+model/xgboost/backup/
 # Experiment logs
 mlruns/
 wandb/
@@ -68,3 +72,6 @@ wandb/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+#Agent skills
+.agents/
