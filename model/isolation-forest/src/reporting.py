@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
+from typing import Any
 
+import joblib
 import numpy as np
 import pandas as pd
 
@@ -110,3 +113,76 @@ def write_cluster_profiles(
 def write_run_config(output_dir: Path, config: dict[str, object]) -> None:
     with (output_dir / "run_config.json").open("w", encoding="utf-8") as file:
         json.dump(config, file, indent=2, ensure_ascii=False)
+
+
+def write_backup_artifacts(
+    backup_dir: Path,
+    isolation_forest: Any,
+    cluster_preprocessor: Any,
+    alert_cluster_model: Any,
+    feature_names: list[str],
+    run_config: dict[str, object],
+    evaluation_rows: list[dict[str, object]],
+) -> tuple[Path, Path]:
+    """Save a timestamp-matched model bundle and held-out evaluation JSON."""
+    created_at = datetime.now().astimezone()
+    run_id = f"isolation-forest-iso-{created_at.strftime('%Y%m%d-%H%M%S-%f')}"
+    model_path = backup_dir / f"{run_id}.joblib"
+    result_path = backup_dir / f"{run_id}-result.json"
+    backup_dir.mkdir(parents=True, exist_ok=True)
+
+    # Save the fitted cluster preprocessing state as standard data instead of
+    # serializing MixedFeatureClusterer itself. This keeps the artifact
+    # loadable from the repository root without requiring a custom sys.path.
+    model_bundle = {
+        "algorithm": "IsolationForest",
+        "anomaly_detector": isolation_forest,
+        "threshold_anomaly_score": run_config["threshold_anomaly_score"],
+        "cluster_preprocessor": {
+            "numeric_columns": cluster_preprocessor.numeric_columns,
+            "one_hot_columns": cluster_preprocessor.one_hot_columns,
+            "log_columns": sorted(
+                cluster_preprocessor.LOG_COLUMNS.intersection(
+                    cluster_preprocessor.numeric_columns
+                )
+            ),
+            "numeric_scaler": cluster_preprocessor.scaler,
+            "numeric_weight": cluster_preprocessor.numeric_weight,
+        },
+        "alert_cluster_model": alert_cluster_model,
+        "non_alert_cluster_id": -1,
+        "feature_names": feature_names,
+        "run_config": run_config,
+    }
+    joblib.dump(model_bundle, model_path)
+
+    result = {
+        "run_id": run_id,
+        "created_at": created_at.isoformat(timespec="microseconds"),
+        "algorithm": "IsolationForest",
+        "training": {
+            "split": run_config["training_split"],
+            "rows": run_config["training_rows"],
+            "fit_uses_targets": run_config["fit_uses_targets"],
+            "feature_count": run_config["feature_count"],
+            "threshold_anomaly_score": run_config["threshold_anomaly_score"],
+            "alert_rate": run_config["alert_rate"],
+        },
+        "parameters": isolation_forest.get_params(deep=False),
+        "run_config": run_config,
+        "evaluation": {
+            "labels_used_for_fit": False,
+            "description": (
+                "Labels are used only after scoring to calculate held-out benchmark metrics."
+            ),
+            "splits": evaluation_rows,
+        },
+        "artifacts": {
+            "model_file": model_path.name,
+            "result_file": result_path.name,
+        },
+    }
+    with result_path.open("w", encoding="utf-8") as result_file:
+        json.dump(result, result_file, ensure_ascii=False, indent=2, allow_nan=False)
+
+    return model_path, result_path

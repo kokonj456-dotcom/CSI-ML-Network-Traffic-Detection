@@ -1,9 +1,5 @@
 import os
 import sys
-import csv
-import time
-from datetime import datetime
-
 import random
 import json
 import argparse
@@ -88,7 +84,7 @@ def train_epoch(model, loader, criterion, optimizer, device):
     model.train()
     total_loss = 0.0
     all_preds, all_targets = [], []
-    
+
     for x_batch, y_batch in loader:
         x_batch, y_batch = x_batch.to(device), y_batch.to(device)
         optimizer.zero_grad()
@@ -139,16 +135,10 @@ def run_experiment(task="multiclass", epochs=30, batch_size=256, lr=1e-3, seed=4
     print(f"=======================================================")
     
     script_dir = Path(__file__).resolve().parent
-    # Backup: experiment tracking
-    run_start_time = time.perf_counter()
-    started_at = datetime.now().astimezone()
-    run_id = f"MLP_{started_at.strftime('%Y%m%d_%H%M%S')}_{task}"
-
-    backup_dir = script_dir / "Backup"
-    run_dir = backup_dir / "runs" / run_id
-    run_dir.mkdir(parents=True, exist_ok=False)
-    data_dir = script_dir.parent.parent / "data-pipeline" / "output" / "NSL-KDD" / "feature_engineered"
-    plots_dir = script_dir / "plots"
+    data_dir = script_dir.parent.parent / "data-pipeline" / "NSL-KDD" / "output" / "feature_engineering"
+    model_output_dir = data_dir.parent / "model_runs" / "mlp"
+    plots_dir = model_output_dir / "plots"
+    model_output_dir.mkdir(parents=True, exist_ok=True)
     plots_dir.mkdir(parents=True, exist_ok=True)
     
     # 1. Load Data
@@ -243,7 +233,7 @@ def run_experiment(task="multiclass", epochs=30, batch_size=256, lr=1e-3, seed=4
     
     # 8. Training Loop with Early Stopping
     best_val_f1 = -1.0
-    best_model_path = script_dir / f"best_mlp_{task}.pth"
+    best_model_path = model_output_dir / f"best_mlp_{task}.pth"
     history = {"train_loss": [], "val_loss": [], "train_f1": [], "val_f1": []}
     
     print(f"\nTraining MLP for {epochs} epochs...")
@@ -357,94 +347,23 @@ def run_experiment(task="multiclass", epochs=30, batch_size=256, lr=1e-3, seed=4
         plt.close()
         print(f"Saved confusion matrix plot: {cm_path}")
         
-
-    # 12. Save Results and Experiment History
-    duration_seconds = time.perf_counter() - run_start_time
-    finished_at = datetime.now().astimezone()
-
+    # 12. Save Results JSON
     results = {
         "task": task,
         "input_features": input_dim,
         "epochs": epochs,
         "batch_size": batch_size,
         "learning_rate": lr,
-        "seed": seed,
         "class_names": class_names,
-        "run_metadata": {
-            "run_id": run_id,
-            "started_at": started_at.isoformat(),
-            "finished_at": finished_at.isoformat(),
-            "duration_seconds": round(duration_seconds, 2),
-            "duration_minutes": round(duration_seconds / 60, 2),
-            "device": str(device),
-            "best_val_macro_f1": float(best_val_f1)
-        },
         "kdd_test_plus": test_metrics,
         "kdd_test_21": test21_metrics
     }
-
-    # Keep the original latest-results file
-    results_path = script_dir / f"results_{task}.json"
+    results_path = model_output_dir / f"results_{task}.json"
     with open(results_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-
-    # Save a separate, permanent copy for this run
-    backup_results_path = run_dir / f"results_{task}.json"
-    with open(backup_results_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-
-    # Save training plots for this run
-    for plot_name in [
-        f"training_curves_{task}.png",
-        f"confusion_matrix_kddtestplus_{task}.png",
-        f"confusion_matrix_kddtest-21_{task}.png"
-    ]:
-        plot_path = plots_dir / plot_name
-        if plot_path.exists():
-            import shutil
-            shutil.copy2(plot_path, run_dir / plot_name)
-
-    # Append one row without deleting previous runs
-    history_path = backup_dir / "experiment_history.csv"
-    row = {
-        "run_id": run_id,
-        "task": task,
-        "started_at": started_at.isoformat(),
-        "finished_at": finished_at.isoformat(),
-        "duration_seconds": round(duration_seconds, 2),
-        "duration_minutes": round(duration_seconds / 60, 2),
-        "epochs": epochs,
-        "batch_size": batch_size,
-        "learning_rate": lr,
-        "seed": seed,
-        "input_features": input_dim,
-        "device": str(device),
-        "best_val_macro_f1": float(best_val_f1),
-        "kdd_test_plus_accuracy": test_metrics["accuracy"],
-        "kdd_test_plus_macro_f1": test_metrics["macro_f1"],
-        "kdd_test_plus_balanced_accuracy": test_metrics["balanced_accuracy"],
-        "kdd_test_21_accuracy": test21_metrics["accuracy"],
-        "kdd_test_21_macro_f1": test21_metrics["macro_f1"],
-        "kdd_test_21_balanced_accuracy": test21_metrics["balanced_accuracy"],
-        "results_file": str(backup_results_path)
-    }
-
-    backup_dir.mkdir(parents=True, exist_ok=True)
-    file_exists = history_path.exists() and history_path.stat().st_size > 0
-
-    with open(history_path, "a", newline="", encoding="utf-8-sig") as f:
-        writer = csv.DictWriter(f, fieldnames=row.keys())
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(row)
-
-    print(f"Run ID: {run_id}")
-    print(f"Training duration: {duration_seconds / 60:.2f} minutes")
-    print(f"Backup results: {backup_results_path}")
-    print(f"Experiment history: {history_path}")
+        json.dump(results, f, indent=2)
+    print(f"Saved results summary: {results_path}")
 
     return results
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train PyTorch MLP for NSL-KDD")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -13,11 +14,15 @@ from data import OUTPUT_DIR, load_inputs
 from evaluation import evaluate_predictions
 from preprocessing import MixedFeatureClusterer
 from reporting import (
+    write_backup_artifacts,
     write_cluster_profiles,
     write_run_config,
     write_scored_split,
     write_training_results,
 )
+
+
+BACKUP_DIR = Path(__file__).resolve().parents[1] / "backup"
 
 
 def validate_args(args: argparse.Namespace) -> None:
@@ -170,6 +175,7 @@ def run_training(args: argparse.Namespace) -> None:
         "algorithm": "IsolationForest",
         "fit_uses_targets": False,
         "training_split": "KDDTrain",
+        "training_rows": len(train_features),
         "feature_profile": "original numeric + train-vocabulary one-hot; engineered alternatives excluded",
         "feature_count": len(model_schema),
         "n_estimators": args.estimators,
@@ -185,11 +191,22 @@ def run_training(args: argparse.Namespace) -> None:
         "output_directory": str(OUTPUT_DIR),
     }
     write_run_config(OUTPUT_DIR, run_config)
+    backup_model_path, backup_result_path = write_backup_artifacts(
+        BACKUP_DIR,
+        model,
+        clusterer,
+        cluster_model,
+        train_features.columns.tolist(),
+        run_config,
+        metric_rows,
+    )
 
     print(f"Fitted on {len(train_features):,} unlabeled KDDTrain rows.")
     print(f"Features used: {len(model_schema)} (targets excluded from fitting).")
     print(f"Alert threshold: {threshold:.6f}; training alert rate: {train_flagged.mean():.2%}")
     print(f"Clustered training alerts into {actual_clusters} groups.")
     print(f"Results written to: {OUTPUT_DIR}")
+    print(f"Timestamped model bundle: {backup_model_path}")
+    print(f"Timestamped evaluation result: {backup_result_path}")
     print("\nHeld-out evaluation (labels used only after scoring):")
     print(metrics.to_string(index=False))

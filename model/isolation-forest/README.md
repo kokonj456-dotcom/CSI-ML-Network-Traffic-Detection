@@ -7,13 +7,13 @@ This experiment uses Isolation Forest as an **unsupervised anomaly scorer** and 
 1. Download the dataset if it is not already present:
 
    ```powershell
-   python dataset/download_nsl_dataset.py
+   python data-pipeline/NSL-KDD/download.py
    ```
 
 2. Run these notebooks in order:
 
-   - `data-pipeline/nsl_cleansing.ipynb`
-   - `data-pipeline/nsl_feature_engineering.ipynb`
+   - `data-pipeline/NSL-KDD/cleansing.ipynb`
+   - `data-pipeline/NSL-KDD/feature_engineering.ipynb`
 
 3. Install this experiment's dependencies and run it:
 
@@ -22,11 +22,14 @@ This experiment uses Isolation Forest as an **unsupervised anomaly scorer** and 
    python model/isolation-forest/train.py --alert-rate 0.05 --clusters 5
    ```
 
+   For a training-only walkthrough in one file, run `python model/isolation-forest/train_single.py` instead. It fits Isolation Forest on KDDTrain features only; it does not evaluate test data or create clusters. Its model and training configuration are saved under `data-pipeline/NSL-KDD/output/model_runs/isolation_forest_single/`.
+
 The scripts resolve data paths from their own locations. To start one while the current directory is elsewhere, invoke the Python file by its absolute path.
 
 ## Code layout
 
 - `train.py`: command-line entry point and options.
+- `train_single.py`: beginner-friendly, single-file training script; reads only the feature table and never loads targets.
 - `src/data.py`: dataset paths, loading, input/schema checks, and baseline feature selection.
 - `src/preprocessing.py`: transformations used only to prepare flagged records for clustering.
 - `src/training.py`: Isolation Forest/K-Means fitting, scoring, and experiment orchestration.
@@ -45,10 +48,10 @@ Run the experiment through `train.py`; implementation modules are grouped under 
 
 ## Output
 
-Generated files are written to the ignored local directory:
+Generated reports are written to the ignored local directory:
 
 ```text
-data-pipeline/output/NSL-KDD/isolation_forest/
+data-pipeline/NSL-KDD/output/model_runs/isolation_forest/
 ```
 
 - `KDDTrain_anomaly_results.csv`, `KDDTest_anomaly_results.csv`, `KDDTest-21_anomaly_results.csv`: row index, anomaly score, flag, cluster, and reference targets for post-hoc inspection.
@@ -56,6 +59,23 @@ data-pipeline/output/NSL-KDD/isolation_forest/
 - `evaluation_metrics.csv`: ranking metrics and threshold-based precision/recall/F1/false-positive rate; also reports recall on attack labels absent from KDDTrain.
 - `training_alert_cluster_profiles.csv`: training alert cluster sizes and label/service summaries for interpretation only.
 - `run_config.json`: feature set, threshold, seed, cluster count, and output location.
+
+Every successful run also creates a timestamp-matched pair under
+`model/isolation-forest/backup/`:
+
+- `isolation-forest-iso-<เวลา>.joblib`: a reusable bundle containing the fitted Isolation Forest,
+  alert threshold, portable fitted clustering-preprocessing state, K-Means model, feature names,
+  and run settings.
+- `isolation-forest-iso-<เวลา>-result.json`: model parameters and evaluation results for both
+  `KDDTest` and `KDDTest-21`. Test labels are used only after scoring; they are not used to fit
+  the Isolation Forest or choose the threshold.
+
+For example, one run may produce `isolation-forest-iso-20261012-143520-123456.joblib` and its
+matching `isolation-forest-iso-20261012-143520-123456-result.json`.
+
+The timestamp includes date, time, and microseconds so repeated runs do not overwrite earlier
+backups. The backup folder is ignored by Git because it contains generated model artifacts and
+run-specific results.
 
 The default threshold is only a starting operating point. Choose it for the number of alerts the reviewer can handle, and report the resulting false-positive rate and recall. Do not tune it against KDDTest and then report that same Test result as an untouched final evaluation.
 

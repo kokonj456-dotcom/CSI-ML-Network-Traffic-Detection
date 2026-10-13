@@ -64,8 +64,8 @@ python train.py --task both --epochs 25 --batch_size 256 --seed 42
 
 ไฟล์ผลลัพธ์ที่ได้:
 - น้ำหนักโมเดลที่ดีที่สุด: `best_mlp_multiclass.pth`, `best_mlp_binary.pth`
-- ผลเมตริกสรุปเป็น JSON: `results_multiclass.json`, `results_binary.json`
-- กราฟ Loss & F1 และ Confusion Matrix บันทึกในโฟลเดอร์ `plots/`
+- ผลเมตริกสรุปเป็น JSON: `data-pipeline/NSL-KDD/output/model_runs/mlp/results_multiclass.json`, `results_binary.json`
+- กราฟ Loss & F1 และ Confusion Matrix บันทึกใน `data-pipeline/NSL-KDD/output/model_runs/mlp/plots/`
 
 ---
 
@@ -112,13 +112,13 @@ python train.py --task both --epochs 25 --batch_size 256 --seed 42
 ## 6. ภาพกราฟประกอบการทดลอง (Plots & Visualizations)
 
 - **กราฟการเรียนรู้ (Loss & Macro F1 curves)**:
-  - Multiclass: `plots/training_curves_multiclass.png`
-  - Binary: `plots/training_curves_binary.png`
+  - Multiclass: `data-pipeline/NSL-KDD/output/model_runs/mlp/plots/training_curves_multiclass.png`
+  - Binary: `data-pipeline/NSL-KDD/output/model_runs/mlp/plots/training_curves_binary.png`
 - **Confusion Matrix (Normalized)**:
-  - `plots/confusion_matrix_kddtestplus_multiclass.png`
-  - `plots/confusion_matrix_kddtest-21_multiclass.png`
-  - `plots/confusion_matrix_kddtestplus_binary.png`
-  - `plots/confusion_matrix_kddtest-21_binary.png`
+  - `data-pipeline/NSL-KDD/output/model_runs/mlp/plots/confusion_matrix_kddtestplus_multiclass.png`
+  - `data-pipeline/NSL-KDD/output/model_runs/mlp/plots/confusion_matrix_kddtest-21_multiclass.png`
+  - `data-pipeline/NSL-KDD/output/model_runs/mlp/plots/confusion_matrix_kddtestplus_binary.png`
+  - `data-pipeline/NSL-KDD/output/model_runs/mlp/plots/confusion_matrix_kddtest-21_binary.png`
 
 ---
 
