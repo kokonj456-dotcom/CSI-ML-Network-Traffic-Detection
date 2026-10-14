@@ -85,7 +85,7 @@ data-pipeline/UNSW-NB15/raw/
 | `proto` | โปรโตคอล เช่น TCP/UDP/ICMP | `protocol`: แปลงตัวพิมพ์เล็กและค่ารหัสที่รู้จัก; ที่เหลือเป็น `other` | ใช้ One-Hot ในขั้น feature engineering; หมวด unseen ไม่ทำให้ schema เปลี่ยน |
 | `sbytes` | จำนวนไบต์จาก source ไป destination | `bytes_forward` หน่วย byte | รักษาทิศทาง source→destination ตามชื่อ/นิยามต้นทาง |
 | `dbytes` | จำนวนไบต์จาก destination กลับ source | `bytes_backward` หน่วย byte | อย่าสลับกับ `sbytes`; นิยามทิศทางต้องตรงกับแหล่งอื่นก่อนใช้ร่วม |
-| `service` | ชนิดบริการที่ตรวจพบ | `service_group` เมื่อมีค่า | map ชื่อที่รู้จัก เช่น HTTP, HTTPS/SSL, DNS, FTP, SSH, SMTP; ค่าอื่นเป็น `other` |
+| `service` | ชนิดบริการที่ตรวจพบ; `-` หมายถึงบริการอื่นนอกเหนือจากชื่อที่ระบุ | `service_group` เมื่อมีค่า | Cleansing แปลง `-` เป็น `other` และนับใน audit; ชื่อที่รู้จัก map เป็นกลุ่มมาตรฐาน ส่วน missing จริงยังคง missing |
 | `state` | สถานะ/ธงของการเชื่อมต่อ | `conn_state_group` เมื่อมีค่า | map แบบหยาบเป็น `established`, `reset`, `no-reply`, `other`; เก็บต้นฉบับในตาราง cleansed |
 | `spkts`, `dpkts` | จำนวน packet สองทิศทาง | `packets_forward`, `packets_backward` | extension ของ UNSW; NSL-KDD ไม่มีค่าที่เทียบกันตรง ๆ จึงไม่เข้า core ร่วมโดยอัตโนมัติ |
 | `sttl`, `dttl` | ค่า TTL ของ packet แยกสองทิศทาง | `ttl_forward`, `ttl_backward` | เก็บเป็น extension; อาจสะท้อนสภาพแวดล้อม/เส้นทางเครือข่าย ไม่ใช่หลักฐานการโจมตีโดยตัวมันเอง |

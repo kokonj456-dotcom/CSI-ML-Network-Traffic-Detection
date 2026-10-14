@@ -138,16 +138,7 @@ y = labels["label_binary"]        # เก็บไว้ประเมิน�
 
 โปรไฟล์หลักพัก `log_total_bytes` ไว้เพราะเป็นผลรวมที่คำนวณซ้ำจาก bytes สองทิศทาง และพัก `log_bytes_per_second` เพราะการแทน duration ศูนย์ด้วย epsilon อาจสร้างอัตราที่สูงเกินความหมายของข้อมูล
 
-Notebook สร้างฟีเจอร์ที่ยังไม่ผ่านการทดลองเป็นชุดแยก ไม่รวมเข้า 19 model features ของ `joint_v1`:
-
-| ฟีเจอร์ทดลอง | สูตร/การจัดการ | เหตุผลที่ยังไม่เป็นฟีเจอร์หลัก |
-|---|---|---|
-| `total_bytes` | `bytes_forward + bytes_backward` | คำนวณได้จากทั้งสองชุด แต่ซ้ำกับข้อมูลสองทิศทางที่มีอยู่แล้ว |
-| `flow_throughput_bytes_per_sec` | `(bytes_forward + bytes_backward) / duration`; เมื่อ duration = 0 จะเก็บ missing | คำนวณจากฟิลด์ร่วมได้ แต่ NSL-KDD มี duration เป็นศูนย์จำนวนมาก จึงต้องประเมินผลของ missing และวิธีจัดการก่อน |
-| `is_zero_duration` | 1 เมื่อ duration = 0 มิฉะนั้น 0 | ช่วยแยกกรณีอัตราคำนวณไม่ได้ แต่สัดส่วนศูนย์ต่างกันระหว่างแหล่งข้อมูล จึงอาจกลายเป็นสัญญาณบอกแหล่งแทนพฤติกรรม |
-| `service_state_combo` | ต่อหมวด `service_group` และ `conn_state_group` เช่น `http__reset` | ทดลองว่าปฏิสัมพันธ์ระหว่าง service กับสถานะช่วยได้หรือไม่; ยังไม่ได้เข้ารหัสหรือประเมินกับโมเดล |
-
-ไฟล์ทดลองอยู่ที่ `output/feature_engineering/experimental_candidates/<split>/candidates.csv` และสรุปจำนวนค่าที่คำนวณ throughput ได้/ไม่ได้อยู่ใน `experimental_candidates_report.csv` ไฟล์เหล่านี้มี `record_id` เพื่อเชื่อมแถว แต่ **ไม่ถูกรวมใน `features.csv` หลักและไม่ควรนำเข้าโมเดลโดยตรง** จนกว่าจะทำ ablation และกำหนด preprocessing ของ candidate ให้ชัดเจน
+ปัจจุบัน Notebook สร้างเฉพาะ model features 19 คอลัมน์ของ `joint_v1` ตามตารางด้านบน ไม่มีการสร้างหรือส่งออกฟีเจอร์ทดลองเพิ่มเติม ส่วน `record_id` ยังคงอยู่ในไฟล์เพื่อเชื่อม features กับ labels/metadata และต้องตัดออกก่อนส่งข้อมูลเข้าโมเดล
 
 `StandardScaler` และ One-hot encoders ใช้หมวดมาตรฐานที่กำหนดใน contract และ fit จาก `train` เท่านั้น ตัวแปลงชุดเดียวกันใช้กับ `train_full`, `validation` และ `test`; ค่าหมวดที่ไม่รู้จักกลายเป็น `other`, แต่ค่าว่างในฟีเจอร์บังคับทำให้กระบวนการหยุดพร้อมรายงาน ไม่เติมศูนย์และไม่ลบแถวเงียบ ๆ
 
