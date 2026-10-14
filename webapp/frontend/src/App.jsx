@@ -341,33 +341,35 @@ export default function App() {
   const metricsB = evalSplit === 'kddtest21' ? runB?.kddtest21 : runB?.kddtest;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#f5fafd] text-slate-800 flex flex-col font-sans">
       {/* Top Header */}
-      <header className="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-md">
+      <header className="border-b border-slate-200 bg-white/95 sticky top-0 z-50 backdrop-blur-md shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center font-bold text-indigo-400">
+            <div className="w-9 h-9 rounded-xl bg-[#182d88] flex items-center justify-center font-black text-[#182d88] shadow-md shadow-[#182d88]/20">
               N
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white text-base">NIDS Unified Pipeline Dashboard</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">v2.0</span>
+                <span className="font-bold text-[#182d88] text-base">NIDS Unified Pipeline Dashboard</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#f5fafd] text-[#097c5c] border border-[#3ac890]/50 font-bold">
+                  v2.0 Harmonized
+                </span>
               </div>
-              <p className="text-xs text-slate-400">NSL-KDD, UNSW-NB15, Harmonized Pipeline & Cross-Model Benchmark</p>
+              <p className="text-xs text-slate-500">NSL-KDD, UNSW-NB15, Harmonized Pipeline & Cross-Model Benchmark</p>
             </div>
           </div>
 
           {/* Dataset Switcher in Header */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 hidden sm:inline">Active Dataset:</span>
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs text-slate-500 font-medium hidden sm:inline">Active Dataset:</span>
             <select
               value={dataset}
               onChange={(e) => {
                 setDataset(e.target.value);
                 setSplit('all');
               }}
-              className="bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 font-medium"
+              className="bg-white border border-slate-300 text-xs text-[#182d88] font-bold rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#3ac890] focus:border-[#182d88] shadow-sm transition"
             >
               <option value="common">Common (Harmonized Merged)</option>
               <option value="nsl-kdd">NSL-KDD</option>
@@ -377,21 +379,22 @@ export default function App() {
         </div>
 
         {/* Global Tab Navigation */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex border-t border-slate-800/80 text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex border-t border-slate-200 text-xs overflow-x-auto">
           {[
             { id: 'models', label: 'Models & Comparison' },
             { id: 'training', label: 'Model Training' },
             { id: 'eda', label: 'EDA & Distributions' },
+            { id: 'harmonization', label: 'Harmonization Mapping' },
             { id: 'cleansing', label: 'Data Cleansing & Quality' },
             { id: 'features', label: 'Feature Engineering & Contract' },
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`py-3 px-4 font-semibold transition border-b-2 flex items-center gap-2 ${
+              className={`py-3 px-4 font-semibold transition border-b-2 flex items-center gap-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-indigo-500 text-indigo-400 bg-slate-800/40'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'
+                  ? 'border-[#182d88] text-[#182d88] bg-[#f5fafd] font-bold'
+                  : 'border-transparent text-slate-500 hover:text-[#182d88] hover:bg-slate-50'
               }`}
             >
               {tab.label}
@@ -407,21 +410,21 @@ export default function App() {
         {activeTab === 'models' && (
           <div className="space-y-6">
             {/* Tab Header Banner */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-base font-bold text-white">Cross-Model Benchmark & Head-to-Head Comparator</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <h2 className="text-base font-bold text-[#182d88]">Cross-Model Benchmark & Head-to-Head Comparator</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Compare performance metrics between supervised classifiers and unsupervised anomaly detectors on NSL-KDD benchmark test sets.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400">Target Mode:</span>
+                    <span className="text-xs text-slate-500">Target Mode:</span>
                     <select
                       value={comparatorModeFilter}
                       onChange={(e) => setComparatorModeFilter(e.target.value)}
-                      className="bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 font-sans font-medium"
+                      className="bg-white border border-slate-300 text-xs text-slate-800 rounded-lg px-2.5 py-1 focus:outline-none focus:border-[#182d88] font-sans font-medium"
                     >
                       <option value="all">All Formulations</option>
                       <option value="binary">Binary (Normal vs Attack)</option>
@@ -429,11 +432,11 @@ export default function App() {
                     </select>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400">Evaluation Test View:</span>
+                    <span className="text-xs text-slate-500">Evaluation Test View:</span>
                     <select
                       value={evalSplit}
                       onChange={(e) => setEvalSplit(e.target.value)}
-                      className="bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 font-mono"
+                      className="bg-white border border-slate-300 text-xs text-slate-800 rounded-lg px-2.5 py-1 focus:outline-none focus:border-[#182d88] font-mono"
                     >
                       <option value="kddtest">KDDTest+ (Full Test Set)</option>
                       <option value="kddtest21">KDDTest-21 (Difficult Novel Set)</option>
@@ -446,19 +449,19 @@ export default function App() {
             {/* 2-Tier Selection Box for Comparator */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Model A Tier Selection */}
-              <div className="bg-slate-900 border border-indigo-500/30 rounded-xl p-4 shadow-md space-y-3">
+              <div className="bg-slate-50 border border-[#182d88]/30 rounded-xl p-4 shadow-md space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-950 text-indigo-400 border border-indigo-800">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                     Model A (Baseline)
                   </span>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-slate-500">
                     {runA?.kddtest?.accuracy ? `Acc: ${(runA.kddtest.accuracy * 100).toFixed(2)}%` : '-'}
                   </span>
                 </div>
 
                 {/* Tier 1: Select Main Family */}
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Step 1: Select Model Family</label>
+                  <label className="block text-[11px] text-slate-500 mb-1">Step 1: Select Model Family</label>
                   <select
                     value={familyA}
                     onChange={(e) => {
@@ -467,7 +470,7 @@ export default function App() {
                       const matching = modelRuns.filter(r => r.family === newFam);
                       if (matching.length > 0) setSelectedRunIdA(matching[0].id);
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 font-medium"
+                    className="w-full bg-white border border-slate-300 text-xs text-slate-800 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#182d88] font-medium"
                   >
                     {['XGBoost', 'Autoencoder', 'MLP', 'Isolation Forest'].map(fam => (
                       <option key={fam} value={fam}>{fam}</option>
@@ -477,11 +480,11 @@ export default function App() {
 
                 {/* Tier 2: Select Checkpoint Run */}
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Step 2: Select Trained Checkpoint / Run</label>
+                  <label className="block text-[11px] text-slate-500 mb-1">Step 2: Select Trained Checkpoint / Run</label>
                   <select
                     value={selectedRunIdA}
                     onChange={(e) => setSelectedRunIdA(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 font-mono truncate"
+                    className="w-full bg-white border border-slate-300 text-xs text-slate-800 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#182d88] font-mono truncate"
                   >
                     {availableRunsA.map(r => (
                       <option key={r.id} value={r.id}>
@@ -493,19 +496,19 @@ export default function App() {
               </div>
 
               {/* Model B Tier Selection */}
-              <div className="bg-slate-900 border border-sky-500/30 rounded-xl p-4 shadow-md space-y-3">
+              <div className="bg-slate-50 border border-sky-500/30 rounded-xl p-4 shadow-md space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">
                     Model B (Challenger)
                   </span>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-slate-500">
                     {runB?.kddtest?.accuracy ? `Acc: ${(runB.kddtest.accuracy * 100).toFixed(2)}%` : '-'}
                   </span>
                 </div>
 
                 {/* Tier 1: Select Main Family */}
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Step 1: Select Model Family</label>
+                  <label className="block text-[11px] text-slate-500 mb-1">Step 1: Select Model Family</label>
                   <select
                     value={familyB}
                     onChange={(e) => {
@@ -514,7 +517,7 @@ export default function App() {
                       const matching = modelRuns.filter(r => r.family === newFam);
                       if (matching.length > 0) setSelectedRunIdB(matching[0].id);
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-500 font-medium"
+                    className="w-full bg-white border border-slate-300 text-xs text-slate-800 rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-500 font-medium"
                   >
                     {['Autoencoder', 'XGBoost', 'MLP', 'Isolation Forest'].map(fam => (
                       <option key={fam} value={fam}>{fam}</option>
@@ -524,11 +527,11 @@ export default function App() {
 
                 {/* Tier 2: Select Checkpoint Run */}
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Step 2: Select Trained Checkpoint / Run</label>
+                  <label className="block text-[11px] text-slate-500 mb-1">Step 2: Select Trained Checkpoint / Run</label>
                   <select
                     value={selectedRunIdB}
                     onChange={(e) => setSelectedRunIdB(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-500 font-mono truncate"
+                    className="w-full bg-white border border-slate-300 text-xs text-slate-800 rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-500 font-mono truncate"
                   >
                     {availableRunsB.map(r => (
                       <option key={r.id} value={r.id}>
@@ -541,10 +544,10 @@ export default function App() {
             </div>
 
             {/* Side-by-Side Comparison Metrics Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
-              <div className="px-5 py-3 border-b border-slate-800 flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Head-to-Head Metrics Evaluation</h3>
-                <span className="text-[11px] font-mono text-slate-400">View: {evalSplit.toUpperCase()}</span>
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xl">
+              <div className="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Head-to-Head Metrics Evaluation</h3>
+                <span className="text-[11px] font-mono text-slate-500">View: {evalSplit.toUpperCase()}</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs table-fixed">
@@ -555,10 +558,10 @@ export default function App() {
                     <col className="w-1/6" />
                     <col className="w-1/6" />
                   </colgroup>
-                  <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800 font-semibold">
+                  <thead className="bg-white text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200 font-semibold">
                     <tr>
                       <th className="py-3 px-4">Evaluation Metric</th>
-                      <th className="py-3 px-3 text-center text-indigo-400 font-mono truncate" title={runA?.run_id}>
+                      <th className="py-3 px-3 text-center text-[#182d88] font-mono truncate" title={runA?.run_id}>
                         Model A ({runA?.family || 'A'})
                       </th>
                       <th className="py-3 px-3 text-center font-mono truncate">Diff (B - A)</th>
@@ -568,7 +571,7 @@ export default function App() {
                       <th className="py-3 px-4 text-right">Advantage</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/80 font-mono">
+                  <tbody className="divide-y divide-slate-100 font-mono">
                     {[
                       { key: 'accuracy', name: 'Overall Accuracy', higherBetter: true, isPct: true },
                       { key: 'balanced_accuracy', name: 'Balanced Accuracy', higherBetter: true, isPct: true },
@@ -600,7 +603,7 @@ export default function App() {
                             </span>
                           );
                           advHtml = (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 text-[10px] font-sans font-bold whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 text-[10px] font-sans font-bold whitespace-nowrap">
                               <span>Model B</span>
                               <span className="font-mono text-sky-400">(+{deltaStr})</span>
                             </span>
@@ -613,20 +616,20 @@ export default function App() {
                             </span>
                           );
                           advHtml = (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 text-[10px] font-sans font-bold whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-sans font-bold whitespace-nowrap">
                               <span>Model A</span>
-                              <span className="font-mono text-indigo-400">(+{deltaStr})</span>
+                              <span className="font-mono text-[#182d88]">(+{deltaStr})</span>
                             </span>
                           );
                         } else {
                           diffHtml = <span className="text-slate-500 font-mono">0.00</span>;
-                          advHtml = <span className="text-slate-400 font-sans text-[11px] whitespace-nowrap">Even</span>;
+                          advHtml = <span className="text-slate-500 font-sans text-[11px] whitespace-nowrap">Even</span>;
                         }
                       }
 
                       return (
-                        <tr key={m.key} className="hover:bg-slate-800/40 transition">
-                          <td className="py-2.5 px-4 text-slate-200 font-sans font-medium whitespace-nowrap">{m.name}</td>
+                        <tr key={m.key} className="hover:bg-slate-50 transition">
+                          <td className="py-2.5 px-4 text-slate-800 font-sans font-medium whitespace-nowrap">{m.name}</td>
                           <td className="py-2.5 px-3 text-center font-bold text-indigo-300 whitespace-nowrap">{strA}</td>
                           <td className="py-2.5 px-3 text-center whitespace-nowrap">{diffHtml}</td>
                           <td className="py-2.5 px-3 text-center font-bold text-sky-300 whitespace-nowrap">{strB}</td>
@@ -642,8 +645,8 @@ export default function App() {
             {/* Confusion Matrix Face-Off */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Matrix A */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                <h4 className="text-xs font-bold text-indigo-400 mb-3 flex items-center justify-between">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4">
+                <h4 className="text-xs font-bold text-[#182d88] mb-3 flex items-center justify-between">
                   <span>Model A Confusion Matrix ({runA?.model_name || 'A'})</span>
                   <span className="text-[10px] text-slate-500 font-mono">True vs Predicted</span>
                 </h4>
@@ -652,9 +655,9 @@ export default function App() {
                     <table className="border-collapse text-center text-xs font-mono">
                       <thead>
                         <tr>
-                          <th className="p-1 text-[9px] text-slate-400">T \ P</th>
+                          <th className="p-1 text-[9px] text-slate-500">T \ P</th>
                           {(metricsA.classes || ['Normal', 'Attack']).map((c, i) => (
-                            <th key={i} className="p-1.5 px-3 font-semibold text-slate-300 border-b border-slate-700">{c}</th>
+                            <th key={i} className="p-1.5 px-3 font-semibold text-slate-700 border-b border-slate-300">{c}</th>
                           ))}
                         </tr>
                       </thead>
@@ -663,7 +666,7 @@ export default function App() {
                           const rowSum = row.reduce((a, b) => a + b, 0) || 1;
                           return (
                             <tr key={i}>
-                              <td className="p-1.5 px-3 font-semibold text-slate-300 border-r border-slate-700 text-left">
+                              <td className="p-1.5 px-3 font-semibold text-slate-700 border-r border-slate-300 text-left">
                                 {(metricsA.classes || ['Normal', 'Attack'])[i] || i}
                               </td>
                               {row.map((val, j) => {
@@ -677,10 +680,10 @@ export default function App() {
                                         ? `rgba(16, 185, 129, ${Math.max(0.2, pct / 100)})`
                                         : `rgba(239, 68, 68, ${Math.min(0.6, (val / rowSum) * 0.8)})`
                                     }}
-                                    className="p-2 border border-slate-800 text-white"
+                                    className="p-2 border border-slate-200 text-[#182d88]"
                                   >
                                     <div className="font-bold">{val.toLocaleString()}</div>
-                                    <div className="text-[9px] text-slate-300">{pct}%</div>
+                                    <div className="text-[9px] text-slate-700">{pct}%</div>
                                   </td>
                                 );
                               })}
@@ -696,7 +699,7 @@ export default function App() {
               </div>
 
               {/* Matrix B */}
-              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4">
                 <h4 className="text-xs font-bold text-sky-400 mb-3 flex items-center justify-between">
                   <span>Model B Confusion Matrix ({runB?.model_name || 'B'})</span>
                   <span className="text-[10px] text-slate-500 font-mono">True vs Predicted</span>
@@ -706,9 +709,9 @@ export default function App() {
                     <table className="border-collapse text-center text-xs font-mono">
                       <thead>
                         <tr>
-                          <th className="p-1 text-[9px] text-slate-400">T \ P</th>
+                          <th className="p-1 text-[9px] text-slate-500">T \ P</th>
                           {(metricsB.classes || ['Normal', 'Attack']).map((c, i) => (
-                            <th key={i} className="p-1.5 px-3 font-semibold text-slate-300 border-b border-slate-700">{c}</th>
+                            <th key={i} className="p-1.5 px-3 font-semibold text-slate-700 border-b border-slate-300">{c}</th>
                           ))}
                         </tr>
                       </thead>
@@ -717,7 +720,7 @@ export default function App() {
                           const rowSum = row.reduce((a, b) => a + b, 0) || 1;
                           return (
                             <tr key={i}>
-                              <td className="p-1.5 px-3 font-semibold text-slate-300 border-r border-slate-700 text-left">
+                              <td className="p-1.5 px-3 font-semibold text-slate-700 border-r border-slate-300 text-left">
                                 {(metricsB.classes || ['Normal', 'Attack'])[i] || i}
                               </td>
                               {row.map((val, j) => {
@@ -731,10 +734,10 @@ export default function App() {
                                         ? `rgba(16, 185, 129, ${Math.max(0.2, pct / 100)})`
                                         : `rgba(239, 68, 68, ${Math.min(0.6, (val / rowSum) * 0.8)})`
                                     }}
-                                    className="p-2 border border-slate-800 text-white"
+                                    className="p-2 border border-slate-200 text-[#182d88]"
                                   >
                                     <div className="font-bold">{val.toLocaleString()}</div>
-                                    <div className="text-[9px] text-slate-300">{pct}%</div>
+                                    <div className="text-[9px] text-slate-700">{pct}%</div>
                                   </td>
                                 );
                               })}
@@ -751,37 +754,37 @@ export default function App() {
             </div>
 
             {/* Hyperparameters Face-Off & Comparison */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
                     Hyperparameter Inspection & Comparison
                   </h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-slate-500 mt-0.5">
                     Side-by-side audit of training configurations and parameters between Model A and Model B
                   </p>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-500 border border-slate-300">
                   Parameter Audit
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Model A Hyperparameters */}
-                <div className="bg-slate-950/60 border border-indigo-500/20 rounded-xl p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
-                    <span className="text-xs font-bold text-indigo-400 truncate max-w-[200px]" title={runA?.model_name}>
+                <div className="bg-white/60 border border-[#182d88]/20 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                    <span className="text-xs font-bold text-[#182d88] truncate max-w-[200px]" title={runA?.model_name}>
                       Model A: {runA?.model_name || 'A'}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                       {runA?.family}
                     </span>
                   </div>
                   {runA?.hyperparameters && Object.keys(runA.hyperparameters).length > 0 ? (
                     <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                       {Object.entries(runA.hyperparameters).map(([k, v]) => (
-                        <div key={k} className="bg-slate-900 border border-slate-800 rounded-lg p-2 flex flex-col">
-                          <span className="text-[10px] text-slate-400 font-sans uppercase tracking-wider truncate" title={k}>
+                        <div key={k} className="bg-white border border-slate-200 rounded-lg p-2 flex flex-col">
+                          <span className="text-[10px] text-slate-500 font-sans uppercase tracking-wider truncate" title={k}>
                             {k.replace(/_/g, ' ')}
                           </span>
                           <span className="text-indigo-300 font-bold truncate mt-0.5" title={String(v)}>
@@ -796,20 +799,20 @@ export default function App() {
                 </div>
 
                 {/* Model B Hyperparameters */}
-                <div className="bg-slate-950/60 border border-sky-500/20 rounded-xl p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-2">
+                <div className="bg-white/60 border border-sky-500/20 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                     <span className="text-xs font-bold text-sky-400 truncate max-w-[200px]" title={runB?.model_name}>
                       Model B: {runB?.model_name || 'B'}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">
                       {runB?.family}
                     </span>
                   </div>
                   {runB?.hyperparameters && Object.keys(runB.hyperparameters).length > 0 ? (
                     <div className="grid grid-cols-2 gap-2 text-xs font-mono">
                       {Object.entries(runB.hyperparameters).map(([k, v]) => (
-                        <div key={k} className="bg-slate-900 border border-slate-800 rounded-lg p-2 flex flex-col">
-                          <span className="text-[10px] text-slate-400 font-sans uppercase tracking-wider truncate" title={k}>
+                        <div key={k} className="bg-white border border-slate-200 rounded-lg p-2 flex flex-col">
+                          <span className="text-[10px] text-slate-500 font-sans uppercase tracking-wider truncate" title={k}>
                             {k.replace(/_/g, ' ')}
                           </span>
                           <span className="text-sky-300 font-bold truncate mt-0.5" title={String(v)}>
@@ -826,17 +829,17 @@ export default function App() {
             </div>
 
             {/* Section 1: Best Performing Models by Family */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
                     Top Model Performers by Architecture Family
                   </h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-slate-500 mt-0.5">
                     Highest scoring configuration from each model family based on evaluation test accuracy and macro F1
                   </p>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold">
                   Champion Models
                 </span>
               </div>
@@ -868,16 +871,16 @@ export default function App() {
                       return (
                         <div
                           key={fam}
-                          className="bg-slate-950/80 border border-slate-800 hover:border-slate-700 rounded-xl p-4 flex flex-col justify-between space-y-3 transition"
+                          className="bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-4 flex flex-col justify-between space-y-3 transition"
                         >
                           <div>
                             <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-xs font-bold text-white uppercase tracking-wider">{fam}</span>
-                              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
+                              <span className="text-xs font-bold text-[#182d88] uppercase tracking-wider">{fam}</span>
+                              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                                 Best Pick
                               </span>
                             </div>
-                            <div className="text-[11px] font-mono text-slate-300 truncate font-semibold" title={best.run_id}>
+                            <div className="text-[11px] font-mono text-slate-700 truncate font-semibold" title={best.run_id}>
                               {best.run_id}
                             </div>
                             <div className="text-[10px] text-slate-500 font-sans mt-0.5 uppercase tracking-wider">
@@ -885,15 +888,15 @@ export default function App() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1 border-t border-slate-800/80">
-                            <div className="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                              <span className="text-[9px] text-slate-400 block font-sans uppercase">Accuracy</span>
+                          <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1 border-t border-slate-200">
+                            <div className="bg-slate-50/90 p-2 rounded-lg border border-slate-200">
+                              <span className="text-[9px] text-slate-500 block font-sans uppercase">Accuracy</span>
                               <span className="text-emerald-400 font-bold">
                                 {acc !== null && acc !== undefined ? `${(acc * 100).toFixed(2)}%` : '-'}
                               </span>
                             </div>
-                            <div className="bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                              <span className="text-[9px] text-slate-400 block font-sans uppercase">Macro F1</span>
+                            <div className="bg-slate-50/90 p-2 rounded-lg border border-slate-200">
+                              <span className="text-[9px] text-slate-500 block font-sans uppercase">Macro F1</span>
                               <span className="text-sky-400 font-bold">
                                 {f1 !== null && f1 !== undefined ? f1.toFixed(4) : '-'}
                               </span>
@@ -901,7 +904,7 @@ export default function App() {
                           </div>
 
                           {best.hyperparameters && Object.keys(best.hyperparameters).length > 0 && (
-                            <div className="text-[10px] font-mono text-slate-400 bg-slate-900/50 p-2 rounded border border-slate-800/60 truncate" title={JSON.stringify(best.hyperparameters)}>
+                            <div className="text-[10px] font-mono text-slate-500 bg-slate-50/50 p-2 rounded border border-slate-200 truncate" title={JSON.stringify(best.hyperparameters)}>
                               <span className="text-slate-500 mr-1 uppercase text-[9px] font-sans">Params:</span>
                               {Object.entries(best.hyperparameters).slice(0, 3).map(([k, v]) => `${k}:${v}`).join(', ')}
                             </div>
@@ -938,26 +941,26 @@ export default function App() {
             </div>
 
             {/* Section 2: Interactive Model Leaderboard with Filter & Sorting */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-3">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-3">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
                     Comprehensive Model Benchmark Leaderboard ({modelRuns.length} Total Runs)
                   </h3>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
+                  <p className="text-[11px] text-slate-500 mt-0.5">
                     Filter by architecture family, search by configuration keywords, and sort by key detection metrics
                   </p>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-500 border border-slate-300">
                   Interactive Leaderboard
                 </span>
               </div>
 
               {/* Leaderboard Controls (Filter, Mode, Search, Sort) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 bg-slate-950/70 p-3.5 rounded-xl border border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 bg-white/70 p-3.5 rounded-xl border border-slate-200">
                 {/* Family Filter */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                     Filter by Family
                   </label>
                   <select
@@ -966,7 +969,7 @@ export default function App() {
                       setLeaderboardFamily(e.target.value);
                       setLeaderboardPage(1);
                     }}
-                    className="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 font-medium"
+                    className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#182d88] font-medium"
                   >
                     <option value="all">All Families ({modelRuns.length})</option>
                     <option value="XGBoost">XGBoost ({modelRuns.filter(r => r.family === 'XGBoost').length})</option>
@@ -978,7 +981,7 @@ export default function App() {
 
                 {/* Formulation Mode Filter */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                     Target Formulation
                   </label>
                   <select
@@ -987,7 +990,7 @@ export default function App() {
                       setLeaderboardMode(e.target.value);
                       setLeaderboardPage(1);
                     }}
-                    className="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 font-medium"
+                    className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#182d88] font-medium"
                   >
                     <option value="all">All Formulations</option>
                     <option value="binary">Binary Classification</option>
@@ -997,7 +1000,7 @@ export default function App() {
 
                 {/* Search Input */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                     Search Run ID
                   </label>
                   <input
@@ -1008,13 +1011,13 @@ export default function App() {
                       setLeaderboardPage(1);
                     }}
                     placeholder="e.g. common, seed, multiclass..."
-                    className="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 font-mono placeholder-slate-600"
+                    className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#182d88] font-mono placeholder-slate-600"
                   />
                 </div>
 
                 {/* Metric Sort Key */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                     Sort Metric
                   </label>
                   <select
@@ -1023,7 +1026,7 @@ export default function App() {
                       setLeaderboardSortKey(e.target.value);
                       setLeaderboardPage(1);
                     }}
-                    className="w-full bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-indigo-500 font-medium"
+                    className="w-full bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#182d88] font-medium"
                   >
                     <option value="accuracy">Accuracy (KDDTest)</option>
                     <option value="f1">Macro F1-Score</option>
@@ -1036,7 +1039,7 @@ export default function App() {
 
                 {/* Sort Order */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                     Sort Direction
                   </label>
                   <div className="flex gap-1.5 h-[34px]">
@@ -1046,8 +1049,8 @@ export default function App() {
                       title="Sort Highest First (Descending)"
                       className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 rounded-lg border text-xs font-semibold transition ${
                         leaderboardSortDir === 'desc'
-                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
-                          : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-white hover:bg-slate-800'
+                          ? 'bg-[#182d88] text-[#182d88] border-[#182d88] shadow-md shadow-indigo-600/30'
+                          : 'bg-slate-50 text-slate-500 border-slate-300 hover:text-[#182d88] hover:bg-slate-100'
                       }`}
                     >
                       <ArrowDown className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1059,8 +1062,8 @@ export default function App() {
                       title="Sort Lowest First (Ascending)"
                       className={`flex-1 flex items-center justify-center gap-1.5 px-2.5 rounded-lg border text-xs font-semibold transition ${
                         leaderboardSortDir === 'asc'
-                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
-                          : 'bg-slate-900 text-slate-400 border-slate-700 hover:text-white hover:bg-slate-800'
+                          ? 'bg-[#182d88] text-[#182d88] border-[#182d88] shadow-md shadow-indigo-600/30'
+                          : 'bg-slate-50 text-slate-500 border-slate-300 hover:text-[#182d88] hover:bg-slate-100'
                       }`}
                     >
                       <ArrowUp className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1108,8 +1111,8 @@ export default function App() {
 
                 return (
                   <div className="space-y-3">
-                    <div className="overflow-x-auto rounded-xl border border-slate-800">
-                      <table className="w-full text-left text-xs table-fixed divide-y divide-slate-800/80">
+                    <div className="overflow-x-auto rounded-xl border border-slate-200">
+                      <table className="w-full text-left text-xs table-fixed divide-y divide-slate-100">
                         <colgroup>
                           <col className="w-[50px]" />
                           <col className="w-[110px]" />
@@ -1123,7 +1126,7 @@ export default function App() {
                           <col className="w-[125px]" />
                           <col className="w-[60px]" />
                         </colgroup>
-                        <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
+                        <thead className="bg-white text-slate-500 uppercase text-[10px] tracking-wider font-semibold">
                           <tr>
                             <th className="py-2.5 px-2.5 text-center">Rank</th>
                             <th className="py-2.5 px-2.5">Family</th>
@@ -1138,22 +1141,22 @@ export default function App() {
                             <th className="py-2.5 px-2.5 text-center">Action</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/80 font-mono bg-slate-900/40">
+                        <tbody className="divide-y divide-slate-100 font-mono bg-slate-100/60">
                           {paginatedRuns.length > 0 ? (
                             paginatedRuns.map((r, idx) => {
                               const globalRank = startIndex + idx + 1;
                               const isMulticlass = (r.mode || '').toLowerCase() === 'multiclass';
                               return (
-                                <tr key={r.id} className="hover:bg-slate-800/50 transition">
-                                  <td className="py-2.5 px-2.5 font-sans text-slate-400 font-bold text-center">
+                                <tr key={r.id} className="hover:bg-slate-100/50 transition">
+                                  <td className="py-2.5 px-2.5 font-sans text-slate-500 font-bold text-center">
                                     #{globalRank}
                                   </td>
                                   <td className="py-2.5 px-2.5 font-sans">
-                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-slate-700 bg-slate-800 text-slate-300 block truncate text-center">
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-slate-300 bg-slate-800 text-slate-700 block truncate text-center">
                                       {r.family}
                                     </span>
                                   </td>
-                                  <td className="py-2.5 px-3 text-slate-200">
+                                  <td className="py-2.5 px-3 text-slate-800">
                                     <div className="truncate font-medium" title={r.run_id}>
                                       {r.run_id}
                                     </div>
@@ -1161,8 +1164,8 @@ export default function App() {
                                   <td className="py-2.5 px-2.5 font-sans text-center">
                                     <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border inline-block ${
                                       isMulticlass
-                                        ? 'border-purple-800 bg-purple-950/60 text-purple-300'
-                                        : 'border-slate-700 bg-slate-800/60 text-slate-300'
+                                        ? 'border-purple-800 bg-purple-50 text-purple-700'
+                                        : 'border-slate-300 bg-slate-800/60 text-slate-700'
                                     }`}>
                                       {r.mode || 'binary'}
                                     </span>
@@ -1173,7 +1176,7 @@ export default function App() {
                                   <td className="py-2.5 px-2.5 text-sky-400 font-bold text-right whitespace-nowrap">
                                     {r.kddtest?.f1 ? r.kddtest.f1.toFixed(4) : '-'}
                                   </td>
-                                  <td className="py-2.5 px-2.5 text-slate-300 text-right whitespace-nowrap">
+                                  <td className="py-2.5 px-2.5 text-slate-700 text-right whitespace-nowrap">
                                     {r.kddtest?.precision ? `${(r.kddtest.precision * 100).toFixed(2)}%` : '-'}
                                   </td>
                                   <td className="py-2.5 px-2.5 text-indigo-300 text-right whitespace-nowrap">
@@ -1192,7 +1195,7 @@ export default function App() {
                                           setFamilyA(r.family);
                                           setSelectedRunIdA(r.id);
                                         }}
-                                        className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-indigo-950 text-indigo-300 border border-indigo-800 hover:bg-indigo-900 hover:text-white transition whitespace-nowrap"
+                                        className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-900 hover:text-[#182d88] transition whitespace-nowrap"
                                         title={`Set ${r.run_id} as Model A`}
                                       >
                                         Set A
@@ -1203,7 +1206,7 @@ export default function App() {
                                           setFamilyB(r.family);
                                           setSelectedRunIdB(r.id);
                                         }}
-                                        className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-sky-950 text-sky-300 border border-sky-800 hover:bg-sky-900 hover:text-white transition whitespace-nowrap"
+                                        className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-900 hover:text-[#182d88] transition whitespace-nowrap"
                                         title={`Set ${r.run_id} as Model B`}
                                       >
                                         Set B
@@ -1214,7 +1217,7 @@ export default function App() {
                                     <button
                                       type="button"
                                       onClick={() => handleDeleteModel(r.id, r.run_id)}
-                                      className="p-1.5 rounded-lg text-rose-400 hover:text-white hover:bg-rose-900/60 border border-rose-900/40 hover:border-rose-700 transition inline-flex items-center justify-center"
+                                      className="p-1.5 rounded-lg text-rose-400 hover:text-[#182d88] hover:bg-rose-900/60 border border-rose-900/40 hover:border-rose-700 transition inline-flex items-center justify-center"
                                       title={`Delete run: ${r.run_id}`}
                                     >
                                       <Trash2 className="w-3.5 h-3.5" />
@@ -1235,11 +1238,11 @@ export default function App() {
                     </div>
 
                     {/* Pagination Controls Bar */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800/80 text-xs font-sans">
-                      <div className="text-slate-400 font-mono text-[11px]">
-                        Showing <span className="text-white font-bold">{filtered.length > 0 ? startIndex + 1 : 0}</span> to{' '}
-                        <span className="text-white font-bold">{endIndex}</span> of{' '}
-                        <span className="text-white font-bold">{filtered.length}</span> runs
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200 text-xs font-sans">
+                      <div className="text-slate-500 font-mono text-[11px]">
+                        Showing <span className="text-[#182d88] font-bold">{filtered.length > 0 ? startIndex + 1 : 0}</span> to{' '}
+                        <span className="text-[#182d88] font-bold">{endIndex}</span> of{' '}
+                        <span className="text-[#182d88] font-bold">{filtered.length}</span> runs
                         {filtered.length !== modelRuns.length && (
                           <span className="text-slate-500 ml-1">({modelRuns.length} total)</span>
                         )}
@@ -1253,8 +1256,8 @@ export default function App() {
                           title="Previous Page"
                           className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${
                             currentPage <= 1
-                              ? 'bg-slate-900/40 text-slate-600 border-slate-800/60 cursor-not-allowed'
-                              : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white'
+                              ? 'bg-slate-100/60 text-slate-600 border-slate-200 cursor-not-allowed'
+                              : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100 hover:text-[#182d88]'
                           }`}
                         >
                           <ChevronLeft className="w-3.5 h-3.5" />
@@ -1275,8 +1278,8 @@ export default function App() {
                                   onClick={() => setLeaderboardPage(p)}
                                   className={`min-w-[28px] h-7 px-1.5 rounded text-xs font-bold transition ${
                                     currentPage === p
-                                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                                      : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                                      ? 'bg-[#182d88] text-[#182d88] shadow-md shadow-indigo-600/30'
+                                      : 'bg-slate-50 text-slate-500 hover:text-[#182d88] border border-slate-200'
                                   }`}
                                 >
                                   {p}
@@ -1297,8 +1300,8 @@ export default function App() {
                           title="Next Page"
                           className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${
                             currentPage >= totalPages
-                              ? 'bg-slate-900/40 text-slate-600 border-slate-800/60 cursor-not-allowed'
-                              : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-white'
+                              ? 'bg-slate-100/60 text-slate-600 border-slate-200 cursor-not-allowed'
+                              : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100 hover:text-[#182d88]'
                           }`}
                         >
                           <span>Next</span>
@@ -1316,15 +1319,15 @@ export default function App() {
         {/* 2. MODEL TRAINING TAB */}
         {activeTab === 'training' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg flex flex-wrap items-center justify-between gap-4">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg flex flex-wrap items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold text-white">Interactive Model Training Studio</h2>
-                  <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-indigo-950 text-indigo-400 border border-indigo-800">
+                  <h2 className="text-base font-bold text-[#182d88]">Interactive Model Training Studio</h2>
+                  <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                     On-Demand Training Engine
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Train any model family (XGBoost, MLP, Autoencoder, Isolation Forest) on your selected dataset with customized hyperparameters.
                 </p>
               </div>
@@ -1334,8 +1337,8 @@ export default function App() {
               {/* Form Controls Column */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Step 1: Model Family Cards */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                     Step 1: Choose Model Architecture
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1351,21 +1354,21 @@ export default function App() {
                         onClick={() => handleSelectFamily(m.id)}
                         className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${
                           trainFamily === m.id
-                            ? 'border-indigo-500 bg-indigo-950/30 ring-1 ring-indigo-500/50'
-                            : 'border-slate-800 bg-slate-950 hover:border-slate-700 hover:bg-slate-900/60'
+                            ? 'border-[#182d88] bg-indigo-950/30 ring-1 ring-indigo-500/50'
+                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                         }`}
                       >
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-sm text-white">{m.name}</span>
+                            <span className="font-bold text-sm text-[#182d88]">{m.name}</span>
                             {trainFamily === m.id && (
-                              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400">
+                              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-[#182d88]">
                                 Active
                               </span>
                             )}
                           </div>
-                          <span className="text-[11px] text-indigo-400 block font-mono">{m.type}</span>
-                          <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{m.desc}</p>
+                          <span className="text-[11px] text-[#182d88] block font-mono">{m.type}</span>
+                          <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{m.desc}</p>
                         </div>
                       </button>
                     ))}
@@ -1373,8 +1376,8 @@ export default function App() {
                 </div>
 
                 {/* Step 2: Target Dataset Selector */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                     Step 2: Choose Training & Evaluation Dataset
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1389,25 +1392,25 @@ export default function App() {
                         onClick={() => setTrainDataset(d.id)}
                         className={`p-3 rounded-xl border text-left transition ${
                           trainDataset === d.id
-                            ? 'border-indigo-500 bg-indigo-950/30 ring-1 ring-indigo-500/50'
-                            : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                            ? 'border-[#182d88] bg-indigo-950/30 ring-1 ring-indigo-500/50'
+                            : 'border-slate-200 bg-white hover:border-slate-300'
                         }`}
                       >
-                        <div className="font-bold text-xs text-white">{d.name}</div>
+                        <div className="font-bold text-xs text-[#182d88]">{d.name}</div>
                         <div className="text-[10px] text-emerald-400 font-mono mt-0.5">{d.rows}</div>
-                        <div className="text-[10px] text-slate-400 mt-1">{d.desc}</div>
+                        <div className="text-[10px] text-slate-500 mt-1">{d.desc}</div>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* Step 3: Target Formulation Selector */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                       Step 3: Choose Target Formulation
                     </label>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-500 border border-slate-300">
                       Target Label Encoding
                     </span>
                   </div>
@@ -1417,20 +1420,20 @@ export default function App() {
                       onClick={() => setTrainTargetType('binary')}
                       className={`p-3.5 rounded-xl border text-left transition ${
                         trainTargetType === 'binary'
-                          ? 'border-indigo-500 bg-indigo-950/30 ring-1 ring-indigo-500/50'
-                          : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                          ? 'border-[#182d88] bg-indigo-950/30 ring-1 ring-indigo-500/50'
+                          : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-xs text-white">Binary Classification</span>
+                        <span className="font-bold text-xs text-[#182d88]">Binary Classification</span>
                         {trainTargetType === 'binary' && (
-                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-400">
+                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-[#182d88]">
                             Active
                           </span>
                         )}
                       </div>
                       <div className="text-[10px] text-emerald-400 font-mono">2 Classes: Normal vs Attack</div>
-                      <div className="text-[10px] text-slate-400 mt-1">
+                      <div className="text-[10px] text-slate-500 mt-1">
                         Standard binary intrusion detection supported by all supervised and unsupervised models.
                       </div>
                     </button>
@@ -1441,14 +1444,14 @@ export default function App() {
                       onClick={() => setTrainTargetType('multiclass')}
                       className={`p-3.5 rounded-xl border text-left transition ${
                         trainFamily === 'Autoencoder' || trainFamily === 'Isolation Forest'
-                          ? 'border-slate-900 bg-slate-950/40 opacity-40 cursor-not-allowed'
+                          ? 'border-slate-900 bg-white/40 opacity-40 cursor-not-allowed'
                           : trainTargetType === 'multiclass'
                           ? 'border-purple-500 bg-purple-950/30 ring-1 ring-purple-500/50'
-                          : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                          : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-xs text-white">Multiclass Categorization</span>
+                        <span className="font-bold text-xs text-[#182d88]">Multiclass Categorization</span>
                         {trainTargetType === 'multiclass' && (
                           <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400">
                             Active
@@ -1456,7 +1459,7 @@ export default function App() {
                         )}
                       </div>
                       <div className="text-[10px] text-purple-400 font-mono">7 Specific Attack Taxonomy Classes</div>
-                      <div className="text-[10px] text-slate-400 mt-1">
+                      <div className="text-[10px] text-slate-500 mt-1">
                         {trainFamily === 'Autoencoder' || trainFamily === 'Isolation Forest'
                           ? 'Unsupervised anomaly detectors exclusively model 1-class normal baseline.'
                           : 'Deep categorization across DoS, Probe, Exploit, Brute-force, Fuzzer, Backdoor, Normal.'}
@@ -1466,20 +1469,20 @@ export default function App() {
                 </div>
 
                 {/* Step 4: Adjustable Hyperparameters Form */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                         Step 4: Adjustable Hyperparameters ({trainFamily})
                       </label>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-slate-500 mt-0.5">
                         Customize learning rates, architecture capacity, and optimization parameters
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={resetToDefaults}
-                      className="text-[11px] text-indigo-400 hover:text-indigo-300 underline font-mono"
+                      className="text-[11px] text-[#182d88] hover:text-indigo-300 underline font-mono"
                     >
                       Reset Defaults
                     </button>
@@ -1487,10 +1490,10 @@ export default function App() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {getActiveParamDefs().map(param => (
-                      <div key={param.key} className="bg-slate-950 border border-slate-800/80 rounded-xl p-3.5 space-y-2">
+                      <div key={param.key} className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-semibold text-slate-300">{param.label}</span>
-                          <span className="text-xs font-mono font-bold text-indigo-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                          <span className="text-xs font-semibold text-slate-700">{param.label}</span>
+                          <span className="text-xs font-mono font-bold text-[#182d88] bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
                             {trainHyperparams[param.key] ?? param.default}
                           </span>
                         </div>
@@ -1516,19 +1519,19 @@ export default function App() {
               {/* Execution & Live Result Column */}
               <div className="space-y-6">
                 {/* Active Parameters Card */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Active Parameters Payload</h3>
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Active Parameters Payload</h3>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Architecture:</span>
-                      <span className="font-bold text-white font-mono">{trainFamily}</span>
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Architecture:</span>
+                      <span className="font-bold text-[#182d88] font-mono">{trainFamily}</span>
                     </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Dataset Target:</span>
-                      <span className="font-bold text-indigo-400 font-mono uppercase">{trainDataset}</span>
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Dataset Target:</span>
+                      <span className="font-bold text-[#182d88] font-mono uppercase">{trainDataset}</span>
                     </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800">
-                      <span className="text-slate-400">Formulation:</span>
+                    <div className="flex justify-between py-1.5 border-b border-slate-200">
+                      <span className="text-slate-500">Formulation:</span>
                       <span className={`font-bold font-mono text-[11px] uppercase ${
                         trainTargetType === 'multiclass' ? 'text-purple-400' : 'text-emerald-400'
                       }`}>
@@ -1536,8 +1539,8 @@ export default function App() {
                       </span>
                     </div>
                     <div className="py-2">
-                      <span className="text-slate-400 block mb-1.5 text-[11px]">Parameters Dictionary:</span>
-                      <pre className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto">
+                      <span className="text-slate-500 block mb-1.5 text-[11px]">Parameters Dictionary:</span>
+                      <pre className="bg-white p-2.5 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700 overflow-x-auto">
                         {JSON.stringify(trainHyperparams, null, 2)}
                       </pre>
                     </div>
@@ -1550,7 +1553,7 @@ export default function App() {
                     className={`w-full py-3 px-4 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 ${
                       isTraining
                         ? 'bg-indigo-900/60 text-indigo-300 cursor-not-allowed'
-                        : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30'
+                        : 'bg-[#182d88] hover:bg-[#2657c1] text-[#182d88] shadow-lg shadow-indigo-600/30'
                     }`}
                   >
                     {isTraining ? (
@@ -1565,29 +1568,29 @@ export default function App() {
 
                   {/* Live Progress Bar Card */}
                   {isTraining && trainingProgress && (
-                    <div className="bg-slate-950 border border-indigo-500/40 rounded-xl p-4 space-y-3 animate-fade-in shadow-lg shadow-indigo-950/40">
+                    <div className="bg-white border border-[#182d88]/40 rounded-xl p-4 space-y-3 animate-fade-in shadow-lg shadow-indigo-950/40">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-indigo-300 flex items-center gap-2">
                           <span className="inline-block w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
                           {trainingProgress.phase || 'Processing'}
                         </span>
-                        <span className="font-mono text-indigo-400 font-bold text-sm">
+                        <span className="font-mono text-[#182d88] font-bold text-sm">
                           {trainingProgress.percent || 0}%
                         </span>
                       </div>
 
                       {/* Progress Bar Track */}
-                      <div className="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-800 p-0.5">
+                      <div className="w-full bg-slate-50 rounded-full h-3 overflow-hidden border border-slate-200 p-0.5">
                         <div
                           className="bg-gradient-to-r from-indigo-600 via-sky-500 to-emerald-400 h-full rounded-full transition-all duration-300 ease-out"
                           style={{ width: `${Math.min(100, Math.max(2, trainingProgress.percent || 0))}%` }}
                         ></div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-400 pt-1">
+                      <div className="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-500 pt-1">
                         <div>
                           <span className="text-slate-500 block text-[9px] uppercase">Elapsed Time</span>
-                          <span className="text-slate-200">{trainingProgress.elapsed_seconds || 0}s</span>
+                          <span className="text-slate-800">{trainingProgress.elapsed_seconds || 0}s</span>
                         </div>
                         <div className="text-right">
                           <span className="text-slate-500 block text-[9px] uppercase">
@@ -1610,7 +1613,7 @@ export default function App() {
                   )}
 
                   {trainError && (
-                    <div className="p-3 rounded-lg bg-rose-950/50 border border-rose-800 text-rose-300 text-xs">
+                    <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs">
                       Error: {trainError}
                     </div>
                   )}
@@ -1618,23 +1621,23 @@ export default function App() {
 
                 {/* Latest Result Card */}
                 {trainResult && (
-                  <div className="bg-slate-900 border border-emerald-500/30 rounded-xl p-5 space-y-3">
+                  <div className="bg-slate-50 border border-emerald-500/30 rounded-xl p-5 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                         Run Completed
                       </span>
-                      <span className="text-xs font-mono text-slate-400">{trainResult.elapsed_seconds}s</span>
+                      <span className="text-xs font-mono text-slate-500">{trainResult.elapsed_seconds}s</span>
                     </div>
-                    <div className="font-bold text-sm text-white">{trainResult.model_name}</div>
+                    <div className="font-bold text-sm text-[#182d88]">{trainResult.model_name}</div>
                     <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                      <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
-                        <span className="text-[10px] text-slate-400 block font-sans">Accuracy</span>
+                      <div className="bg-white p-2 rounded-lg border border-slate-200">
+                        <span className="text-[10px] text-slate-500 block font-sans">Accuracy</span>
                         <span className="text-emerald-400 font-bold text-base">
                           {((trainResult.kddtest_metrics?.accuracy || 0) * 100).toFixed(2)}%
                         </span>
                       </div>
-                      <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
-                        <span className="text-[10px] text-slate-400 block font-sans">F1-Score</span>
+                      <div className="bg-white p-2 rounded-lg border border-slate-200">
+                        <span className="text-[10px] text-slate-500 block font-sans">F1-Score</span>
                         <span className="text-sky-400 font-bold text-base">
                           {(trainResult.kddtest_metrics?.f1 || 0).toFixed(4)}
                         </span>
@@ -1647,7 +1650,7 @@ export default function App() {
                         setSelectedRunIdB(`${trainResult.family.toLowerCase()}::${trainResult.run_id}`);
                         setActiveTab('models');
                       }}
-                      className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold transition"
+                      className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-800 rounded-lg text-xs font-semibold transition"
                     >
                       Compare Head-to-Head in Comparator
                     </button>
@@ -1657,22 +1660,22 @@ export default function App() {
             </div>
 
             {/* Training History & Hyperparameters Table */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-3">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
                   Training History & Hyperparameter Audit Log ({trainingHistory.length})
                 </h3>
                 <button
                   type="button"
                   onClick={fetchTrainingHistory}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-medium"
+                  className="text-xs text-[#182d88] hover:text-indigo-300 font-medium"
                 >
                   Refresh Log
                 </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                  <thead className="bg-white text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="py-2.5 px-3">Family</th>
                       <th className="py-2.5 px-3">Dataset</th>
@@ -1684,21 +1687,21 @@ export default function App() {
                       <th className="py-2.5 px-3">Timestamp</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/80 font-mono text-[11px]">
+                  <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
                     {trainingHistory.length > 0 ? (
                       trainingHistory.map((h, i) => (
-                        <tr key={i} className="hover:bg-slate-800/40">
+                        <tr key={i} className="hover:bg-slate-50">
                           <td className="py-2.5 px-3 font-sans">
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-slate-700 bg-slate-800 text-slate-300">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded border border-slate-300 bg-slate-800 text-slate-700">
                               {h.family}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 uppercase text-slate-400">{h.dataset}</td>
+                          <td className="py-2.5 px-3 uppercase text-slate-500">{h.dataset}</td>
                           <td className="py-2.5 px-3 font-sans">
                             <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${
                               (h.target_type || 'binary') === 'multiclass'
-                                ? 'border-purple-800 bg-purple-950/60 text-purple-300'
-                                : 'border-slate-700 bg-slate-800/60 text-slate-400'
+                                ? 'border-purple-800 bg-purple-50 text-purple-700'
+                                : 'border-slate-300 bg-slate-800/60 text-slate-500'
                             }`}>
                               {h.target_type || 'binary'}
                             </span>
@@ -1709,8 +1712,8 @@ export default function App() {
                           <td className="py-2.5 px-3 text-sky-400">
                             {h.f1 ? h.f1.toFixed(4) : '-'}
                           </td>
-                          <td className="py-2.5 px-3 text-slate-400">{h.elapsed_seconds}s</td>
-                          <td className="py-2.5 px-3 max-w-[280px] truncate text-slate-300" title={JSON.stringify(h.hyperparameters)}>
+                          <td className="py-2.5 px-3 text-slate-500">{h.elapsed_seconds}s</td>
+                          <td className="py-2.5 px-3 max-w-[280px] truncate text-slate-700" title={JSON.stringify(h.hyperparameters)}>
                             {Object.entries(h.hyperparameters || {}).map(([k, v]) => `${k}:${v}`).join(', ')}
                           </td>
                           <td className="py-2.5 px-3 text-slate-500 text-[10px] font-sans truncate max-w-[120px]">
@@ -1733,22 +1736,22 @@ export default function App() {
         {/* 2. EDA & DISTRIBUTIONS TAB */}
         {activeTab === 'eda' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg flex flex-wrap items-center justify-between gap-4">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg flex flex-wrap items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold text-white">Exploratory Data Analysis (EDA)</h2>
-                  <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
+                  <h2 className="text-base font-bold text-[#182d88]">Exploratory Data Analysis (EDA)</h2>
+                  <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     100% Full Dataset
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">Comprehensive distributions and statistical properties across all harmonized records</p>
+                <p className="text-xs text-slate-500 mt-0.5">Comprehensive distributions and statistical properties across all harmonized records</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">Split Filter:</span>
+                <span className="text-xs text-slate-500">Split Filter:</span>
                 <select
                   value={split}
                   onChange={(e) => setSplit(e.target.value)}
-                  className="bg-slate-950 border border-slate-700 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 font-medium"
+                  className="bg-white border border-slate-300 text-xs text-slate-800 rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#182d88] font-medium"
                 >
                   {dataset === 'common' && (
                     <>
@@ -1778,26 +1781,26 @@ export default function App() {
             </div>
 
             {/* Cross-Dataset Overview & Imbalance Comparison Section */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-5">
-              <div className="border-b border-slate-800/80 pb-3">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg space-y-5">
+              <div className="border-b border-slate-200 pb-3">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
                     Dataset Imbalance & Multi-Split Comparison (ภาพรวมและการเปรียบเทียบชุดข้อมูล)
                   </h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                     NSL-KDD vs UNSW-NB15
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-500 mt-1">
                   การเปรียบเทียบขนาดระเบียน สัดส่วน Normal vs Attack และความหลากหลายของประเภทภัยคุกคามข้ามชุดข้อมูล
                 </p>
               </div>
 
               {/* Comparison Summary Table */}
-              <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/70">
+              <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white/70">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="bg-slate-900/90 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                    <tr className="bg-slate-50/90 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
                       <th className="py-2.5 px-4 font-semibold">Dataset / Split</th>
                       <th className="py-2.5 px-3 font-semibold text-right">Total Rows</th>
                       <th className="py-2.5 px-3 font-semibold text-right text-emerald-400">Normal Rows</th>
@@ -1805,43 +1808,43 @@ export default function App() {
                       <th className="py-2.5 px-4 font-semibold text-right">Attack Ratio (%)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 font-mono text-xs">
-                    <tr className="hover:bg-slate-900/40">
-                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                  <tbody className="divide-y divide-slate-100 font-mono text-xs">
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-800 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
                         NSL-KDD Train
                       </td>
-                      <td className="py-2.5 px-3 text-right text-slate-300">125,973</td>
+                      <td className="py-2.5 px-3 text-right text-slate-700">125,973</td>
                       <td className="py-2.5 px-3 text-right text-emerald-400">67,343</td>
                       <td className="py-2.5 px-3 text-right text-rose-400">58,630</td>
                       <td className="py-2.5 px-4 text-right font-bold text-rose-300">46.54%</td>
                     </tr>
-                    <tr className="hover:bg-slate-900/40">
-                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-800 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
                         NSL-KDD Test
                       </td>
-                      <td className="py-2.5 px-3 text-right text-slate-300">22,544</td>
+                      <td className="py-2.5 px-3 text-right text-slate-700">22,544</td>
                       <td className="py-2.5 px-3 text-right text-emerald-400">9,711</td>
                       <td className="py-2.5 px-3 text-right text-rose-400">12,833</td>
                       <td className="py-2.5 px-4 text-right font-bold text-rose-300">56.92%</td>
                     </tr>
-                    <tr className="hover:bg-slate-900/40">
-                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-800 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-sky-500"></span>
                         UNSW-NB15 Train
                       </td>
-                      <td className="py-2.5 px-3 text-right text-slate-300">175,341</td>
+                      <td className="py-2.5 px-3 text-right text-slate-700">175,341</td>
                       <td className="py-2.5 px-3 text-right text-emerald-400">56,000</td>
                       <td className="py-2.5 px-3 text-right text-rose-400">119,341</td>
                       <td className="py-2.5 px-4 text-right font-bold text-rose-400">68.06%</td>
                     </tr>
-                    <tr className="hover:bg-slate-900/40">
-                      <td className="py-2.5 px-4 font-sans font-medium text-slate-200 flex items-center gap-2">
+                    <tr className="hover:bg-slate-50">
+                      <td className="py-2.5 px-4 font-sans font-medium text-slate-800 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-sky-400"></span>
                         UNSW-NB15 Test
                       </td>
-                      <td className="py-2.5 px-3 text-right text-slate-300">82,332</td>
+                      <td className="py-2.5 px-3 text-right text-slate-700">82,332</td>
                       <td className="py-2.5 px-3 text-right text-emerald-400">37,000</td>
                       <td className="py-2.5 px-3 text-right text-rose-400">45,332</td>
                       <td className="py-2.5 px-4 text-right font-bold text-rose-300">55.06%</td>
@@ -1852,27 +1855,27 @@ export default function App() {
 
               {/* Key Analytical Insights Callout */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-1">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">
                     1. Imbalance & Distribution Shift
                   </span>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-700 leading-relaxed">
                     สัดส่วน Attack ระหว่าง Train และ Test แตกต่างกัน: NSL-KDD มีสัดส่วนการโจมตีเพิ่มขึ้นใน Test (46.5% ไปเป็น 56.9%) ในขณะที่ UNSW-NB15 มีสัดส่วนลดลงใน Test (68.1% ไปเป็น 55.1%)
                   </p>
                 </div>
-                <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-1">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400 block">
                     2. Attack Diversity in UNSW-NB15
                   </span>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-700 leading-relaxed">
                     UNSW-NB15 บรรจุภัยคุกคามสมัยใหม่หลากหลายประเภท เช่น Generic, Exploits, Fuzzers, DoS, Reconnaissance, Backdoor, Shellcode, Analysis, และ Worms
                   </p>
                 </div>
-                <div className="bg-slate-950 p-3.5 rounded-lg border border-slate-800 space-y-1">
+                <div className="bg-white p-3.5 rounded-lg border border-slate-200 space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
                     3. Schema & Label Discrepancy
                   </span>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-slate-700 leading-relaxed">
                     NSL-KDD และ UNSW-NB15 มีโครงสร้างคอลัมน์และคำเรียก Label ต่างกัน จึงต้องผ่านกระบวนการ Harmonization และสร้าง Common Dataset เพื่อให้ประเมินข้ามโมเดลได้สมบูรณ์
                   </p>
                 </div>
@@ -1881,9 +1884,9 @@ export default function App() {
               {/* Comparative Charts: Split Stacked Bar & UNSW Attack Breakdown */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
                 {/* Chart 1: Normal vs Attack Stacked per Split */}
-                <div className="bg-slate-950/80 border border-slate-800 p-4 rounded-xl flex flex-col">
+                <div className="bg-white border border-slate-200 p-4 rounded-xl flex flex-col">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                       Normal vs Attack by Split (จำนวนระเบียนแยกตามชุด)
                     </h4>
                     <span className="text-[10px] font-mono text-slate-500">Stacked Bar</span>
@@ -1943,9 +1946,9 @@ export default function App() {
                 </div>
 
                 {/* Chart 2: UNSW-NB15 Attack Category Breakdown */}
-                <div className="bg-slate-950/80 border border-slate-800 p-4 rounded-xl flex flex-col">
+                <div className="bg-white border border-slate-200 p-4 rounded-xl flex flex-col">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
                       UNSW-NB15 Attack Categories Breakdown (Train & Test)
                     </h4>
                     <span className="text-[10px] font-mono text-slate-500">Attack Counts</span>
@@ -2010,46 +2013,46 @@ export default function App() {
               <div className="space-y-6">
                 {/* 100% Dataset KPI Summary Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Total Processed Records</span>
-                    <div className="text-xl font-bold font-mono text-white">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Total Processed Records</span>
+                    <div className="text-xl font-bold font-mono text-[#182d88]">
                       {(edaData.total_rows || edaData.total_rows_sampled || 0).toLocaleString()}
                     </div>
                     <span className="text-[10px] text-emerald-400 font-medium mt-1 inline-block">100% Verified Full Data</span>
                   </div>
 
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Attack Ratio</span>
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Attack Ratio</span>
                     <div className="text-xl font-bold font-mono text-rose-400">
                       {((edaData.attack_ratio || 0) * 100).toFixed(2)}%
                     </div>
-                    <span className="text-[10px] text-slate-400 font-mono mt-1 inline-block">
+                    <span className="text-[10px] text-slate-500 font-mono mt-1 inline-block">
                       {((1 - (edaData.attack_ratio || 0)) * 100).toFixed(2)}% Normal
                     </span>
                   </div>
 
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Attack Categories</span>
-                    <div className="text-xl font-bold font-mono text-indigo-400">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Attack Categories</span>
+                    <div className="text-xl font-bold font-mono text-[#182d88]">
                       {(edaData.category_distribution || []).filter(c => c.category !== 'Normal').length}
                     </div>
-                    <span className="text-[10px] text-slate-400 mt-1 inline-block">Harmonized Threat Types</span>
+                    <span className="text-[10px] text-slate-500 mt-1 inline-block">Harmonized Threat Types</span>
                   </div>
 
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Protocols Monitored</span>
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Protocols Monitored</span>
                     <div className="text-xl font-bold font-mono text-sky-400">
                       {(edaData.protocol_distribution || []).length}
                     </div>
-                    <span className="text-[10px] text-slate-400 mt-1 inline-block">L4 Transport Types</span>
+                    <span className="text-[10px] text-slate-500 mt-1 inline-block">L4 Transport Types</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Binary Distribution Card */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Normal vs Attack Ratio</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Normal vs Attack Ratio</h3>
                       <span className="text-[10px] font-mono text-slate-500">100% Full Count</span>
                     </div>
                     <div className="relative flex-1 min-h-[240px] flex items-center justify-center">
@@ -2073,9 +2076,9 @@ export default function App() {
                   </div>
 
                   {/* Category Breakdown Card */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Top Attack Categories</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Top Attack Categories</h3>
                       <span className="text-[10px] font-mono text-slate-500">Full Aggregation</span>
                     </div>
                     <div className="relative flex-1 min-h-[240px]">
@@ -2103,9 +2106,9 @@ export default function App() {
                   </div>
 
                   {/* Protocol Breakdown Card */}
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 md:col-span-2">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-5 md:col-span-2">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">Protocol Distribution</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">Protocol Distribution</h3>
                       <span className="text-[10px] font-mono text-slate-500">Full Aggregation</span>
                     </div>
                     <div className="relative h-64">
@@ -2144,9 +2147,9 @@ export default function App() {
         {/* 3. DATA CLEANSING & QUALITY TAB */}
         {activeTab === 'cleansing' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-              <h2 className="text-base font-bold text-white">Data Cleansing Quality & Audit Report</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Verification of missing value treatment, outlier preservation, and deduplication</p>
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg">
+              <h2 className="text-base font-bold text-[#182d88]">Data Cleansing Quality & Audit Report</h2>
+              <p className="text-xs text-slate-500 mt-0.5">Verification of missing value treatment, outlier preservation, and deduplication</p>
             </div>
 
             {cleansingLoading ? (
@@ -2156,33 +2159,33 @@ export default function App() {
                 {/* Quality Summary Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {Object.entries(cleansingData.quality_summary || {}).map(([key, val]) => (
-                    <div key={key} className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+                    <div key={key} className="bg-white border border-slate-200 rounded-2xl p-4">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
                         {key.replace(/_/g, ' ')}
                       </span>
-                      <p className="text-xs text-slate-200">{val}</p>
+                      <p className="text-xs text-slate-800">{val}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Audit Table */}
                 {cleansingData.audit && cleansingData.audit.length > 0 && (
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Audit Details</h3>
+                  <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">Audit Details</h3>
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                        <thead className="bg-white text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
                           <tr>
                             {Object.keys(cleansingData.audit[0] || {}).map(k => (
                               <th key={k} className="py-2.5 px-3">{k}</th>
                             ))}
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/80 font-mono">
+                        <tbody className="divide-y divide-slate-100 font-mono">
                           {cleansingData.audit.map((row, idx) => (
-                            <tr key={idx} className="hover:bg-slate-800/40">
+                            <tr key={idx} className="hover:bg-slate-50">
                               {Object.values(row).map((v, cidx) => (
-                                <td key={cidx} className="py-2.5 px-3 text-slate-300">{String(v)}</td>
+                                <td key={cidx} className="py-2.5 px-3 text-slate-700">{String(v)}</td>
                               ))}
                             </tr>
                           ))}
@@ -2198,12 +2201,405 @@ export default function App() {
           </div>
         )}
 
-        {/* 4. FEATURE CONTRACT TAB */}
+        {/* 4. HARMONIZATION MAPPING TAB */}
+        {activeTab === 'harmonization' && (
+          <div className="space-y-6">
+            {/* Header Banner */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-[#182d88]">
+                      Cross-Dataset Schema Harmonization Mapping (ตารางเทียบการแปลงฟิลด์)
+                    </h2>
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#3ac890]/15 text-[#097c5c] border border-[#3ac890]/40">
+                      Standard Adapter v3
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
+                    แสดงการแปลงชื่อคอลัมน์ต้นทาง (Source Column) จาก NSL-KDD และ UNSW-NB15 เข้าสู่ชื่อฟีเจอร์กลาง (Central Column) 
+                    พร้อมกฎการแปลงและสูตรคำนวณ (Rule or Calculation) ที่ผ่านการพิสูจน์ตาม Feature Contract
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-500">Pipeline Status:</span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold font-mono">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Verified 19 Model Inputs
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Core Candidate & Joint Features Schema Diff Table */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#182d88]">
+                    Side-by-Side Schema Diff View (NSL Column → Central Rule → UNSW Column)
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    เปรียบเทียบคอลัมน์ฝั่งซ้าย (NSL-KDD), คอลัมน์กลางพร้อมสูตร (Central Feature Contract), และคอลัมน์ฝั่งขวา (UNSW-NB15)
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-mono">
+                  <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">
+                    NSL-KDD (Left)
+                  </span>
+                  <span className="text-slate-500 font-bold">{'<->'}</span>
+                  <span className="px-2 py-0.5 rounded bg-sky-50 text-sky-700 font-semibold border border-sky-200">
+                    UNSW-NB15 (Right)
+                  </span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/80 text-slate-600 uppercase text-[10px] tracking-wider border-b border-slate-200">
+                      <th className="py-3 px-4 font-bold text-[#182d88]">Central Column</th>
+                      <th className="py-3 px-3 font-semibold text-indigo-700 bg-indigo-50/30">NSL Source Column</th>
+                      <th className="py-3 px-4 font-semibold text-slate-700">Rule or Calculation (สูตรและการแปลง)</th>
+                      <th className="py-3 px-3 font-semibold text-sky-700 bg-sky-50/30">UNSW Source Column</th>
+                      <th className="py-3 px-3 font-semibold text-center">Type / Domain</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-sans text-xs">
+                    {/* Row 1: duration */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-[#182d88]">
+                        duration
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">log_duration = log1p(duration)</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        duration
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-semibold text-[11px]">
+                          log1p(duration)
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          แปลงเวลาเป็นวินาที (seconds); ตรวจสอบว่าไม่ติดลบ แล้วทำ log1p เพื่อลดช่วงหางยาว (long-tail)
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        dur
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                          Numeric Core
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 2: bytes_forward */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-[#182d88]">
+                        bytes_forward
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">log_bytes_forward</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        src_bytes
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-semibold text-[11px]">
+                          log1p(bytes_forward)
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          จำนวนไบต์ในทิศทาง Source → Destination (ขาไป); ตรวจสอบค่าผิดปกติ แล้ว normalize ด้วย log1p
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        sbytes
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                          Numeric Core
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 3: bytes_backward */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-[#182d88]">
+                        bytes_backward
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">log_bytes_backward</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        dst_bytes
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-semibold text-[11px]">
+                          log1p(bytes_backward)
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          จำนวนไบต์ในทิศทาง Destination → Source (ขากลับ); ตรวจสอบค่าผิดปกติ แล้ว normalize ด้วย log1p
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        dbytes
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                          Numeric Core
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 4: signed_log_bytes_ratio */}
+                    <tr className="hover:bg-slate-50/80 transition bg-slate-50/40">
+                      <td className="py-3 px-4 font-mono font-bold text-[#182d88]">
+                        signed_log_bytes_ratio
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">Directional Asymmetry</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-slate-500 bg-indigo-50/10 italic">
+                        src_bytes & dst_bytes
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-indigo-50 text-indigo-800 border border-indigo-200 px-1.5 py-0.5 rounded font-semibold text-[11px]">
+                          log1p(bytes_forward) - log1p(bytes_backward)
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          วัดความไม่สมดุลของปริมาณรับ-ส่ง; ค่าบวกแสดงว่าส่งออกมากกว่า ค่าลบแสดงว่าดาวน์โหลดกลับมากกว่า
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-slate-500 bg-sky-50/10 italic">
+                        sbytes & dbytes
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-indigo-50 text-indigo-700 font-bold border border-indigo-200">
+                          Derived Feature
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 5: protocol */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-[#182d88]">
+                        protocol
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">protocol_tcp/udp/icmp/other</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        protocol_type
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-semibold text-[11px]">
+                          Map: [tcp, udp, icmp] else 'other' → One-Hot
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          แปลงเป็นตัวพิมพ์เล็ก; ค่าที่อยู่นอก 3 โพรโทคอลหลักจะถูกจัดเข้ากลุ่ม 'other' เพื่อป้องกัน OOD leakage
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        proto
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-50 text-purple-700 font-bold border border-purple-200">
+                          One-Hot Categorical
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 6: service_group */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-[#182d88]">
+                        service_group
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">service_dns/http/ssh/...</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        service
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-semibold text-[11px]">
+                          Group: [dns, ftp, http, https_ssl, smtp, ssh, other]
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          จัดบริการเครือข่ายเข้า 7 กลุ่มมาตรฐาน; รวม http/http_443/ssl เข้าหมวดหมู่กลางเดียวกัน
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        service
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-50 text-purple-700 font-bold border border-purple-200">
+                          One-Hot Categorical
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 7: conn_state_group */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-[#182d88]">
+                        conn_state_group
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">conn_state_established/reset/...</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        flag
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-semibold text-[11px]">
+                          Conservative Mapping: [established, no-reply, reset, other]
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          NSL flags (SF → established, S0/REJ → no-reply/reset) แมปกับ UNSW state (FIN/CON → established, INT/REQ → no-reply)
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        state
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-50 text-purple-700 font-bold border border-purple-200">
+                          One-Hot Categorical
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 8: label_binary */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-rose-700">
+                        label_binary
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">Binary Target (0 or 1)</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        class
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-rose-50 text-rose-800 border border-rose-200 px-1.5 py-0.5 rounded font-semibold text-[11px]">
+                          0 = Normal, 1 = Attack
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          NSL ('normal' → 0, other → 1); UNSW (0 → 0, 1 → 1); เก็บใน labels.csv แยกจากโมเดลฟีเจอร์
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        label
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-rose-50 text-rose-700 font-bold border border-rose-200">
+                          Target Label
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Row 9: attack_category */}
+                    <tr className="hover:bg-slate-50/80 transition">
+                      <td className="py-3 px-4 font-mono font-bold text-purple-700">
+                        attack_category
+                        <span className="block text-[10px] font-sans font-normal text-slate-500">Multiclass Target (7 Classes)</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-indigo-700 bg-indigo-50/20">
+                        class / attack_type
+                      </td>
+                      <td className="py-3 px-4 text-slate-600 leading-relaxed">
+                        <span className="font-mono bg-purple-50 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded font-semibold text-[11px]">
+                          Harmonized 7 Families Mapping
+                        </span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
+                          จัด 39 attack types ของ NSL และ 9 attack categories ของ UNSW เข้าสู่ 7 หมวดหมู่กลาง: Botnet/Backdoor, Brute-force/R2L, DoS/DDoS, Exploit/U2R, Generic/Fuzzer, Normal, Probe/Recon
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-mono font-semibold text-sky-700 bg-sky-50/20">
+                        attack_cat
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-50 text-purple-700 font-bold border border-purple-200">
+                          Target Multiclass
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Extensions & Source-Specific Features Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#182d88]">
+                    Source-Specific Extensions & Asymmetric Fields (ฟิลด์ที่มีเฉพาะบางชุด)
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    ฟิลด์ที่ไม่มีค่าเทียบตรงในอีกชุดข้อมูล จะถูกเก็บค่า null พร้อม availability mask ใน metadata (ไม่ป้อนเข้า joint_v1 เพื่อป้องกัน dataset fingerprinting)
+                  </p>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-semibold">
+                  Extension Policy
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* UNSW-Only Extensions */}
+                <div className="p-4 rounded-xl border border-sky-200 bg-sky-50/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-sky-900 font-mono">UNSW-NB15 Specific Features</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 border border-sky-200">
+                      null in NSL-KDD
+                    </span>
+                  </div>
+                  <ul className="text-xs text-slate-600 space-y-1.5 font-mono">
+                    <li><strong className="text-sky-900">spkts / dpkts:</strong> packets_forward & packets_backward (has_packet_stats mask)</li>
+                    <li><strong className="text-sky-900">mean_packet_size:</strong> (sbytes + dbytes) / (spkts + dpkts)</li>
+                    <li><strong className="text-sky-900">sttl / dttl:</strong> Time-to-Live metrics (ttl_forward / ttl_backward)</li>
+                    <li><strong className="text-sky-900">swin / dwin:</strong> TCP source and destination window sizes</li>
+                  </ul>
+                </div>
+
+                {/* NSL-Only Extensions */}
+                <div className="p-4 rounded-xl border border-indigo-200 bg-indigo-50/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-indigo-900 font-mono">NSL-KDD Specific Features</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 border border-indigo-200">
+                      null in UNSW-NB15
+                    </span>
+                  </div>
+                  <ul className="text-xs text-slate-600 space-y-1.5 font-mono">
+                    <li><strong className="text-indigo-900">hot, logged_in, root_shell:</strong> Host-based content indicators</li>
+                    <li><strong className="text-indigo-900">count, srv_count:</strong> 2-second time window connection counts</li>
+                    <li><strong className="text-indigo-900">same_srv_rate, serror_rate:</strong> 2-second time window error rates</li>
+                    <li><strong className="text-indigo-900">difficulty_level:</strong> Benchmark score preserved only in metadata</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Architecture Summary / Contract Principles */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#097c5c] block">
+                  1. Strict Table Separation
+                </span>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  แยกข้อมูลออกเป็น 3 ตารางอย่างเด็ดขาด: <strong>features.csv</strong> (สำหรับโมเดล), <strong>labels.csv</strong> (สำหรับประเมินผล), และ <strong>metadata.csv</strong> (สำหรับ audit และ split tracing)
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#182d88] block">
+                  2. Leakage Prevention
+                </span>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  ฟิลด์ระบุตัวตน (record_id, orig_row_id), เฉลย (labels), และแหล่งที่มา (source_dataset) จะถูกตัดทิ้งก่อน fit/predict เพื่อป้องกันโมเดลจำ source signature
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#2657c1] block">
+                  3. Scaler & Encoder Integrity
+                </span>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  StandardScaler และ OneHotEncoder ทุกตัวจะถูก <strong>fit เฉพาะบนชุด Train</strong> เท่านั้น แล้วนำ object เดียวกันไป transform บน Validation และ Test
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 5. FEATURE CONTRACT TAB */}
         {activeTab === 'features' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-              <h2 className="text-base font-bold text-white">Harmonized Feature Contract & Architecture</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Cross-dataset feature mappings between NSL-KDD and UNSW-NB15</p>
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg">
+              <h2 className="text-base font-bold text-[#182d88]">Harmonized Feature Contract & Architecture</h2>
+              <p className="text-xs text-slate-500 mt-0.5">Cross-dataset feature mappings between NSL-KDD and UNSW-NB15</p>
             </div>
 
             {featureLoading ? (
@@ -2211,13 +2607,13 @@ export default function App() {
             ) : featureData ? (
               <div className="space-y-6">
                 {/* Core Candidate Features */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Core Harmonized Features</h3>
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">Core Harmonized Features</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {Object.entries(featureData.contract?.candidate_features || {}).map(([name, conf]) => (
-                      <div key={name} className="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1">
-                        <span className="text-xs font-bold text-indigo-400 font-mono block">{name}</span>
-                        <div className="text-[11px] text-slate-400">Type: <span className="text-slate-200">{conf.type}</span></div>
+                      <div key={name} className="bg-white p-3 rounded-lg border border-slate-200 space-y-1">
+                        <span className="text-xs font-bold text-[#182d88] font-mono block">{name}</span>
+                        <div className="text-[11px] text-slate-500">Type: <span className="text-slate-800">{conf.type}</span></div>
                         <div className="text-[10px] text-slate-500">Transform: {conf.transform}</div>
                         <div className="text-[10px] text-slate-500 mt-1">
                           Sources: NSL ({conf.sources?.['NSL-KDD']}) / UNSW ({conf.sources?.['UNSW-NB15']})
@@ -2228,11 +2624,11 @@ export default function App() {
                 </div>
 
                 {/* Never Model Features / Leakage Prevention */}
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-lg">
                   <h3 className="text-xs font-bold uppercase tracking-wider text-rose-400 mb-2">Features Excluded from Models (Leakage Prevention)</h3>
                   <div className="flex flex-wrap gap-2">
                     {(featureData.contract?.never_model_features || []).map((f, i) => (
-                      <span key={i} className="text-[11px] font-mono px-2 py-1 rounded bg-rose-950/40 text-rose-300 border border-rose-900/60">
+                      <span key={i} className="text-[11px] font-mono px-2 py-1 rounded bg-rose-50 text-rose-700 border border-rose-200">
                         {f}
                       </span>
                     ))}
