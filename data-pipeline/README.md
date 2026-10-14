@@ -163,7 +163,7 @@ Harmonization ไม่ใช่แค่เปลี่ยนชื่อคอ
 
 ตัวอย่างจำลอง: ถ้า `bytes_forward=120` และ `bytes_backward=30`, signed ratio จะได้ `ln(121)-ln(31)≈1.36`; เมื่อสลับ bytes สองทิศทางจะได้ค่าประมาณ `-1.36` จึงแสดงความไม่สมดุลได้สองด้าน
 
-โปรไฟล์หลักพัก `log_total_bytes` ไว้เพราะซ้ำกับ bytes สองทิศทาง และพัก `log_bytes_per_second` เพราะ duration ศูนย์ที่แทนด้วย epsilon อาจทำให้ความหมายของอัตราคลาดเคลื่อน รายละเอียดชื่อฟีเจอร์และ vocabulary อยู่ใน `common/feature_contract.json`.
+โปรไฟล์หลักพัก `log_total_bytes` ไว้เพราะซ้ำกับ bytes สองทิศทาง และพัก `log_bytes_per_second` เพราะ duration ศูนย์ที่แทนด้วย epsilon อาจทำให้ความหมายของอัตราคลาดเคลื่อน Notebook จะส่งออก candidate ที่ยังไม่ผ่านการทดสอบแยกจาก `joint_v1` เพื่อทำ ablation; ดูสูตร ข้อจำกัด และตำแหน่งไฟล์ใน [คู่มือ Dataset กลาง](common/docs/central_dataset_guide.md#7-feature-engineering-กลาง--สร้างและปรับสเกล-feature).
 
 `StandardScaler` และ `OneHotEncoder` เรียนรู้จาก `train` เท่านั้น แล้วใช้ transformer ชุดเดิมแปลง `train_full`, `validation` และ `test` เพื่อไม่ให้ชุดประเมินมีอิทธิพลต่อค่าที่เรียนรู้ หาก feature ที่เลือกมี missing/infinite ระบบหยุดพร้อมรายงาน ไม่เติมศูนย์หรือลบแถวเงียบ ๆ
 
