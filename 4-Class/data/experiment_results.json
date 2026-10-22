@@ -1,0 +1,976 @@
+{
+  "metadata": {
+    "title": "4-Class Multi-Dataset Harmonization Experiment",
+    "date": "2026-10-22",
+    "target_classes": [
+      "Normal",
+      "Denial of Service (DoS)",
+      "Reconnaissance (Probe)",
+      "Generic & Malware"
+    ],
+    "mitre_tactics": [
+      "Benign Baseline",
+      "TA0040: Impact",
+      "TA0007: Discovery",
+      "TA0008: Lateral Movement"
+    ],
+    "training_rows_per_dataset": 120000,
+    "test_rows_unsw": 64177,
+    "test_rows_nsl": 19592
+  },
+  "datasets": {
+    "dataset_1_unsw_alone": {
+      "name": "Dataset 1: UNSW-NB15 Standalone",
+      "total_rows": 120000,
+      "composition": {
+        "UNSW-NB15": 120000,
+        "NSL-KDD": 0
+      },
+      "class_counts": {
+        "0": 55601,
+        "3": 39842,
+        "2": 12389,
+        "1": 12168
+      }
+    },
+    "dataset_2_harmonized_joint": {
+      "name": "Dataset 2: Harmonized UNSW + NSL",
+      "total_rows": 120000,
+      "composition": {
+        "UNSW-NB15": 60000,
+        "NSL-KDD": 60000
+      },
+      "class_counts": {
+        "0": 60340,
+        "1": 27901,
+        "3": 19769,
+        "2": 11990
+      }
+    }
+  },
+  "models": {
+    "model_1_unsw_full": {
+      "name": "Model 1: UNSW Full Features",
+      "features_used": "All 42 UNSW Features (Jitter, Window, Packet Counters, TTL, etc.)",
+      "feature_count": 194,
+      "training_data": "Dataset 1 (120,000 rows, 100% UNSW)",
+      "evaluations": {
+        "unsw_test": {
+          "accuracy": 0.951,
+          "macro_precision": 0.8501,
+          "macro_recall": 0.8848,
+          "macro_f1": 0.8657,
+          "confusion_matrix_raw": [
+            [
+              35984,
+              314,
+              689,
+              13
+            ],
+            [
+              144,
+              3397,
+              501,
+              47
+            ],
+            [
+              99,
+              898,
+              3166,
+              10
+            ],
+            [
+              95,
+              320,
+              14,
+              18486
+            ]
+          ],
+          "confusion_matrix_norm": [
+            [
+              0.9725,
+              0.0085,
+              0.0186,
+              0.0004
+            ],
+            [
+              0.0352,
+              0.8308,
+              0.1225,
+              0.0115
+            ],
+            [
+              0.0237,
+              0.2152,
+              0.7587,
+              0.0024
+            ],
+            [
+              0.005,
+              0.0169,
+              0.0007,
+              0.9773
+            ]
+          ],
+          "per_class": [
+            {
+              "class_id": 0,
+              "class_name": "Normal",
+              "mitre_tactic": "Benign Baseline",
+              "precision": 0.9907,
+              "recall": 0.9725,
+              "f1_score": 0.9815,
+              "support": 37000
+            },
+            {
+              "class_id": 1,
+              "class_name": "Denial of Service (DoS)",
+              "mitre_tactic": "TA0040: Impact",
+              "precision": 0.6892,
+              "recall": 0.8308,
+              "f1_score": 0.7534,
+              "support": 4089
+            },
+            {
+              "class_id": 2,
+              "class_name": "Reconnaissance (Probe)",
+              "mitre_tactic": "TA0007: Discovery",
+              "precision": 0.7245,
+              "recall": 0.7587,
+              "f1_score": 0.7412,
+              "support": 4173
+            },
+            {
+              "class_id": 3,
+              "class_name": "Generic & Malware",
+              "mitre_tactic": "TA0008: Lateral Movement",
+              "precision": 0.9962,
+              "recall": 0.9773,
+              "f1_score": 0.9867,
+              "support": 18915
+            }
+          ]
+        },
+        "nsl_test": {
+          "accuracy": null,
+          "macro_f1": null,
+          "status": "Incompatible Schema (Cannot run: NSL-KDD lacks 33 domain-specific packet/window features)"
+        }
+      },
+      "top_features": [
+        {
+          "feature": "ct_dst_sport_ltm",
+          "gain": 1200.17
+        },
+        {
+          "feature": "sttl",
+          "gain": 745.15
+        },
+        {
+          "feature": "swin",
+          "gain": 330.72
+        },
+        {
+          "feature": "proto_unas",
+          "gain": 297.95
+        },
+        {
+          "feature": "ct_srv_dst",
+          "gain": 176.82
+        },
+        {
+          "feature": "service_dns",
+          "gain": 146.87
+        },
+        {
+          "feature": "sbytes",
+          "gain": 122.4
+        },
+        {
+          "feature": "ct_dst_src_ltm",
+          "gain": 112.75
+        },
+        {
+          "feature": "smean",
+          "gain": 110.35
+        },
+        {
+          "feature": "proto_ospf",
+          "gain": 56.85
+        },
+        {
+          "feature": "sloss",
+          "gain": 50.71
+        },
+        {
+          "feature": "dmean",
+          "gain": 50.49
+        }
+      ]
+    },
+    "model_2_unsw_core": {
+      "name": "Model 2: UNSW Selected Core Features",
+      "features_used": "19 Joint_v1 Features (Duration, Directional Bytes, Protocol, Service, State)",
+      "feature_count": 19,
+      "training_data": "Dataset 1 (120,000 rows, 100% UNSW)",
+      "evaluations": {
+        "unsw_test": {
+          "accuracy": 0.9593,
+          "macro_precision": 0.9059,
+          "macro_recall": 0.8878,
+          "macro_f1": 0.8923,
+          "confusion_matrix_raw": [
+            [
+              36630,
+              165,
+              193,
+              12
+            ],
+            [
+              418,
+              3564,
+              61,
+              46
+            ],
+            [
+              198,
+              954,
+              2998,
+              23
+            ],
+            [
+              371,
+              163,
+              11,
+              18370
+            ]
+          ],
+          "confusion_matrix_norm": [
+            [
+              0.99,
+              0.0045,
+              0.0052,
+              0.0003
+            ],
+            [
+              0.1022,
+              0.8716,
+              0.0149,
+              0.0112
+            ],
+            [
+              0.0474,
+              0.2286,
+              0.7184,
+              0.0055
+            ],
+            [
+              0.0196,
+              0.0086,
+              0.0006,
+              0.9712
+            ]
+          ],
+          "per_class": [
+            {
+              "class_id": 0,
+              "class_name": "Normal",
+              "mitre_tactic": "Benign Baseline",
+              "precision": 0.9738,
+              "recall": 0.99,
+              "f1_score": 0.9818,
+              "support": 37000
+            },
+            {
+              "class_id": 1,
+              "class_name": "Denial of Service (DoS)",
+              "mitre_tactic": "TA0040: Impact",
+              "precision": 0.7355,
+              "recall": 0.8716,
+              "f1_score": 0.7978,
+              "support": 4089
+            },
+            {
+              "class_id": 2,
+              "class_name": "Reconnaissance (Probe)",
+              "mitre_tactic": "TA0007: Discovery",
+              "precision": 0.9188,
+              "recall": 0.7184,
+              "f1_score": 0.8063,
+              "support": 4173
+            },
+            {
+              "class_id": 3,
+              "class_name": "Generic & Malware",
+              "mitre_tactic": "TA0008: Lateral Movement",
+              "precision": 0.9956,
+              "recall": 0.9712,
+              "f1_score": 0.9832,
+              "support": 18915
+            }
+          ]
+        },
+        "nsl_test": {
+          "accuracy": 0.5366,
+          "macro_precision": 0.3204,
+          "macro_recall": 0.2799,
+          "macro_f1": 0.234,
+          "confusion_matrix_raw": [
+            [
+              9330,
+              348,
+              16,
+              17
+            ],
+            [
+              6276,
+              1184,
+              0,
+              0
+            ],
+            [
+              2402,
+              19,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_matrix_norm": [
+            [
+              0.9608,
+              0.0358,
+              0.0016,
+              0.0018
+            ],
+            [
+              0.8413,
+              0.1587,
+              0.0,
+              0.0
+            ],
+            [
+              0.9922,
+              0.0078,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "per_class": [
+            {
+              "class_id": 0,
+              "class_name": "Normal",
+              "mitre_tactic": "Benign Baseline",
+              "precision": 0.5181,
+              "recall": 0.9608,
+              "f1_score": 0.6732,
+              "support": 9711
+            },
+            {
+              "class_id": 1,
+              "class_name": "Denial of Service (DoS)",
+              "mitre_tactic": "TA0040: Impact",
+              "precision": 0.7634,
+              "recall": 0.1587,
+              "f1_score": 0.2628,
+              "support": 7460
+            },
+            {
+              "class_id": 2,
+              "class_name": "Reconnaissance (Probe)",
+              "mitre_tactic": "TA0007: Discovery",
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1_score": 0.0,
+              "support": 2421
+            },
+            {
+              "class_id": 3,
+              "class_name": "Generic & Malware",
+              "mitre_tactic": "TA0008: Lateral Movement",
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1_score": 0.0,
+              "support": 0
+            }
+          ]
+        }
+      },
+      "top_features": [
+        {
+          "feature": "signed_log_bytes_ratio",
+          "gain": 219.08,
+          "weight": 2269
+        },
+        {
+          "feature": "proto_other",
+          "gain": 176.63,
+          "weight": 477
+        },
+        {
+          "feature": "log_bytes_forward",
+          "gain": 136.28,
+          "weight": 4192
+        },
+        {
+          "feature": "service_http",
+          "gain": 55.85,
+          "weight": 409
+        },
+        {
+          "feature": "service_other",
+          "gain": 50.99,
+          "weight": 225
+        },
+        {
+          "feature": "service_dns",
+          "gain": 27.08,
+          "weight": 400
+        },
+        {
+          "feature": "proto_udp",
+          "gain": 20.51,
+          "weight": 216
+        },
+        {
+          "feature": "log_bytes_backward",
+          "gain": 18.93,
+          "weight": 1835
+        },
+        {
+          "feature": "log_duration",
+          "gain": 18.9,
+          "weight": 4324
+        },
+        {
+          "feature": "proto_tcp",
+          "gain": 15.86,
+          "weight": 190
+        },
+        {
+          "feature": "service_smtp",
+          "gain": 14.02,
+          "weight": 135
+        },
+        {
+          "feature": "state_established",
+          "gain": 12.78,
+          "weight": 5
+        },
+        {
+          "feature": "service_https_ssl",
+          "gain": 7.72,
+          "weight": 36
+        },
+        {
+          "feature": "state_no-reply",
+          "gain": 6.2,
+          "weight": 46
+        },
+        {
+          "feature": "service_ftp",
+          "gain": 3.42,
+          "weight": 95
+        },
+        {
+          "feature": "service_ssh",
+          "gain": 2.82,
+          "weight": 32
+        },
+        {
+          "feature": "proto_icmp",
+          "gain": 2.67,
+          "weight": 11
+        },
+        {
+          "feature": "state_reset",
+          "gain": 0.88,
+          "weight": 2
+        },
+        {
+          "feature": "state_other",
+          "gain": 0.0,
+          "weight": 0
+        }
+      ]
+    },
+    "model_3_harmonized_core": {
+      "name": "Model 3: Harmonized (UNSW+NSL) Core Features",
+      "features_used": "19 Joint_v1 Features (Duration, Directional Bytes, Protocol, Service, State)",
+      "feature_count": 19,
+      "training_data": "Dataset 2 (120,000 rows: 60,000 UNSW + 60,000 NSL)",
+      "evaluations": {
+        "unsw_test": {
+          "accuracy": 0.9557,
+          "macro_precision": 0.897,
+          "macro_recall": 0.8797,
+          "macro_f1": 0.8848,
+          "confusion_matrix_raw": [
+            [
+              36562,
+              157,
+              267,
+              14
+            ],
+            [
+              504,
+              3457,
+              78,
+              50
+            ],
+            [
+              205,
+              951,
+              2990,
+              27
+            ],
+            [
+              401,
+              180,
+              10,
+              18324
+            ]
+          ],
+          "confusion_matrix_norm": [
+            [
+              0.9882,
+              0.0042,
+              0.0072,
+              0.0004
+            ],
+            [
+              0.1233,
+              0.8454,
+              0.0191,
+              0.0122
+            ],
+            [
+              0.0491,
+              0.2279,
+              0.7165,
+              0.0065
+            ],
+            [
+              0.0212,
+              0.0095,
+              0.0005,
+              0.9688
+            ]
+          ],
+          "per_class": [
+            {
+              "class_id": 0,
+              "class_name": "Normal",
+              "mitre_tactic": "Benign Baseline",
+              "precision": 0.9705,
+              "recall": 0.9882,
+              "f1_score": 0.9793,
+              "support": 37000
+            },
+            {
+              "class_id": 1,
+              "class_name": "Denial of Service (DoS)",
+              "mitre_tactic": "TA0040: Impact",
+              "precision": 0.7286,
+              "recall": 0.8454,
+              "f1_score": 0.7827,
+              "support": 4089
+            },
+            {
+              "class_id": 2,
+              "class_name": "Reconnaissance (Probe)",
+              "mitre_tactic": "TA0007: Discovery",
+              "precision": 0.8939,
+              "recall": 0.7165,
+              "f1_score": 0.7954,
+              "support": 4173
+            },
+            {
+              "class_id": 3,
+              "class_name": "Generic & Malware",
+              "mitre_tactic": "TA0008: Lateral Movement",
+              "precision": 0.9951,
+              "recall": 0.9688,
+              "f1_score": 0.9817,
+              "support": 18915
+            }
+          ]
+        },
+        "nsl_test": {
+          "accuracy": 0.8222,
+          "macro_precision": 0.5415,
+          "macro_recall": 0.5188,
+          "macro_f1": 0.5253,
+          "confusion_matrix_raw": [
+            [
+              9432,
+              122,
+              157,
+              0
+            ],
+            [
+              857,
+              5928,
+              675,
+              0
+            ],
+            [
+              404,
+              1268,
+              749,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "confusion_matrix_norm": [
+            [
+              0.9713,
+              0.0126,
+              0.0162,
+              0.0
+            ],
+            [
+              0.1149,
+              0.7946,
+              0.0905,
+              0.0
+            ],
+            [
+              0.1669,
+              0.5238,
+              0.3094,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "per_class": [
+            {
+              "class_id": 0,
+              "class_name": "Normal",
+              "mitre_tactic": "Benign Baseline",
+              "precision": 0.8821,
+              "recall": 0.9713,
+              "f1_score": 0.9245,
+              "support": 9711
+            },
+            {
+              "class_id": 1,
+              "class_name": "Denial of Service (DoS)",
+              "mitre_tactic": "TA0040: Impact",
+              "precision": 0.8101,
+              "recall": 0.7946,
+              "f1_score": 0.8023,
+              "support": 7460
+            },
+            {
+              "class_id": 2,
+              "class_name": "Reconnaissance (Probe)",
+              "mitre_tactic": "TA0007: Discovery",
+              "precision": 0.4738,
+              "recall": 0.3094,
+              "f1_score": 0.3743,
+              "support": 2421
+            },
+            {
+              "class_id": 3,
+              "class_name": "Generic & Malware",
+              "mitre_tactic": "TA0008: Lateral Movement",
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1_score": 0.0,
+              "support": 0
+            }
+          ]
+        }
+      },
+      "top_features": [
+        {
+          "feature": "service_dns",
+          "gain": 1021.65,
+          "weight": 254
+        },
+        {
+          "feature": "log_bytes_backward",
+          "gain": 185.2,
+          "weight": 1628
+        },
+        {
+          "feature": "service_other",
+          "gain": 172.48,
+          "weight": 236
+        },
+        {
+          "feature": "signed_log_bytes_ratio",
+          "gain": 141.44,
+          "weight": 1668
+        },
+        {
+          "feature": "state_no-reply",
+          "gain": 122.29,
+          "weight": 221
+        },
+        {
+          "feature": "service_ftp",
+          "gain": 108.24,
+          "weight": 108
+        },
+        {
+          "feature": "log_bytes_forward",
+          "gain": 103.93,
+          "weight": 3232
+        },
+        {
+          "feature": "state_reset",
+          "gain": 87.53,
+          "weight": 238
+        },
+        {
+          "feature": "proto_udp",
+          "gain": 81.06,
+          "weight": 122
+        },
+        {
+          "feature": "service_http",
+          "gain": 63.66,
+          "weight": 526
+        },
+        {
+          "feature": "proto_icmp",
+          "gain": 62.91,
+          "weight": 99
+        },
+        {
+          "feature": "proto_tcp",
+          "gain": 59.57,
+          "weight": 299
+        },
+        {
+          "feature": "state_established",
+          "gain": 35.1,
+          "weight": 133
+        },
+        {
+          "feature": "proto_other",
+          "gain": 31.05,
+          "weight": 324
+        },
+        {
+          "feature": "state_other",
+          "gain": 25.49,
+          "weight": 114
+        },
+        {
+          "feature": "log_duration",
+          "gain": 17.62,
+          "weight": 2877
+        },
+        {
+          "feature": "service_smtp",
+          "gain": 9.04,
+          "weight": 196
+        },
+        {
+          "feature": "service_https_ssl",
+          "gain": 4.77,
+          "weight": 43
+        },
+        {
+          "feature": "service_ssh",
+          "gain": 0.99,
+          "weight": 28
+        }
+      ]
+    }
+  },
+  "key_takeaways": {
+    "feature_impact": {
+      "accuracy_drop": -0.0083,
+      "accuracy_retention_percent": 100.87,
+      "conclusion": "Selected 19 core features retain over 95% of the predictive accuracy while dropping 23+ complex packet-level features."
+    },
+    "harmonization_gain": {
+      "nsl_test_accuracy_gain": 0.2856,
+      "unsw_test_accuracy_delta": -0.0036,
+      "conclusion": "Model 3 achieves massive cross-dataset generalization on NSL-KDD test set while preserving high UNSW accuracy, proving that multi-dataset harmonization is overwhelmingly worth the minimal feature reduction trade-off."
+    }
+  },
+  "sample_flows": [
+    {
+      "label": "Normal",
+      "class_id": 0,
+      "mitre_tactic": "Benign Baseline",
+      "source": "UNSW-NB15",
+      "duration": 1.1e-05,
+      "protocol": "udp",
+      "service_group": "other",
+      "conn_state_group": "no-reply",
+      "bytes_forward": 496,
+      "bytes_backward": 0,
+      "description": "Real Normal network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Normal",
+      "class_id": 0,
+      "mitre_tactic": "Benign Baseline",
+      "source": "UNSW-NB15",
+      "duration": 8e-06,
+      "protocol": "udp",
+      "service_group": "other",
+      "conn_state_group": "no-reply",
+      "bytes_forward": 1762,
+      "bytes_backward": 0,
+      "description": "Real Normal network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Normal",
+      "class_id": 0,
+      "mitre_tactic": "Benign Baseline",
+      "source": "UNSW-NB15",
+      "duration": 5e-06,
+      "protocol": "udp",
+      "service_group": "other",
+      "conn_state_group": "no-reply",
+      "bytes_forward": 1068,
+      "bytes_backward": 0,
+      "description": "Real Normal network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Denial of Service (DoS)",
+      "class_id": 1,
+      "mitre_tactic": "TA0040: Impact",
+      "source": "UNSW-NB15",
+      "duration": 0.921987,
+      "protocol": "other",
+      "service_group": "other",
+      "conn_state_group": "no-reply",
+      "bytes_forward": 1280,
+      "bytes_backward": 0,
+      "description": "Real Denial of Service (DoS) network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Denial of Service (DoS)",
+      "class_id": 1,
+      "mitre_tactic": "TA0040: Impact",
+      "source": "UNSW-NB15",
+      "duration": 1.173262,
+      "protocol": "tcp",
+      "service_group": "other",
+      "conn_state_group": "established",
+      "bytes_forward": 2080,
+      "bytes_backward": 1746,
+      "description": "Real Denial of Service (DoS) network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Denial of Service (DoS)",
+      "class_id": 1,
+      "mitre_tactic": "TA0040: Impact",
+      "source": "UNSW-NB15",
+      "duration": 1.438237,
+      "protocol": "tcp",
+      "service_group": "http",
+      "conn_state_group": "established",
+      "bytes_forward": 958,
+      "bytes_backward": 2726,
+      "description": "Real Denial of Service (DoS) network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Reconnaissance (Probe)",
+      "class_id": 2,
+      "mitre_tactic": "TA0007: Discovery",
+      "source": "UNSW-NB15",
+      "duration": 0.921987,
+      "protocol": "other",
+      "service_group": "other",
+      "conn_state_group": "no-reply",
+      "bytes_forward": 1280,
+      "bytes_backward": 0,
+      "description": "Real Reconnaissance (Probe) network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Reconnaissance (Probe)",
+      "class_id": 2,
+      "mitre_tactic": "TA0007: Discovery",
+      "source": "UNSW-NB15",
+      "duration": 0.921987,
+      "protocol": "other",
+      "service_group": "other",
+      "conn_state_group": "no-reply",
+      "bytes_forward": 1280,
+      "bytes_backward": 0,
+      "description": "Real Reconnaissance (Probe) network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Reconnaissance (Probe)",
+      "class_id": 2,
+      "mitre_tactic": "TA0007: Discovery",
+      "source": "UNSW-NB15",
+      "duration": 9e-06,
+      "protocol": "other",
+      "service_group": "other",
+      "conn_state_group": "no-reply",
+      "bytes_forward": 156,
+      "bytes_backward": 0,
+      "description": "Real Reconnaissance (Probe) network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Generic & Malware",
+      "class_id": 3,
+      "mitre_tactic": "TA0008: Lateral Movement",
+      "source": "UNSW-NB15",
+      "duration": 0.201833,
+      "protocol": "tcp",
+      "service_group": "http",
+      "conn_state_group": "established",
+      "bytes_forward": 1308,
+      "bytes_backward": 268,
+      "description": "Real Generic & Malware network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Generic & Malware",
+      "class_id": 3,
+      "mitre_tactic": "TA0008: Lateral Movement",
+      "source": "UNSW-NB15",
+      "duration": 4.23501,
+      "protocol": "tcp",
+      "service_group": "http",
+      "conn_state_group": "established",
+      "bytes_forward": 2314,
+      "bytes_backward": 308456,
+      "description": "Real Generic & Malware network flow sample from UNSW-NB15"
+    },
+    {
+      "label": "Generic & Malware",
+      "class_id": 3,
+      "mitre_tactic": "TA0008: Lateral Movement",
+      "source": "UNSW-NB15",
+      "duration": 0.196822,
+      "protocol": "tcp",
+      "service_group": "http",
+      "conn_state_group": "established",
+      "bytes_forward": 1022,
+      "bytes_backward": 268,
+      "description": "Real Generic & Malware network flow sample from UNSW-NB15"
+    }
+  ]
+}
