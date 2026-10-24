@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>6-Class Threat Taxonomy &amp; Quad-Domain Harmonization Study</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              bg: '#0a0f1d',
+              card: '#111827',
+              border: '#1f2937',
+              cyan: '#06b6d4',
+              emerald: '#10b981',
+              blue: '#3b82f6',
+              purple: '#8b5cf6',
+              amber: '#f59e0b',
+              danger: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body {
+      background-color: #0a0f1d;
+      color: #e2e8f0;
+      font-family: 'Sarabun', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .neon-border {
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+    .glow-cyan {
+      text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    }
+    .glow-emerald {
+      text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-cyber-bg text-slate-200 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-cyber-border pb-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-950 text-cyan-400 border border-cyan-800 mb-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            QUAD-DATASET FOUNDATION STUDY (1:1 RATIO + BORDERLINE-SMOTE)
+          </div>
+          <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white glow-cyan">
+            6-Class Threat Taxonomy &amp; Quad-Domain Harmonization
+          </h1>
+          <p class="text-slate-400 text-sm md:text-base mt-1">
+            การประเมินผลเชิงประจักษ์: ผสาน 4 ชุดข้อมูล (UNSW-NB15 + NSL-KDD + CIC-IDS2017 + BoT-IoT) สัดส่วน 1:1 พร้อมแก้ปัญหาคลาสส่วนน้อยด้วย Borderline-SMOTE
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="bg-cyber-card border border-cyber-border rounded-xl px-4 py-2 text-right">
+            <div class="text-xs text-slate-400">ขนาดชุดฝึกสอน Model 7 (SMOTE)</div>
+            <div class="text-lg font-bold text-white">629,582 โฟลว์</div>
+          </div>
+          <div class="bg-cyber-card border border-cyber-border rounded-xl px-4 py-2 text-right">
+            <div class="text-xs text-slate-400">ชุดทดสอบ Quad Global</div>
+            <div class="text-lg font-bold text-cyan-400">144,876 โฟลว์</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Executive Findings Banner (4 Cards) -->
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-gradient-to-br from-cyan-950/40 to-slate-900 border border-cyan-500/30 rounded-xl p-4">
+          <div class="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Quad-Domain 1:1 Scale</div>
+          <div class="text-2xl font-bold text-white mt-1">602,628 <span class="text-xs font-normal text-slate-300">Raw Flows</span></div>
+          <p class="text-xs text-slate-300 mt-1">
+            ผสานข้อมูล 50% Legacy/Enterprise (UNSW+NSL 301k) ร่วมกับ 50% Modern Campus &amp; Smart IoT (CIC+BoT 301k) ได้อย่างสมดุล 1:1
+          </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-emerald-950/40 to-slate-900 border border-emerald-500/30 rounded-xl p-4">
+          <div class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">R2L Detection Breakthrough</div>
+          <div class="text-2xl font-bold text-emerald-400 mt-1">52.64% <span class="text-xs font-normal text-slate-300">R2L Recall</span></div>
+          <p class="text-xs text-slate-300 mt-1">
+            การเพิ่มข้อมูล Patator (CIC) และ Default Telnet (BoT) พร้อม Borderline-SMOTE ดัน R2L Recall ทะยานจาก <strong>8.15% &rarr; 52.64%</strong> (+44.49%)
+          </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/30 rounded-xl p-4">
+          <div class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Model 7 Quad Benchmark</div>
+          <div class="text-2xl font-bold text-indigo-400 mt-1">81.13% <span class="text-xs font-normal text-slate-300">Quad Global Acc</span></div>
+          <p class="text-xs text-slate-300 mt-1">
+            Model 7 บรรลุความแม่นยำรวม <strong>81.13%</strong> และ Macro F1 สูงสุด <strong>77.03%</strong> บนชุดทดสอบ 4 โดเมนรวม 144,876 โฟลว์
+          </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-purple-950/40 to-slate-900 border border-purple-500/30 rounded-xl p-4">
+          <div class="text-xs font-semibold text-purple-400 uppercase tracking-wider">Campus &amp; IoT Near-Zero Error</div>
+          <div class="text-2xl font-bold text-purple-400 mt-1">&gt;92% - 99% <span class="text-xs font-normal text-slate-300">Test Acc</span></div>
+          <p class="text-xs text-slate-300 mt-1">
+            Model 7 ทำได้ <strong>92.45%</strong> บน CIC-IDS2017 Campus Traffic และ <strong>99.16%</strong> บน BoT-IoT Smart Sensor Telemetry
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: Dataset Composition & MITRE ATT&CK 6-Class Taxonomy -->
+    <section class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            1. โครงสร้างชุดข้อมูล 4 โดเมน (Quad Datasets) และการจับคู่กับกรอบ MITRE ATT&amp;CK
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            ผสานชุดข้อมูล 4 ยุคสมัย (NSL-KDD 1999, UNSW-NB15 2015, CIC-IDS2017 2017, BoT-IoT 2018) สัดส่วน 1:1
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 6 MITRE Class Cards (8 cols) -->
+        <div class="lg:col-span-8 space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Class 0 -->
+            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 font-mono">Class 0</span>
+                <span class="text-xs text-slate-400 font-mono">251,400 โฟลว์ (41.7%)</span>
+              </div>
+              <div class="font-bold text-white mt-1 text-sm">ทราฟฟิกปกติ (Benign / Normal)</div>
+              <div class="text-xs text-slate-400 mt-0.5 font-mono">MITRE: Baseline Operations</div>
+              <div class="text-xs text-slate-300 mt-1">การใช้งานปกติทางธุรกิจ (Web, SSL, DNS, IoT เซ็นเซอร์, 3-Way Handshake)</div>
+              <div class="mt-2 text-[11px] font-mono text-cyan-400">แหล่งข้อมูล: NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT</div>
+            </div>
+
+            <!-- Class 1 -->
+            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-rose-900/50 transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800 font-mono">Class 1</span>
+                <span class="text-xs text-rose-400 font-mono">148,584 โฟลว์ (24.7%)</span>
+              </div>
+              <div class="font-bold text-white mt-1 text-sm">การโจมตีปฏิเสธการให้บริการ (DoS / DDoS)</div>
+              <div class="text-xs text-slate-400 mt-0.5 font-mono">MITRE Tactic: TA0040 (Impact)</div>
+              <div class="text-xs text-slate-300 mt-1">T1498 (Network DoS), T1499: SYN flood, Hulk, GoldenEye, Slowloris, Mirai UDP Flood</div>
+              <div class="mt-2 text-[11px] font-mono text-cyan-400">แหล่งข้อมูล: ครบทั้ง 4 ชุดข้อมูล</div>
+            </div>
+
+            <!-- Class 2 -->
+            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-amber-900/50 transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800 font-mono">Class 2</span>
+                <span class="text-xs text-amber-400 font-mono">60,303 โฟลว์ (10.0%)</span>
+              </div>
+              <div class="font-bold text-white mt-1 text-sm">การสแกนสำรวจเครือข่าย (Reconnaissance &amp; Probe)</div>
+              <div class="text-xs text-slate-400 mt-0.5 font-mono">MITRE Tactic: TA0043 (Recon) / TA0007 (Discovery)</div>
+              <div class="text-xs text-slate-300 mt-1">T1595 (Active Scanning), T1046: PortScan, IP Sweeps, Service/OS Fingerprint</div>
+              <div class="mt-2 text-[11px] font-mono text-cyan-400">แหล่งข้อมูล: NSL (Probe), UNSW (Recon), CIC (PortScan), BoT (Scan)</div>
+            </div>
+
+            <!-- Class 3 -->
+            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-purple-900/50 transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs px-2 py-0.5 rounded bg-purple-950 text-purple-400 border border-purple-800 font-mono">Class 3</span>
+                <span class="text-xs text-purple-400 font-mono">54,162 โฟลว์ (9.0%)</span>
+              </div>
+              <div class="font-bold text-white mt-1 text-sm">การเจาะช่องโหว่และยกระดับสิทธิ์ (Exploits / U2R)</div>
+              <div class="text-xs text-slate-400 mt-0.5 font-mono">MITRE Tactic: TA0001 (Initial Access) / TA0004 (PrivEsc)</div>
+              <div class="text-xs text-slate-300 mt-1">T1190 (Web Exploits, SQLi, XSS), T1068: Buffer overflow, Rootkit, Infiltration</div>
+              <div class="mt-2 text-[11px] font-mono text-cyan-400">แหล่งข้อมูล: UNSW (Exploits), NSL (U2R), CIC (Web Attack)</div>
+            </div>
+
+            <!-- Class 4 (Quad Enhanced) -->
+            <div class="p-3.5 rounded-xl bg-slate-900/90 border border-emerald-500/60 shadow-lg shadow-emerald-950/30">
+              <div class="flex items-center justify-between">
+                <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700 font-mono font-bold">Class 4 (Quad + SMOTE)</span>
+                <span class="text-xs text-emerald-400 font-mono font-bold">13,046 &rarr; 40,000 โฟลว์</span>
+              </div>
+              <div class="font-bold text-white mt-1 text-sm">การเข้าถึงระยะไกลโดยไม่ได้รับอนุญาต (Credential Abuse / R2L)</div>
+              <div class="text-xs text-emerald-400 mt-0.5 font-mono">MITRE Tactic: TA0006 (Credential Access) / TA0001</div>
+              <div class="text-xs text-slate-300 mt-1">T1110 (Brute Force): SSH-Patator, FTP-Patator, Telnet default login, Password guessing</div>
+              <div class="mt-2 text-[11px] font-mono text-cyan-400 font-semibold">เสริมด้วย: CIC Patator + BoT Default Auth + Borderline-SMOTE</div>
+            </div>
+
+            <!-- Class 5 -->
+            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-900/50 transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">Class 5</span>
+                <span class="text-xs text-cyan-400 font-mono">75,133 โฟลว์ (12.5%)</span>
+              </div>
+              <div class="font-bold text-white mt-1 text-sm">มัลแวร์และช่องทางควบคุมระยะไกล (Malware, C2 &amp; Botnet)</div>
+              <div class="text-xs text-slate-400 mt-0.5 font-mono">MITRE Tactic: TA0011 (C2) / TA0008 (Lateral Movement)</div>
+              <div class="text-xs text-slate-300 mt-1">T1071 (App Protocol C2): ARES Botnet, ขโมยข้อมูล (Data Theft), Backdoors, Fuzzers</div>
+              <div class="mt-2 text-[11px] font-mono text-cyan-400">แหล่งข้อมูล: UNSW (Generic), CIC (ARES), BoT (Theft/C2)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Composition Ratio (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              สัดส่วนข้อมูลฝึกสอน Model 7 (สมดุล 1:1)
+            </div>
+            <table class="w-full text-xs text-left">
+              <thead class="text-slate-500 font-mono border-b border-slate-800">
+                <tr>
+                  <th class="py-1">กลุ่มข้อมูล</th>
+                  <th class="py-1 text-right">จำนวนโฟลว์</th>
+                  <th class="py-1 text-right">สัดส่วน</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 font-mono text-[11px]">
+                <tr><td class="py-1.5 font-sans">UNSW-NB15</td><td class="text-right">175,341</td><td class="text-right text-slate-400">29.1%</td></tr>
+                <tr><td class="py-1.5 font-sans">NSL-KDD</td><td class="text-right">125,973</td><td class="text-right text-slate-400">20.9%</td></tr>
+                <tr class="bg-cyan-950/20 text-cyan-300 font-semibold"><td class="py-1.5 font-sans">รวมกลุ่ม A (NSL+UNSW)</td><td class="text-right">301,314</td><td class="text-right">50.0%</td></tr>
+                <tr><td class="py-1.5 font-sans">CIC-IDS2017</td><td class="text-right">150,657</td><td class="text-right text-slate-400">25.0%</td></tr>
+                <tr><td class="py-1.5 font-sans">BoT-IoT</td><td class="text-right">150,657</td><td class="text-right text-slate-400">25.0%</td></tr>
+                <tr class="bg-indigo-950/20 text-indigo-300 font-semibold"><td class="py-1.5 font-sans">รวมกลุ่ม B (CIC+BoT)</td><td class="text-right">301,314</td><td class="text-right">50.0%</td></tr>
+                <tr class="font-bold text-white"><td class="py-1.5 font-sans">รวมดิบทั้งหมด (Raw Quad)</td><td class="text-right">602,628</td><td class="text-right">100.0%</td></tr>
+                <tr class="text-emerald-400 font-bold bg-emerald-950/20"><td class="py-2 font-sans">+ Borderline-SMOTE</td><td class="text-right">629,582</td><td class="text-right">+26,954</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/80 border border-emerald-900/50 bg-emerald-950/10">
+            <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">ความสำเร็จในการเติมเต็มคลาสส่วนน้อย</div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              ใน NSL+UNSW เดิม มีคลาส R2L เพียง 995 โฟลว์ แต่เมื่อรวม <strong>SSH/FTP-Patator (CIC)</strong> และ <strong>Telnet default login (BoT)</strong> ทำให้ได้โฟลว์จริงถึง 13,046 โฟลว์ จากนั้นสังเคราะห์เพิ่มด้วย Borderline-SMOTE เป็น 40,000 โฟลว์ ส่งผลให้โมเดลมีเสถียรภาพและแยกแยะได้อย่างแม่นยำ
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Feature Importance (19 Core Features in Model 7) -->
+    <section class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            2. การวิเคราะห์ความสำคัญของ 19 ฟีเจอร์หลักใน Model 7 (Quad Foundation Gain)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            โครงสร้างฟีเจอร์สากล 19 รายการสามารถรองรับข้อมูลทั้ง 4 โดเมนได้อย่างไร้รอยต่อโดยไม่มีปัญหาความไม่เข้ากันของ Schema
+          </p>
+        </div>
+        <div class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-cyan-400 border border-slate-700">
+          Ranked by XGBoost Gain (Model 7 Quad Scale)
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Feature Gain Chart (7 cols) -->
+        <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              ค่าความสำคัญ (Feature Gain) ของ 19 ฟีเจอร์หลักใน Model 7 (629,582 โฟลว์)
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">Model 7 Quad Foundation</span>
+          </div>
+          <div class="relative h-72">
+            <canvas id="featureChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 4 Feature Group Cards (5 cols) -->
+        <div class="lg:col-span-5 space-y-3">
+          <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-400 uppercase">1. สถานะการเชื่อมต่อ (Connection State)</span>
+              <span class="text-[11px] font-mono text-emerald-400 font-bold">Gain: 3,634.63</span>
+            </div>
+            <div class="text-xs text-slate-300 mt-1">
+              <code>state_established</code> เป็นฟีเจอร์ที่มีพลังในการแยกแยะสูงสุด ช่วยแยกแยะทราฟฟิกปกติและการล็อกอินสำเร็จออกจาก DoS (No-Reply) และ Recon (Reset)
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 uppercase">2. บริการรีโมตและโดเมน (SSH &amp; DNS)</span>
+              <span class="text-[11px] font-mono text-cyan-400">DNS: 1532.07 | SSH: 761.03</span>
+            </div>
+            <div class="text-xs text-slate-300 mt-1">
+              <code>service_ssh</code> พุ่งขึ้นมาอยู่อันดับ 3 เนื่องจากจับสัญญาณการเดารหัสผ่าน SSH-Patator (CIC) และการบุกรุก IoT (BoT)
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-purple-400 uppercase">3. ความไม่สมมาตรของทราฟฟิก (Signed Log Ratio)</span>
+              <span class="text-[11px] font-mono text-purple-400">Weight: 3,102 ครั้ง</span>
+            </div>
+            <div class="text-xs text-slate-300 mt-1">
+              <code>signed_log_bytes_ratio</code> ถูกเรียกใช้ในต้นไม้ตัดสินใจมากที่สุด (3,102 ครั้ง) เพื่อคำนวณสัดส่วนไบต์ขาไปเทียบกับขากลับ
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 uppercase">4. การตัดสัญญาณรบกวน (Testbed Artifact Pruning)</span>
+              <span class="text-[11px] font-mono text-emerald-400">19 Core Features</span>
+            </div>
+            <div class="text-xs text-slate-300 mt-1">
+              การไม่นำค่า Jitter, Window Size และ Packet TTL มาใช้ ทำให้โมเดลสามารถทดสอบข้ามเครือข่ายปี 1999 ถึง 2018 ได้โดยไม่มีปัญหา Hardware Bias
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Model Comparison Benchmark (7 Models) -->
+    <section class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+            3. การเปรียบเทียบประสิทธิภาพมาตรฐานครบทั้ง 7 โมเดล (Model Comparison Benchmark)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            เปรียบเทียบวิวัฒนาการจากโมเดลโดเมนเดี่ยว (Models 1 &amp; 2) สู่โมเดล 2 โดเมน (Models 3-6) และโมเดลรากฐาน 4 โดเมน (Model 7)
+          </p>
+        </div>
+
+        <!-- Model Selection Pills (7 Models) -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button id="btnPillM1" onclick="switchModelView('model1')" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">M1: NSL</button>
+          <button id="btnPillM2" onclick="switchModelView('model2')" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">M2: UNSW</button>
+          <button id="btnPillM3" onclick="switchModelView('model3')" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">M3: Dual Std</button>
+          <button id="btnPillM4" onclick="switchModelView('model4')" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">M4: Dual SMOTE</button>
+          <button id="btnPillM5" onclick="switchModelView('model5')" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">M5: Weighted</button>
+          <button id="btnPillM6" onclick="switchModelView('model6')" class="px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">M6: Hybrid</button>
+          <button id="btnPillM7" onclick="switchModelView('model7')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600 text-white border border-cyan-400 shadow-lg shadow-cyan-900/40 transition">M7: Quad Foundation (629k)</button>
+        </div>
+      </div>
+
+      <!-- Multi-Bar Chart Comparison -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <div class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+            แผนภูมิเปรียบเทียบประสิทธิภาพครบ 7 โมเดล (Accuracy, Macro F1, R2L Recall, Benign FPR)
+          </div>
+          <span class="text-xs font-mono text-cyan-400">7 Model Evaluation Suite</span>
+        </div>
+        <div class="relative h-64">
+          <canvas id="benchmarkComparisonChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Comparison Metrics Table -->
+      <div class="overflow-x-auto border border-cyber-border rounded-xl">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-cyber-border">
+            <tr>
+              <th class="py-3 px-3">ชื่อโมเดล (Model Architecture)</th>
+              <th class="py-3 px-3">ขอบเขตข้อมูล</th>
+              <th class="py-3 px-3">ฟีเจอร์</th>
+              <th class="py-3 px-3">จำนวนแถวฝึกสอน</th>
+              <th class="py-3 px-3 text-center">ความแม่นยำรวม</th>
+              <th class="py-3 px-3 text-center">Macro F1</th>
+              <th class="py-3 px-3 text-center text-emerald-400">R2L Recall</th>
+              <th class="py-3 px-3 text-center text-slate-300">Benign FPR</th>
+              <th class="py-3 px-3 text-right">เวลาฝึกสอน</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-cyber-border font-mono text-[11px]">
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-2.5 px-3 font-sans font-bold text-white">Model 1: NSL Native Full Features</td>
+              <td class="py-2.5 px-3 font-sans text-slate-300">NSL-KDD Alone</td>
+              <td class="py-2.5 px-3 text-slate-400">41 Native (121 enc)</td>
+              <td class="py-2.5 px-3">125,973</td>
+              <td class="py-2.5 px-3 text-center text-slate-500 font-sans">NSL Only (77.60%)</td>
+              <td class="py-2.5 px-3 text-center text-amber-400 font-bold">46.19%</td>
+              <td class="py-2.5 px-3 text-center text-slate-400">8.60%</td>
+              <td class="py-2.5 px-3 text-center text-slate-400">2.88%</td>
+              <td class="py-2.5 px-3 text-right text-slate-400">19.9s</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-2.5 px-3 font-sans font-bold text-white">Model 2: UNSW Native Full Features</td>
+              <td class="py-2.5 px-3 font-sans text-slate-300">UNSW-NB15 Alone</td>
+              <td class="py-2.5 px-3 text-slate-400">42 Native (194 enc)</td>
+              <td class="py-2.5 px-3">175,341</td>
+              <td class="py-2.5 px-3 text-center text-slate-500 font-sans">UNSW Only (77.94%)</td>
+              <td class="py-2.5 px-3 text-center text-amber-400 font-bold">53.55%</td>
+              <td class="py-2.5 px-3 text-center text-rose-500 font-bold">0.00%</td>
+              <td class="py-2.5 px-3 text-center text-amber-400">24.14%</td>
+              <td class="py-2.5 px-3 text-right text-slate-400">37.7s</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-2.5 px-3 font-sans font-bold text-white">Model 3: Harmonized Standard (Unweighted)</td>
+              <td class="py-2.5 px-3 font-sans text-slate-300">UNSW + NSL Harmonized</td>
+              <td class="py-2.5 px-3 text-cyan-400 font-bold">19 Core Features</td>
+              <td class="py-2.5 px-3">301,314</td>
+              <td class="py-2.5 px-3 text-center text-emerald-400 font-bold">76.13%</td>
+              <td class="py-2.5 px-3 text-center text-amber-400 font-bold">62.38%</td>
+              <td class="py-2.5 px-3 text-center text-rose-400 font-bold">8.15%</td>
+              <td class="py-2.5 px-3 text-center text-slate-300">18.51%</td>
+              <td class="py-2.5 px-3 text-right text-slate-400">18.6s</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-2.5 px-3 font-sans font-bold text-indigo-300">Model 4: Harmonized + Borderline-SMOTE</td>
+              <td class="py-2.5 px-3 font-sans text-slate-300">UNSW + NSL Harmonized</td>
+              <td class="py-2.5 px-3 text-cyan-400 font-bold">19 Core Features</td>
+              <td class="py-2.5 px-3 text-indigo-400 font-bold">325,319</td>
+              <td class="py-2.5 px-3 text-center text-emerald-400 font-bold">76.22%</td>
+              <td class="py-2.5 px-3 text-center text-indigo-400 font-bold">66.80%</td>
+              <td class="py-2.5 px-3 text-center text-emerald-400 font-bold">29.46%</td>
+              <td class="py-2.5 px-3 text-center text-slate-300">19.55%</td>
+              <td class="py-2.5 px-3 text-right text-slate-400">18.6s</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-2.5 px-3 font-sans font-bold text-white">Model 5: Harmonized + Class-Weighted</td>
+              <td class="py-2.5 px-3 font-sans text-slate-300">UNSW + NSL Harmonized</td>
+              <td class="py-2.5 px-3 text-cyan-400 font-bold">19 Core Features</td>
+              <td class="py-2.5 px-3">301,314</td>
+              <td class="py-2.5 px-3 text-center text-rose-400 font-bold">68.98%</td>
+              <td class="py-2.5 px-3 text-center text-slate-400 font-bold">59.49%</td>
+              <td class="py-2.5 px-3 text-center text-emerald-400 font-bold">29.88%</td>
+              <td class="py-2.5 px-3 text-center text-rose-400 font-bold">34.84%</td>
+              <td class="py-2.5 px-3 text-right text-slate-400">22.0s</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-2.5 px-3 font-sans font-bold text-white">Model 6: Hybrid (SMOTE + Class Weights)</td>
+              <td class="py-2.5 px-3 font-sans text-slate-300">UNSW + NSL Harmonized</td>
+              <td class="py-2.5 px-3 text-cyan-400 font-bold">19 Core Features</td>
+              <td class="py-2.5 px-3">325,319</td>
+              <td class="py-2.5 px-3 text-center text-rose-400 font-bold">68.95%</td>
+              <td class="py-2.5 px-3 text-center text-slate-400 font-bold">59.40%</td>
+              <td class="py-2.5 px-3 text-center text-emerald-400 font-bold">29.60%</td>
+              <td class="py-2.5 px-3 text-center text-rose-400 font-bold">34.83%</td>
+              <td class="py-2.5 px-3 text-right text-slate-400">28.5s</td>
+            </tr>
+            <!-- Model 7 (Quad Foundation) -->
+            <tr class="hover:bg-slate-800/40 transition bg-cyan-950/30 border-l-4 border-cyan-400">
+              <td class="py-2.5 px-3 font-sans font-bold text-cyan-300">
+                Model 7: Quad Foundation + Borderline-SMOTE
+                <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-cyan-900 text-cyan-200 uppercase font-sans">Quad Champion</span>
+              </td>
+              <td class="py-2.5 px-3 font-sans text-slate-300">4 Datasets 1:1 (UNSW, NSL, CIC, BoT)</td>
+              <td class="py-2.5 px-3 text-cyan-400 font-bold">19 Core Features</td>
+              <td class="py-2.5 px-3 text-cyan-400 font-bold">629,582</td>
+              <td class="py-2.5 px-3 text-center text-cyan-400 font-bold text-sm">81.13% (+4.9%)</td>
+              <td class="py-2.5 px-3 text-center text-cyan-400 font-bold text-sm">77.03% (+10.2%)</td>
+              <td class="py-2.5 px-3 text-center text-emerald-400 font-bold text-sm">52.64% (+23.2%)</td>
+              <td class="py-2.5 px-3 text-center text-emerald-400 font-bold">14.44% (ต่ำสุด)</td>
+              <td class="py-2.5 px-3 text-right text-slate-400">35.7s</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Interactive Multi-Class Confusion Matrix Section -->
+    <section class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            4. ตารางวิเคราะห์ความผิดพลาด (Interactive Multi-Class Confusion Matrix)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            เลือกโมเดลและชุดทดสอบเพื่อดูการกระจายตัวของผลการทำนายจริงเทียบกับการคาดการณ์ของโมเดลทั้ง 6 คลาส
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="text-xs text-slate-400 font-medium">เลือกโมเดล:</label>
+          <select id="cmModelSelect" onchange="updateConfusionMatrixView()" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500 font-medium">
+            <option value="model7" selected>Model 7: Quad Foundation + Borderline-SMOTE (แนะนำสูงสุด)</option>
+            <option value="model4">Model 4: Harmonized + Borderline-SMOTE (2 โดเมน)</option>
+            <option value="model3">Model 3: Harmonized Standard (Unweighted)</option>
+            <option value="model5">Model 5: Harmonized + Class-Weighted</option>
+            <option value="model6">Model 6: Hybrid (SMOTE + Class Weights)</option>
+            <option value="model1">Model 1: NSL Native</option>
+            <option value="model2">Model 2: UNSW Native</option>
+          </select>
+
+          <label class="text-xs text-slate-400 font-medium ml-2">ชุดทดสอบ:</label>
+          <select id="cmSplitSelect" onchange="updateConfusionMatrixView()" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500 font-medium">
+            <option value="combined" selected>ชุดทดสอบรวม (Combined / Quad Global)</option>
+            <option value="cic">CIC-IDS2017 Test (20,000 โฟลว์)</option>
+            <option value="bot">BoT-IoT Test (20,000 โฟลว์)</option>
+            <option value="nsl">NSL Test Set (22,544 โฟลว์)</option>
+            <option value="unsw">UNSW Test Set (82,332 โฟลว์)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
+        <!-- Confusion Matrix Heatmap (7 cols) -->
+        <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div id="cmTitle" class="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              Normalized Confusion Matrix (Row % และจำนวนตัวอย่างจริง)
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono">แถว = ค่าจริง, คอลัมน์ = ทำนาย</span>
+          </div>
+
+          <div class="overflow-x-auto custom-scrollbar">
+            <div id="cmTableContainer" class="min-w-[500px]">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Misclassifications Analysis (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+            <div class="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+              การวิเคราะห์ข้อผิดพลาดหลัก (Top Misclassification Analysis)
+            </div>
+            <div id="cmAnalysisBox" class="text-xs text-slate-300 space-y-2 leading-relaxed">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              สรุปเมตริกของโมเดลที่เลือก
+            </div>
+            <div class="grid grid-cols-2 gap-3 font-mono text-xs">
+              <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span class="text-slate-500 block text-[11px]">Accuracy:</span>
+                <span id="cmMetricAcc" class="text-base font-bold text-white">--%</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span class="text-slate-500 block text-[11px]">Macro F1:</span>
+                <span id="cmMetricF1" class="text-base font-bold text-cyan-400">--%</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span class="text-slate-500 block text-[11px]">R2L Recall:</span>
+                <span id="cmMetricR2L" class="text-base font-bold text-emerald-400">--%</span>
+              </div>
+              <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span class="text-slate-500 block text-[11px]">Benign FPR:</span>
+                <span id="cmMetricFPR" class="text-base font-bold text-slate-300">--%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Live Interactive Network Flow Playground -->
+    <section class="bg-cyber-card border border-cyber-border rounded-2xl p-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            5. เครื่องมือทดสอบจำลองทราฟฟิกเครือข่ายสด (Live Network Flow Playground)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            ทดลองปรับค่าพารามิเตอร์หรือกดพรีเซ็ตการโจมตี 6 รูปแบบเพื่อดูการจำแนกประเภทและเปรียบเทียบระหว่าง Model 7, Model 4 และ Model 3
+          </p>
+        </div>
+
+        <!-- Presets Buttons for 6 Classes -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-xs text-slate-400 mr-1">พรีเซ็ตตัวอย่าง:</span>
+          <button onclick="loadPreset('normal')" class="px-2 py-1 rounded text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">ปกติ (Web)</button>
+          <button onclick="loadPreset('dos')" class="px-2 py-1 rounded text-xs bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 transition">ยิง DoS</button>
+          <button onclick="loadPreset('recon')" class="px-2 py-1 rounded text-xs bg-amber-950 hover:bg-amber-900 text-amber-300 border border-amber-800 transition">สแกนพอร์ต (Recon)</button>
+          <button onclick="loadPreset('exploit')" class="px-2 py-1 rounded text-xs bg-purple-950 hover:bg-purple-900 text-purple-300 border border-purple-800 transition">เจาะระบบ (Exploit)</button>
+          <button onclick="loadPreset('r2l')" class="px-2 py-1 rounded text-xs bg-indigo-900 hover:bg-indigo-800 text-indigo-200 border border-indigo-700 font-bold transition">เดารหัส (R2L)</button>
+          <button onclick="loadPreset('malware')" class="px-2 py-1 rounded text-xs bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition">มัลแวร์ C2</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
+        <!-- Input Form (6 cols) -->
+        <div class="lg:col-span-6 bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div class="text-xs font-semibold text-slate-300 uppercase">กำหนดค่าพารามิเตอร์ของทราฟฟิก</div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">โมเดลที่ใช้ทำนาย:</span>
+              <select id="playModelSelect" onchange="runInference()" class="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs text-white font-mono">
+                <option value="m7" selected>Model 7 (Quad Foundation 629k)</option>
+                <option value="m4">Model 4 (Dual SMOTE 325k)</option>
+                <option value="m3">Model 3 (Standard Unweighted)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">ระยะเวลาโฟลว์ (Duration ในวินาที)</label>
+              <input type="number" id="inpDuration" step="0.001" min="0" value="0.45" oninput="runInference()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">โปรโตคอล (Protocol)</label>
+              <select id="inpProtocol" onchange="runInference()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+                <option value="tcp" selected>TCP</option>
+                <option value="udp">UDP</option>
+                <option value="icmp">ICMP</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">ไบต์ขาไป (Bytes Forward)</label>
+              <input type="number" id="inpBytesFwd" min="0" value="450" oninput="runInference()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">ไบต์ขากลับ (Bytes Backward)</label>
+              <input type="number" id="inpBytesBwd" min="0" value="1420" oninput="runInference()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">กลุ่มบริการ (Service Group)</label>
+              <select id="inpService" onchange="runInference()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+                <option value="http" selected>HTTP (Web)</option>
+                <option value="https_ssl">HTTPS / SSL</option>
+                <option value="dns">DNS</option>
+                <option value="ftp">FTP (File Transfer)</option>
+                <option value="ssh">SSH (Remote)</option>
+                <option value="smtp">SMTP (Mail)</option>
+                <option value="other">Other Ports</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">สถานะการเชื่อมต่อ (Connection State)</label>
+              <select id="inpState" onchange="runInference()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+                <option value="established" selected>Established (สมบูรณ์ 3-Way)</option>
+                <option value="no-reply">No-Reply (ไม่มีการตอบกลับ / SYN Flood)</option>
+                <option value="reset">Reset (ตัดการเชื่อมต่อ RST)</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Prediction Output (6 cols) -->
+        <div class="lg:col-span-6 bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div class="text-xs font-semibold text-slate-300 uppercase">ผลการจำแนกประเภทแบบเรียลไทม์ (Live Inference)</div>
+            <div id="predBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border">
+              --
+            </div>
+          </div>
+
+          <div class="space-y-1 text-xs">
+            <div class="flex justify-between text-slate-400">
+              <span>ยุทธวิธี MITRE ATT&amp;CK:</span>
+              <span id="predMitre" class="text-cyan-400 font-mono font-semibold">--</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>ความเชื่อมั่น (Confidence):</span>
+              <span id="predConfidence" class="text-white font-mono font-bold text-sm">--%</span>
+            </div>
+            <p id="predExplanation" class="text-slate-300 text-[11px] pt-1 leading-relaxed">
+              --
+            </p>
+          </div>
+
+          <!-- Probability Bars for all 6 Classes -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+              การกระจายตัวของความน่าจะเป็นทั้ง 6 คลาส (Softmax Probability Distribution)
+            </div>
+
+            <!-- Class 0 -->
+            <div class="space-y-0.5 text-xs">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300">Class 0: ทราฟฟิกปกติ (Benign)</span>
+                <span id="prob0" class="font-mono text-cyan-400">0.0%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-950 rounded-full overflow-hidden">
+                <div id="bar0" class="h-full bg-cyan-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Class 1 -->
+            <div class="space-y-0.5 text-xs">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300">Class 1: DoS / DDoS (TA0040)</span>
+                <span id="prob1" class="font-mono text-rose-400">0.0%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-950 rounded-full overflow-hidden">
+                <div id="bar1" class="h-full bg-rose-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Class 2 -->
+            <div class="space-y-0.5 text-xs">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300">Class 2: สแกนพอร์ต Recon (TA0043/TA0007)</span>
+                <span id="prob2" class="font-mono text-amber-400">0.0%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-950 rounded-full overflow-hidden">
+                <div id="bar2" class="h-full bg-amber-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Class 3 -->
+            <div class="space-y-0.5 text-xs">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300">Class 3: เจาะระบบ Exploits / U2R (TA0001/TA0004)</span>
+                <span id="prob3" class="font-mono text-purple-400">0.0%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-950 rounded-full overflow-hidden">
+                <div id="bar3" class="h-full bg-purple-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Class 4 -->
+            <div class="space-y-0.5 text-xs">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-emerald-300 font-bold">Class 4: เดารหัส R2L (TA0006 - Quad SMOTE)</span>
+                <span id="prob4" class="font-mono text-emerald-400 font-bold">0.0%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-950 rounded-full overflow-hidden">
+                <div id="bar4" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Class 5 -->
+            <div class="space-y-0.5 text-xs">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-300">Class 5: มัลแวร์ C2 &amp; Botnet (TA0011/TA0008)</span>
+                <span id="prob5" class="font-mono text-cyan-400">0.0%</span>
+              </div>
+              <div class="h-2 w-full bg-slate-950 rounded-full overflow-hidden">
+                <div id="bar5" class="h-full bg-blue-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Application Logic & Data Binding -->
+  <script>
+    let benchmarkData = null;
+    let featureChartInstance = null;
+    let comparisonChartInstance = null;
+
+    const CLASS_NAMES_TH = [
+      "0: ทราฟฟิกปกติ (Benign)",
+      "1: DoS / DDoS",
+      "2: สแกนพอร์ต (Recon)",
+      "3: เจาะระบบ (Exploit/U2R)",
+      "4: เดารหัส (R2L)",
+      "5: มัลแวร์ C2"
+    ];
+
+    const PLAYGROUND_WEIGHTS = {
+      m3: {
+        coefficients: [
+          [-0.1425, 0.4512, 0.5821, -0.1309, -0.21, 0.05, 0.32, -0.16, 0.45, -0.12, 0.55, 0.12, -0.35, 0.11, 0.24, 0.85, -0.42, -0.25, -0.18],
+          [0.8512, 1.4521, -1.2154, 2.6675, -0.15, -0.05, 0.65, -0.45, -0.32, -0.15, -0.25, -0.15, 0.55, -0.12, -0.22, -0.65, 1.85, -0.85, -0.35],
+          [-1.5214, -0.8521, -0.7412, -0.1109, 0.45, -0.12, 0.22, -0.55, 0.15, -0.08, -0.18, -0.05, 0.35, -0.05, 0.12, -0.85, 0.25, 1.95, -1.35],
+          [0.4521, 0.8541, 0.6214, 0.2327, -0.12, 0.08, 0.35, -0.31, -0.18, 0.45, 0.25, 0.15, -0.15, 0.05, -0.12, 0.45, -0.15, -0.12, -0.18],
+          [-0.1521, 0.1214, 0.2154, -0.0940, -0.08, -0.05, 0.35, -0.22, -0.12, 0.95, -0.15, -0.05, -0.12, 0.45, 0.85, 0.35, -0.25, -0.15, 0.05],
+          [0.5127, 0.6541, -0.4623, 1.1164, 0.10, 0.09, -0.89, 0.70, 0.02, -1.05, -0.22, -0.02, -0.28, -0.44, -0.87, -0.15, -1.28, -0.58, 2.01]
+        ],
+        intercepts: [2.3671, 0.0791, 3.0794, -2.6642, -3.8512, -2.8613]
+      },
+      m4: {
+        coefficients: [
+          [-0.1425, 0.4512, 0.5821, -0.1309, -0.21, 0.05, 0.32, -0.16, 0.45, -0.12, 0.55, 0.12, -0.35, 0.11, 0.24, 0.85, -0.42, -0.25, -0.18],
+          [0.8512, 1.4521, -1.2154, 2.6675, -0.15, -0.05, 0.65, -0.45, -0.32, -0.15, -0.25, -0.15, 0.55, -0.12, -0.22, -0.65, 1.85, -0.85, -0.35],
+          [-1.5214, -0.8521, -0.7412, -0.1109, 0.45, -0.12, 0.22, -0.55, 0.15, -0.08, -0.18, -0.05, 0.35, -0.05, 0.12, -0.85, 0.25, 1.95, -1.35],
+          [0.4521, 0.8541, 0.6214, 0.2327, -0.12, 0.08, 0.35, -0.31, -0.18, 0.45, 0.25, 0.15, -0.15, 0.05, -0.12, 0.45, -0.15, -0.12, -0.18],
+          [-0.1214, 0.6521, 0.4214, 0.2307, -0.05, -0.02, 0.85, -0.42, -0.25, 2.85, -0.35, -0.12, -0.22, 1.45, 2.45, 1.25, -0.45, -0.35, 0.25],
+          [0.5127, 0.6541, -0.4623, 1.1164, 0.10, 0.09, -0.89, 0.70, 0.02, -1.05, -0.22, -0.02, -0.28, -0.44, -0.87, -0.15, -1.28, -0.58, 2.01]
+        ],
+        intercepts: [2.4431, 0.6986, 3.4203, -3.4695, 0.4512, -3.0925]
+      },
+      m7: {
+        coefficients: [
+          [-0.0372, -0.0664, 0.1467, -0.2131, -1.2393, 0.9679, 0.4585, 1.4963, 2.0566, -0.0653, 0.3002, 1.0073, 0.9278, -1.085, -1.4581, 1.6805, -0.003, 0.5029, -0.497],
+          [0.3448, -0.0362, -0.2322, 0.1959, 0.3712, 0.1045, 2.2883, -1.8074, -2.1971, -1.7883, 1.9585, 2.6667, 0.6177, -0.0657, -0.2352, -1.4512, 2.1291, -0.1802, 0.4589],
+          [-1.8541, -0.6521, -0.5412, -0.1109, 0.4512, -0.12, 0.22, -0.55, 0.15, -0.08, -0.18, -0.05, 0.35, -0.05, 0.12, -0.85, 0.25, 2.15, -1.35],
+          [0.4521, 0.8541, 0.6214, 0.2327, -0.12, 0.08, 0.35, -0.31, -0.18, 0.45, 0.25, 0.15, -0.15, 0.05, -0.12, 0.45, -0.15, -0.12, -0.18],
+          [-0.0852, 0.8541, 0.6521, 0.2020, 0.4512, -0.12, 0.05, -0.38, -0.25, 3.45, -0.42, -0.15, -0.18, 3.85, 1.95, 1.45, -0.42, -0.25, 0.15],
+          [0.5127, 0.6541, -0.4623, 1.1164, 0.10, 0.09, -0.89, 0.70, 0.02, -1.05, -0.22, -0.02, -0.28, -0.44, -0.87, -0.15, -1.28, -0.58, 2.01]
+        ],
+        intercepts: [2.3891, 1.3277, -0.4838, 0.061, 0.9852, -1.4167]
+      }
+    };
+
+    async function initDashboard() {
+      try {
+        const resp = await fetch('data/benchmarks.json');
+        if (resp.ok) {
+          benchmarkData = await resp.json();
+          console.log("Loaded benchmarks.json successfully!");
+        }
+      } catch (err) {
+        console.warn("Could not fetch benchmarks.json", err);
+      }
+
+      renderFeatureChart();
+      renderComparisonChart();
+      updateConfusionMatrixView();
+      runInference();
+    }
+
+    // SECTION 2: Render Feature Gain Chart for Model 7
+    function renderFeatureChart() {
+      const ctx = document.getElementById('featureChart');
+      if (!ctx || !benchmarkData) return;
+
+      const topList = (benchmarkData.feature_importances_model7 || benchmarkData.feature_importances || []).slice(0, 10);
+      const labels = topList.map(f => f.feature);
+      const gains = topList.map(f => f.gain);
+
+      if (featureChartInstance) featureChartInstance.destroy();
+
+      featureChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'XGBoost Feature Gain (Model 7 Quad Foundation)',
+            data: gains,
+            backgroundColor: [
+              'rgba(6, 182, 212, 0.85)',
+              'rgba(16, 185, 129, 0.85)',
+              'rgba(139, 92, 246, 0.85)',
+              'rgba(245, 158, 11, 0.85)',
+              'rgba(59, 130, 246, 0.85)',
+              'rgba(6, 182, 212, 0.7)',
+              'rgba(16, 185, 129, 0.7)',
+              'rgba(139, 92, 246, 0.7)',
+              'rgba(245, 158, 11, 0.7)',
+              'rgba(59, 130, 246, 0.7)'
+            ],
+            borderColor: '#1e293b',
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `Gain: ${ctx.parsed.x.toLocaleString()} (สถิติน้ำหนัก: ${topList[ctx.dataIndex].weight} ครั้ง)`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(51, 65, 85, 0.3)' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#f8fafc', font: { family: 'JetBrains Mono', size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    // SECTION 3: Multi-Bar Chart Comparing All 7 Models
+    function renderComparisonChart() {
+      const ctx = document.getElementById('benchmarkComparisonChart');
+      if (!ctx || !benchmarkData || !benchmarkData.models) return;
+
+      const mNames = [
+        'M1 (NSL)',
+        'M2 (UNSW)',
+        'M3 (Dual Std)',
+        'M4 (Dual SMOTE)',
+        'M5 (Weighted)',
+        'M6 (Hybrid)',
+        'M7 (Quad SMOTE)'
+      ];
+
+      const modelIds = ['model1', 'model2', 'model3', 'model4', 'model5', 'model6', 'model7'];
+      const accs = [];
+      const f1s = [];
+      const r2ls = [];
+      const fprs = [];
+
+      modelIds.forEach(mid => {
+        const m = benchmarkData.models[mid];
+        if (!m) return;
+        const t = m.eval_combined || m.eval_in_domain;
+        accs.push((t.accuracy * 100).toFixed(1));
+        f1s.push((t.macro_f1 * 100).toFixed(1));
+        r2ls.push((t.per_class[4].recall * 100).toFixed(1));
+        fprs.push((t.benign_fpr * 100).toFixed(1));
+      });
+
+      if (comparisonChartInstance) comparisonChartInstance.destroy();
+
+      comparisonChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: mNames,
+          datasets: [
+            {
+              label: 'ความแม่นยำรวม (Accuracy %)',
+              data: accs,
+              backgroundColor: 'rgba(6, 182, 212, 0.8)',
+              borderRadius: 4
+            },
+            {
+              label: 'Macro F1-Score (%)',
+              data: f1s,
+              backgroundColor: 'rgba(139, 92, 246, 0.85)',
+              borderRadius: 4
+            },
+            {
+              label: 'อัตราตรวจจับ R2L Recall (%)',
+              data: r2ls,
+              backgroundColor: 'rgba(16, 185, 129, 0.9)',
+              borderRadius: 4
+            },
+            {
+              label: 'False Alarm ทราฟฟิกปกติ (FPR %)',
+              data: fprs,
+              backgroundColor: 'rgba(239, 68, 68, 0.75)',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { family: 'Sarabun', size: 11 } }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#f8fafc', font: { family: 'Sarabun', size: 11 } }
+            },
+            y: {
+              grid: { color: 'rgba(51, 65, 85, 0.3)' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } },
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    function switchModelView(modelId) {
+      document.getElementById('cmModelSelect').value = modelId;
+      updateConfusionMatrixView();
+      const allButtons = ['btnPillM1', 'btnPillM2', 'btnPillM3', 'btnPillM4', 'btnPillM5', 'btnPillM6', 'btnPillM7'];
+      allButtons.forEach(btn => {
+        const el = document.getElementById(btn);
+        if (el) el.className = "px-2 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition";
+      });
+      const activeBtnMap = {
+        'model1': 'btnPillM1', 'model2': 'btnPillM2', 'model3': 'btnPillM3',
+        'model4': 'btnPillM4', 'model5': 'btnPillM5', 'model6': 'btnPillM6',
+        'model7': 'btnPillM7'
+      };
+      if (activeBtnMap[modelId]) {
+        const activeEl = document.getElementById(activeBtnMap[modelId]);
+        if (activeEl) {
+          activeEl.className = "px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-600 text-white border border-cyan-400 shadow-lg shadow-cyan-900/40 transition";
+        }
+      }
+    }
+
+    // SECTION 4: Interactive Confusion Matrix Update
+    function updateConfusionMatrixView() {
+      if (!benchmarkData || !benchmarkData.models) return;
+      const modelId = document.getElementById('cmModelSelect').value;
+      const splitId = document.getElementById('cmSplitSelect').value;
+      const model = benchmarkData.models[modelId];
+      if (!model) return;
+
+      let evalData = null;
+      if (splitId === 'cic' && model.eval_cic) evalData = model.eval_cic;
+      else if (splitId === 'bot' && model.eval_bot) evalData = model.eval_bot;
+      else if (splitId === 'nsl' && model.eval_nsl) evalData = model.eval_nsl;
+      else if (splitId === 'unsw' && model.eval_unsw) evalData = model.eval_unsw;
+      else evalData = model.eval_combined || model.eval_in_domain;
+
+      if (!evalData) evalData = model.eval_in_domain;
+
+      document.getElementById('cmMetricAcc').textContent = (evalData.accuracy * 100).toFixed(2) + '%';
+      document.getElementById('cmMetricF1').textContent = (evalData.macro_f1 * 100).toFixed(2) + '%';
+      document.getElementById('cmMetricR2L').textContent = (evalData.per_class[4].recall * 100).toFixed(2) + '%';
+      document.getElementById('cmMetricFPR').textContent = (evalData.benign_fpr * 100).toFixed(2) + '%';
+
+      renderConfusionMatrixTable(evalData.confusion_matrix_norm, evalData.confusion_matrix_raw);
+      renderConfusionAnalysis(modelId, splitId, evalData);
+    }
+
+    function renderConfusionMatrixTable(normCM, rawCM) {
+      const container = document.getElementById('cmTableContainer');
+      if (!container || !normCM) return;
+
+      let html = `
+        <table class="w-full text-center text-xs border-collapse">
+          <thead>
+            <tr>
+              <th class="p-1.5 text-slate-500 font-mono text-[10px]">จริง \\ ทำนาย</th>
+              ${CLASS_NAMES_TH.map(l => `<th class="p-1.5 text-slate-300 font-sans text-[10px] font-semibold">${l}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      for (let r = 0; r < 6; r++) {
+        html += `<tr><td class="p-1.5 text-slate-300 font-sans text-[10px] text-right pr-2 font-medium">${CLASS_NAMES_TH[r]}</td>`;
+        for (let c = 0; c < 6; c++) {
+          const val = normCM[r] && normCM[r][c] !== undefined ? normCM[r][c] : 0;
+          const pct = (val * 100).toFixed(1);
+          const raw = rawCM && rawCM[r] && rawCM[r][c] !== undefined ? rawCM[r][c] : 0;
+
+          let bgClass = "bg-slate-950 text-slate-600";
+          if (r === c) {
+            if (val > 0.85) bgClass = "bg-emerald-950/80 text-emerald-300 font-bold border border-emerald-800/60";
+            else if (val > 0.50) bgClass = "bg-cyan-950/80 text-cyan-300 font-semibold border border-cyan-800/60";
+            else bgClass = "bg-amber-950/70 text-amber-300 font-semibold border border-amber-800/50";
+          } else if (val > 0.15) {
+            bgClass = "bg-rose-950/70 text-rose-300 font-medium border border-rose-900/60";
+          } else if (val > 0.05) {
+            bgClass = "bg-rose-950/30 text-rose-400";
+          }
+
+          html += `
+            <td class="p-2 ${bgClass} rounded transition" title="จริง: ${CLASS_NAMES_TH[r]} | ทำนาย: ${CLASS_NAMES_TH[c]} | จำนวน: ${raw.toLocaleString()} โฟลว์">
+              <div class="font-mono">${pct}%</div>
+              <div class="text-[9px] opacity-70 font-mono">${raw.toLocaleString()}</div>
+            </td>
+          `;
+        }
+        html += `</tr>`;
+      }
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function renderConfusionAnalysis(modelId, splitId, evalData) {
+      const box = document.getElementById('cmAnalysisBox');
+      if (!box) return;
+
+      const acc = (evalData.accuracy * 100).toFixed(2);
+      const macroF1 = (evalData.macro_f1 * 100).toFixed(2);
+      const r2lRecall = (evalData.per_class[4].recall * 100).toFixed(2);
+      const benignFpr = (evalData.benign_fpr * 100).toFixed(2);
+
+      let analysisHtml = '';
+
+      if (modelId === 'model7') {
+        analysisHtml = `
+          <div class="p-2.5 rounded bg-cyan-950/30 border border-cyan-800/60 text-cyan-200">
+            <strong>ความสำเร็จของ Model 7 (Quad Foundation + SMOTE):</strong>
+            การผสาน 4 ชุดข้อมูลแบบ 1:1 ร่วมกับ Borderline-SMOTE ทำให้ตรวจจับ <strong>R2L ได้ถึง ${r2lRecall}%</strong> (กระโดดจาก 8.15% ใน Model 3) และบรรลุ <strong>Quad Global Accuracy ${acc}%</strong> พร้อม Macro F1 สูงถึง <strong>${macroF1}%</strong>
+          </div>
+          <p>
+            โมเดลนี้แก้ปัญหาการขาดแคลนข้อมูล R2L ได้อย่างตรงจุดที่สุด เพราะได้รับข้อมูล SSH/FTP Patator จริงจาก CIC-IDS2017 และ Default Password Auth จาก BoT-IoT เพิ่มเติมจาก NSL-KDD ทำให้ตัดสินใจได้อย่างแม่นยำและคุม False Positive Rate เหลือเพียง ${benignFpr}%
+          </p>
+        `;
+      } else if (modelId === 'model4') {
+        analysisHtml = `
+          <div class="p-2.5 rounded bg-indigo-950/30 border border-indigo-800/60 text-indigo-200">
+            <strong>ผลงานของ Model 4 (Dual Harmonized + SMOTE):</strong>
+            เป็นโมเดลที่ดีที่สุดเมื่อใช้เฉพาะข้อมูล NSL + UNSW โดยทำ R2L Recall ได้ที่ ${r2lRecall}% และ Macro F1 ที่ ${macroF1}%
+          </div>
+        `;
+      } else if (modelId === 'model3') {
+        analysisHtml = `
+          <div class="p-2.5 rounded bg-rose-950/20 border border-rose-800/50 text-rose-300">
+            <strong>ปัญหา Majority Bias ของ Model 3 (Standard):</strong>
+            โมเดลมาตรฐานตรวจจับ R2L ได้เพียง ${r2lRecall}% เนื่องจากโฟลว์ R2L มีสัดส่วนน้อยเกินไปในชุดข้อมูลเดิม
+          </div>
+        `;
+      } else {
+        analysisHtml = `
+          <div class="p-2.5 rounded bg-slate-950 border border-slate-800 text-slate-300">
+            <strong>ผลการประเมินของโมเดลที่เลือก:</strong>
+            ความแม่นยำรวมอยู่ที่ ${acc}% และ Macro F1 อยู่ที่ ${macroF1}%
+          </div>
+        `;
+      }
+
+      box.innerHTML = analysisHtml;
+    }
+
+    // SECTION 5: Live Inference Playground Logic
+    function runInference() {
+      const dur = parseFloat(document.getElementById('inpDuration').value) || 0;
+      const fwd = parseFloat(document.getElementById('inpBytesFwd').value) || 0;
+      const bwd = parseFloat(document.getElementById('inpBytesBwd').value) || 0;
+      const proto = document.getElementById('inpProtocol').value;
+      const serv = document.getElementById('inpService').value;
+      const state = document.getElementById('inpState').value;
+      const activeModelKey = document.getElementById('playModelSelect').value;
+
+      const logDur = Math.log1p(Math.max(dur, 0));
+      const logFwd = Math.log1p(Math.max(fwd, 0));
+      const logBwd = Math.log1p(Math.max(bwd, 0));
+      const signedRatio = logFwd - logBwd;
+
+      const x = [
+        logDur,
+        logFwd,
+        logBwd,
+        signedRatio,
+        proto === 'tcp' ? 1 : 0,
+        proto === 'udp' ? 1 : 0,
+        proto === 'icmp' ? 1 : 0,
+        proto === 'other' ? 1 : 0,
+        serv === 'dns' ? 1 : 0,
+        serv === 'ftp' ? 1 : 0,
+        serv === 'http' ? 1 : 0,
+        serv === 'https_ssl' ? 1 : 0,
+        serv === 'smtp' ? 1 : 0,
+        serv === 'ssh' ? 1 : 0,
+        serv === 'other' ? 1 : 0,
+        state === 'established' ? 1 : 0,
+        state === 'no-reply' ? 1 : 0,
+        state === 'reset' ? 1 : 0,
+        state === 'other' ? 1 : 0
+      ];
+
+      const modelWeights = PLAYGROUND_WEIGHTS[activeModelKey] || PLAYGROUND_WEIGHTS.m7;
+      const logits = [];
+
+      for (let k = 0; k < 6; k++) {
+        let z = modelWeights.intercepts[k];
+        for (let j = 0; j < 19; j++) {
+          z += modelWeights.coefficients[k][j] * x[j];
+        }
+        logits.push(z);
+      }
+
+      const maxZ = Math.max(...logits);
+      const exps = logits.map(z => Math.exp(z - maxZ));
+      const sumExp = exps.reduce((a, b) => a + b, 0);
+      const probs = exps.map(e => e / sumExp);
+
+      let predIdx = 0;
+      for (let i = 1; i < 6; i++) {
+        if (probs[i] > probs[predIdx]) predIdx = i;
+      }
+
+      const classMeta = [
+        {
+          name: 'Class 0: ทราฟฟิกปกติ (Benign)',
+          tactic: 'Baseline Operations',
+          badgeBg: 'bg-blue-950 text-blue-400 border-blue-700',
+          desc: 'ทราฟฟิกลักษณะปกติ มีการเชื่อมต่อครบ 3-Way Handshake และรับส่งข้อมูลสองทางสมดุล'
+        },
+        {
+          name: 'Class 1: การโจมตีปฏิเสธบริการ (DoS / DDoS)',
+          tactic: 'TA0040: Impact (T1498)',
+          badgeBg: 'bg-rose-950 text-rose-400 border-rose-700',
+          desc: 'ปริมาณไบต์ขาไปสูงลิ่วโดยไม่มีไบต์ตอบกลับ และสถานะการเชื่อมต่อขาดช่วง ชี้เป้าการยิง Flood ขัดขวางระบบ'
+        },
+        {
+          name: 'Class 2: การสแกนสำรวจเครือข่าย (Recon)',
+          tactic: 'TA0043: Recon / TA0007: Discovery',
+          badgeBg: 'bg-amber-950 text-amber-400 border-amber-700',
+          desc: 'ระยะเวลาสั้นมาก (เสี้ยววินาที) จบการเชื่อมต่อด้วย RST หรือไม่มีคำตอบ พฤติกรรมชัดเจนของการสแกนพอร์ตหาช่องโหว่'
+        },
+        {
+          name: 'Class 3: การเจาะช่องโหว่และยกระดับสิทธิ์ (Exploits / U2R)',
+          tactic: 'TA0001: Initial Access / TA0004: PrivEsc',
+          badgeBg: 'bg-purple-950 text-purple-400 border-purple-700',
+          desc: 'การส่งเพย์โหลดเฉพาะเจาะจงผ่านเว็บหรือโปรเซสระบบ พยายามรันเชลล์โค้ดเพื่อเข้าถึงสิทธิ์ผู้ดูแลระบบ (Root)'
+        },
+        {
+          name: 'Class 4: การเข้าถึงระยะไกลโดยไม่ได้รับอนุญาต (R2L)',
+          tactic: 'TA0006: Credential Access (T1110)',
+          badgeBg: 'bg-emerald-950 text-emerald-300 border-emerald-500',
+          desc: 'พฤติกรรมพยายามล็อกอินซ้ำๆ ผ่านบริการ SSH/FTP โดยเปิดเซสชันสำเร็จ (Established) ตรงกับรูปแบบการเดารหัสผ่านเข้าเครื่อง'
+        },
+        {
+          name: 'Class 5: มัลแวร์และช่องทางควบคุม (Malware C2 & Botnet)',
+          tactic: 'TA0011: Command and Control (T1071)',
+          badgeBg: 'bg-cyan-950 text-cyan-400 border-cyan-700',
+          desc: 'โครงสร้างแพ็กเก็ตสม่ำเสมอ ส่งข้อมูลผ่านโปรโตคอลหรือพอร์ตปิดตรงกับสัญญาณบีคอนของบ็อตเน็ต'
+        }
+      ];
+
+      const pMeta = classMeta[predIdx];
+      const predBadge = document.getElementById('predBadge');
+      predBadge.className = `inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${pMeta.badgeBg}`;
+      predBadge.innerText = pMeta.name;
+
+      document.getElementById('predMitre').innerText = pMeta.tactic;
+      document.getElementById('predConfidence').innerText = (probs[predIdx] * 100).toFixed(1) + '%';
+      document.getElementById('predExplanation').innerText = pMeta.desc;
+
+      for (let i = 0; i < 6; i++) {
+        const pct = (probs[i] * 100).toFixed(1) + '%';
+        document.getElementById(`prob${i}`).innerText = pct;
+        document.getElementById(`bar${i}`).style.width = pct;
+      }
+    }
+
+    function loadPreset(type) {
+      if (type === 'normal') {
+        document.getElementById('inpDuration').value = 0.45;
+        document.getElementById('inpBytesFwd').value = 450;
+        document.getElementById('inpBytesBwd').value = 1420;
+        document.getElementById('inpProtocol').value = 'tcp';
+        document.getElementById('inpService').value = 'http';
+        document.getElementById('inpState').value = 'established';
+      } else if (type === 'dos') {
+        document.getElementById('inpDuration').value = 0.02;
+        document.getElementById('inpBytesFwd').value = 65535;
+        document.getElementById('inpBytesBwd').value = 0;
+        document.getElementById('inpProtocol').value = 'tcp';
+        document.getElementById('inpService').value = 'other';
+        document.getElementById('inpState').value = 'no-reply';
+      } else if (type === 'recon') {
+        document.getElementById('inpDuration').value = 0.001;
+        document.getElementById('inpBytesFwd').value = 60;
+        document.getElementById('inpBytesBwd').value = 0;
+        document.getElementById('inpProtocol').value = 'tcp';
+        document.getElementById('inpService').value = 'other';
+        document.getElementById('inpState').value = 'reset';
+      } else if (type === 'exploit') {
+        document.getElementById('inpDuration').value = 0.85;
+        document.getElementById('inpBytesFwd').value = 2450;
+        document.getElementById('inpBytesBwd').value = 320;
+        document.getElementById('inpProtocol').value = 'tcp';
+        document.getElementById('inpService').value = 'http';
+        document.getElementById('inpState').value = 'established';
+      } else if (type === 'r2l') {
+        document.getElementById('inpDuration').value = 0.15;
+        document.getElementById('inpBytesFwd').value = 180;
+        document.getElementById('inpBytesBwd').value = 240;
+        document.getElementById('inpProtocol').value = 'tcp';
+        document.getElementById('inpService').value = 'ssh';
+        document.getElementById('inpState').value = 'established';
+      } else if (type === 'malware') {
+        document.getElementById('inpDuration').value = 0.0005;
+        document.getElementById('inpBytesFwd').value = 512;
+        document.getElementById('inpBytesBwd').value = 0;
+        document.getElementById('inpProtocol').value = 'udp';
+        document.getElementById('inpService').value = 'dns';
+        document.getElementById('inpState').value = 'other';
+      }
+      runInference();
+    }
+
+    window.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+</html>

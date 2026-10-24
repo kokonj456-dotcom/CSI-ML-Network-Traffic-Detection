@@ -1,0 +1,4723 @@
+{
+  "metadata": {
+    "created_at": "2026-10-24 15:53:04",
+    "total_harmonized_records": 406190,
+    "train_pool_size": 301314,
+    "test_nsl_size": 22544,
+    "test_unsw_size": 82332,
+    "test_combined_size": 104876,
+    "class_names": [
+      "Benign / Normal",
+      "Denial of Service (DoS)",
+      "Reconnaissance & Probing",
+      "Exploits & PrivEsc",
+      "Credential Abuse (R2L)",
+      "Malware, C2 & Botnet"
+    ],
+    "mitre_tactics": [
+      "Benign Baseline",
+      "TA0040: Impact",
+      "TA0043/TA0007: Recon & Discovery",
+      "TA0001/TA0004: Initial Access & PrivEsc",
+      "TA0006/TA0001: Credential Access & R2L",
+      "TA0011/TA0008: C2 & Lateral Movement"
+    ],
+    "mitre_techniques": [
+      "N/A (Legitimate Traffic)",
+      "T1498 (Network DoS), T1499 (Endpoint DoS)",
+      "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+      "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+      "T1110 (Brute Force), T1078 (Valid Accounts)",
+      "T1071 (Application Layer Protocol), T1210 (Remote Services)"
+    ],
+    "core_features_count": 19,
+    "core_feature_names": [
+      "log_duration",
+      "log_bytes_forward",
+      "log_bytes_backward",
+      "signed_log_bytes_ratio",
+      "proto_tcp",
+      "proto_udp",
+      "proto_icmp",
+      "proto_other",
+      "service_dns",
+      "service_ftp",
+      "service_http",
+      "service_https_ssl",
+      "service_smtp",
+      "service_ssh",
+      "service_other",
+      "state_established",
+      "state_no-reply",
+      "state_reset",
+      "state_other"
+    ]
+  },
+  "models": {
+    "model1": {
+      "id": "model1",
+      "name": "Model 1: NSL Native Full Features",
+      "description": "Trained only on NSL-KDD with all 41 native domain features (121 encoded). Siloed domain baseline.",
+      "dataset_scope": "NSL-KDD Alone",
+      "feature_type": "Native Domain Features (121)",
+      "train_rows": 125973,
+      "train_time_sec": 19.87,
+      "is_cross_evaluable": false,
+      "eval_in_domain": {
+        "accuracy": 0.776,
+        "macro_precision": 0.6782,
+        "macro_recall": 0.4434,
+        "macro_f1": 0.4619,
+        "benign_fpr": 0.0288,
+        "confusion_matrix_raw": [
+          [
+            9431,
+            70,
+            207,
+            2,
+            1,
+            0
+          ],
+          [
+            1032,
+            6240,
+            188,
+            0,
+            0,
+            0
+          ],
+          [
+            681,
+            166,
+            1568,
+            0,
+            6,
+            0
+          ],
+          [
+            56,
+            0,
+            0,
+            8,
+            3,
+            0
+          ],
+          [
+            2627,
+            0,
+            8,
+            2,
+            248,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.9712,
+            0.0072,
+            0.0213,
+            0.0002,
+            0.0001,
+            0.0
+          ],
+          [
+            0.1383,
+            0.8365,
+            0.0252,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.2813,
+            0.0686,
+            0.6477,
+            0.0,
+            0.0025,
+            0.0
+          ],
+          [
+            0.8358,
+            0.0,
+            0.0,
+            0.1194,
+            0.0448,
+            0.0
+          ],
+          [
+            0.9106,
+            0.0,
+            0.0028,
+            0.0007,
+            0.086,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.6821,
+            "recall": 0.9712,
+            "f1_score": 0.8013,
+            "support": 9711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.9636,
+            "recall": 0.8365,
+            "f1_score": 0.8955,
+            "support": 7460
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.7955,
+            "recall": 0.6477,
+            "f1_score": 0.714,
+            "support": 2421
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.6667,
+            "recall": 0.1194,
+            "f1_score": 0.2025,
+            "support": 67
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9612,
+            "recall": 0.086,
+            "f1_score": 0.1578,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          }
+        ]
+      },
+      "eval_nsl": {
+        "accuracy": 0.776,
+        "macro_precision": 0.6782,
+        "macro_recall": 0.4434,
+        "macro_f1": 0.4619,
+        "benign_fpr": 0.0288,
+        "confusion_matrix_raw": [
+          [
+            9431,
+            70,
+            207,
+            2,
+            1,
+            0
+          ],
+          [
+            1032,
+            6240,
+            188,
+            0,
+            0,
+            0
+          ],
+          [
+            681,
+            166,
+            1568,
+            0,
+            6,
+            0
+          ],
+          [
+            56,
+            0,
+            0,
+            8,
+            3,
+            0
+          ],
+          [
+            2627,
+            0,
+            8,
+            2,
+            248,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.9712,
+            0.0072,
+            0.0213,
+            0.0002,
+            0.0001,
+            0.0
+          ],
+          [
+            0.1383,
+            0.8365,
+            0.0252,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.2813,
+            0.0686,
+            0.6477,
+            0.0,
+            0.0025,
+            0.0
+          ],
+          [
+            0.8358,
+            0.0,
+            0.0,
+            0.1194,
+            0.0448,
+            0.0
+          ],
+          [
+            0.9106,
+            0.0,
+            0.0028,
+            0.0007,
+            0.086,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.6821,
+            "recall": 0.9712,
+            "f1_score": 0.8013,
+            "support": 9711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.9636,
+            "recall": 0.8365,
+            "f1_score": 0.8955,
+            "support": 7460
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.7955,
+            "recall": 0.6477,
+            "f1_score": 0.714,
+            "support": 2421
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.6667,
+            "recall": 0.1194,
+            "f1_score": 0.2025,
+            "support": 67
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9612,
+            "recall": 0.086,
+            "f1_score": 0.1578,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          }
+        ]
+      },
+      "eval_unsw": null,
+      "eval_combined": null
+    },
+    "model2": {
+      "id": "model2",
+      "name": "Model 2: UNSW Native Full Features",
+      "description": "Trained only on UNSW-NB15 with all 42 native domain features (194 encoded). Siloed domain baseline.",
+      "dataset_scope": "UNSW-NB15 Alone",
+      "feature_type": "Native Domain Features (194)",
+      "train_rows": 175341,
+      "train_time_sec": 37.65,
+      "is_cross_evaluable": false,
+      "eval_in_domain": {
+        "accuracy": 0.7794,
+        "macro_precision": 0.5953,
+        "macro_recall": 0.5511,
+        "macro_f1": 0.5355,
+        "benign_fpr": 0.2414,
+        "confusion_matrix_raw": [
+          [
+            28070,
+            9,
+            427,
+            1030,
+            0,
+            7464
+          ],
+          [
+            22,
+            289,
+            36,
+            3537,
+            0,
+            205
+          ],
+          [
+            29,
+            38,
+            2819,
+            1216,
+            0,
+            71
+          ],
+          [
+            114,
+            112,
+            162,
+            10698,
+            0,
+            424
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            695,
+            143,
+            16,
+            2415,
+            0,
+            22291
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.7586,
+            0.0002,
+            0.0115,
+            0.0278,
+            0.0,
+            0.2017
+          ],
+          [
+            0.0054,
+            0.0707,
+            0.0088,
+            0.865,
+            0.0,
+            0.0501
+          ],
+          [
+            0.0069,
+            0.0091,
+            0.6755,
+            0.2914,
+            0.0,
+            0.017
+          ],
+          [
+            0.0099,
+            0.0097,
+            0.0141,
+            0.9295,
+            0.0,
+            0.0368
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0272,
+            0.0056,
+            0.0006,
+            0.0945,
+            0.0,
+            0.8721
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9703,
+            "recall": 0.7586,
+            "f1_score": 0.8515,
+            "support": 37000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.489,
+            "recall": 0.0707,
+            "f1_score": 0.1235,
+            "support": 4089
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.8147,
+            "recall": 0.6755,
+            "f1_score": 0.7386,
+            "support": 4173
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5662,
+            "recall": 0.9295,
+            "f1_score": 0.7037,
+            "support": 11510
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.7319,
+            "recall": 0.8721,
+            "f1_score": 0.7959,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_nsl": null,
+      "eval_unsw": {
+        "accuracy": 0.7794,
+        "macro_precision": 0.5953,
+        "macro_recall": 0.5511,
+        "macro_f1": 0.5355,
+        "benign_fpr": 0.2414,
+        "confusion_matrix_raw": [
+          [
+            28070,
+            9,
+            427,
+            1030,
+            0,
+            7464
+          ],
+          [
+            22,
+            289,
+            36,
+            3537,
+            0,
+            205
+          ],
+          [
+            29,
+            38,
+            2819,
+            1216,
+            0,
+            71
+          ],
+          [
+            114,
+            112,
+            162,
+            10698,
+            0,
+            424
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            695,
+            143,
+            16,
+            2415,
+            0,
+            22291
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.7586,
+            0.0002,
+            0.0115,
+            0.0278,
+            0.0,
+            0.2017
+          ],
+          [
+            0.0054,
+            0.0707,
+            0.0088,
+            0.865,
+            0.0,
+            0.0501
+          ],
+          [
+            0.0069,
+            0.0091,
+            0.6755,
+            0.2914,
+            0.0,
+            0.017
+          ],
+          [
+            0.0099,
+            0.0097,
+            0.0141,
+            0.9295,
+            0.0,
+            0.0368
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0272,
+            0.0056,
+            0.0006,
+            0.0945,
+            0.0,
+            0.8721
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9703,
+            "recall": 0.7586,
+            "f1_score": 0.8515,
+            "support": 37000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.489,
+            "recall": 0.0707,
+            "f1_score": 0.1235,
+            "support": 4089
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.8147,
+            "recall": 0.6755,
+            "f1_score": 0.7386,
+            "support": 4173
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5662,
+            "recall": 0.9295,
+            "f1_score": 0.7037,
+            "support": 11510
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.7319,
+            "recall": 0.8721,
+            "f1_score": 0.7959,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_combined": null
+    },
+    "model3": {
+      "id": "model3",
+      "name": "Model 3: Harmonized Standard (Unweighted)",
+      "description": "Trained on all UNSW+NSL flows with 19 core features. No oversampling or class weighting applied.",
+      "dataset_scope": "Harmonized UNSW+NSL",
+      "feature_type": "19 Selected Core Features",
+      "train_rows": 301314,
+      "train_time_sec": 18.63,
+      "is_cross_evaluable": true,
+      "eval_in_domain": {
+        "accuracy": 0.7613,
+        "macro_precision": 0.7925,
+        "macro_recall": 0.6164,
+        "macro_f1": 0.6238,
+        "benign_fpr": 0.1851,
+        "confusion_matrix_raw": [
+          [
+            38067,
+            124,
+            258,
+            1054,
+            2,
+            7206
+          ],
+          [
+            991,
+            6052,
+            268,
+            4058,
+            0,
+            180
+          ],
+          [
+            285,
+            1272,
+            3758,
+            1225,
+            0,
+            54
+          ],
+          [
+            756,
+            23,
+            158,
+            9875,
+            0,
+            765
+          ],
+          [
+            2530,
+            114,
+            3,
+            0,
+            235,
+            3
+          ],
+          [
+            1284,
+            6,
+            21,
+            2396,
+            0,
+            21853
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.8149,
+            0.0027,
+            0.0055,
+            0.0226,
+            0.0,
+            0.1543
+          ],
+          [
+            0.0858,
+            0.524,
+            0.0232,
+            0.3514,
+            0.0,
+            0.0156
+          ],
+          [
+            0.0432,
+            0.1929,
+            0.5699,
+            0.1858,
+            0.0,
+            0.0082
+          ],
+          [
+            0.0653,
+            0.002,
+            0.0136,
+            0.853,
+            0.0,
+            0.0661
+          ],
+          [
+            0.8769,
+            0.0395,
+            0.001,
+            0.0,
+            0.0815,
+            0.001
+          ],
+          [
+            0.0502,
+            0.0002,
+            0.0008,
+            0.0937,
+            0.0,
+            0.855
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.8669,
+            "recall": 0.8149,
+            "f1_score": 0.8401,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.7973,
+            "recall": 0.524,
+            "f1_score": 0.6324,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.8415,
+            "recall": 0.5699,
+            "f1_score": 0.6796,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5307,
+            "recall": 0.853,
+            "f1_score": 0.6543,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9916,
+            "recall": 0.0815,
+            "f1_score": 0.1505,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.727,
+            "recall": 0.855,
+            "f1_score": 0.7858,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_nsl": {
+        "accuracy": 0.7353,
+        "macro_precision": 0.5389,
+        "macro_recall": 0.3876,
+        "macro_f1": 0.3849,
+        "benign_fpr": 0.0287,
+        "confusion_matrix_raw": [
+          [
+            9432,
+            120,
+            156,
+            1,
+            2,
+            0
+          ],
+          [
+            798,
+            5928,
+            243,
+            491,
+            0,
+            0
+          ],
+          [
+            174,
+            1270,
+            977,
+            0,
+            0,
+            0
+          ],
+          [
+            62,
+            0,
+            0,
+            5,
+            0,
+            0
+          ],
+          [
+            2530,
+            114,
+            3,
+            0,
+            235,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.9713,
+            0.0124,
+            0.0161,
+            0.0001,
+            0.0002,
+            0.0
+          ],
+          [
+            0.107,
+            0.7946,
+            0.0326,
+            0.0658,
+            0.0,
+            0.0
+          ],
+          [
+            0.0719,
+            0.5246,
+            0.4036,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.9254,
+            0.0,
+            0.0,
+            0.0746,
+            0.0,
+            0.0
+          ],
+          [
+            0.8769,
+            0.0395,
+            0.001,
+            0.0,
+            0.0815,
+            0.001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.7258,
+            "recall": 0.9713,
+            "f1_score": 0.8308,
+            "support": 9711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.7976,
+            "recall": 0.7946,
+            "f1_score": 0.7961,
+            "support": 7460
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.7085,
+            "recall": 0.4036,
+            "f1_score": 0.5142,
+            "support": 2421
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.0101,
+            "recall": 0.0746,
+            "f1_score": 0.0177,
+            "support": 67
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9916,
+            "recall": 0.0815,
+            "f1_score": 0.1505,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          }
+        ]
+      },
+      "eval_unsw": {
+        "accuracy": 0.7684,
+        "macro_precision": 0.6465,
+        "macro_recall": 0.5305,
+        "macro_f1": 0.52,
+        "benign_fpr": 0.2261,
+        "confusion_matrix_raw": [
+          [
+            28635,
+            4,
+            102,
+            1053,
+            0,
+            7206
+          ],
+          [
+            193,
+            124,
+            25,
+            3567,
+            0,
+            180
+          ],
+          [
+            111,
+            2,
+            2781,
+            1225,
+            0,
+            54
+          ],
+          [
+            694,
+            23,
+            158,
+            9870,
+            0,
+            765
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1284,
+            6,
+            21,
+            2396,
+            0,
+            21853
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.7739,
+            0.0001,
+            0.0028,
+            0.0285,
+            0.0,
+            0.1948
+          ],
+          [
+            0.0472,
+            0.0303,
+            0.0061,
+            0.8723,
+            0.0,
+            0.044
+          ],
+          [
+            0.0266,
+            0.0005,
+            0.6664,
+            0.2936,
+            0.0,
+            0.0129
+          ],
+          [
+            0.0603,
+            0.002,
+            0.0137,
+            0.8575,
+            0.0,
+            0.0665
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0502,
+            0.0002,
+            0.0008,
+            0.0937,
+            0.0,
+            0.855
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9262,
+            "recall": 0.7739,
+            "f1_score": 0.8432,
+            "support": 37000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.7799,
+            "recall": 0.0303,
+            "f1_score": 0.0584,
+            "support": 4089
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.9009,
+            "recall": 0.6664,
+            "f1_score": 0.7661,
+            "support": 4173
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.545,
+            "recall": 0.8575,
+            "f1_score": 0.6664,
+            "support": 11510
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.727,
+            "recall": 0.855,
+            "f1_score": 0.7858,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_combined": {
+        "accuracy": 0.7613,
+        "macro_precision": 0.7925,
+        "macro_recall": 0.6164,
+        "macro_f1": 0.6238,
+        "benign_fpr": 0.1851,
+        "confusion_matrix_raw": [
+          [
+            38067,
+            124,
+            258,
+            1054,
+            2,
+            7206
+          ],
+          [
+            991,
+            6052,
+            268,
+            4058,
+            0,
+            180
+          ],
+          [
+            285,
+            1272,
+            3758,
+            1225,
+            0,
+            54
+          ],
+          [
+            756,
+            23,
+            158,
+            9875,
+            0,
+            765
+          ],
+          [
+            2530,
+            114,
+            3,
+            0,
+            235,
+            3
+          ],
+          [
+            1284,
+            6,
+            21,
+            2396,
+            0,
+            21853
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.8149,
+            0.0027,
+            0.0055,
+            0.0226,
+            0.0,
+            0.1543
+          ],
+          [
+            0.0858,
+            0.524,
+            0.0232,
+            0.3514,
+            0.0,
+            0.0156
+          ],
+          [
+            0.0432,
+            0.1929,
+            0.5699,
+            0.1858,
+            0.0,
+            0.0082
+          ],
+          [
+            0.0653,
+            0.002,
+            0.0136,
+            0.853,
+            0.0,
+            0.0661
+          ],
+          [
+            0.8769,
+            0.0395,
+            0.001,
+            0.0,
+            0.0815,
+            0.001
+          ],
+          [
+            0.0502,
+            0.0002,
+            0.0008,
+            0.0937,
+            0.0,
+            0.855
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.8669,
+            "recall": 0.8149,
+            "f1_score": 0.8401,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.7973,
+            "recall": 0.524,
+            "f1_score": 0.6324,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.8415,
+            "recall": 0.5699,
+            "f1_score": 0.6796,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5307,
+            "recall": 0.853,
+            "f1_score": 0.6543,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9916,
+            "recall": 0.0815,
+            "f1_score": 0.1505,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.727,
+            "recall": 0.855,
+            "f1_score": 0.7858,
+            "support": 25560
+          }
+        ]
+      }
+    },
+    "model4": {
+      "id": "model4",
+      "name": "Model 4: Harmonized + Borderline-SMOTE",
+      "description": "Trained on UNSW+NSL with Borderline-SMOTE synthesizing boundary flows for minority attacks (R2L 995 -> 25,000).",
+      "dataset_scope": "Harmonized UNSW+NSL",
+      "feature_type": "19 Selected Core Features",
+      "train_rows": 325319,
+      "train_time_sec": 18.63,
+      "smote_time_sec": 2.34,
+      "is_cross_evaluable": true,
+      "eval_in_domain": {
+        "accuracy": 0.7622,
+        "macro_precision": 0.7739,
+        "macro_recall": 0.6488,
+        "macro_f1": 0.668,
+        "benign_fpr": 0.1955,
+        "confusion_matrix_raw": [
+          [
+            37577,
+            124,
+            382,
+            945,
+            3,
+            7680
+          ],
+          [
+            974,
+            6072,
+            755,
+            3568,
+            2,
+            178
+          ],
+          [
+            341,
+            1269,
+            3694,
+            1223,
+            14,
+            53
+          ],
+          [
+            762,
+            24,
+            151,
+            9864,
+            9,
+            767
+          ],
+          [
+            1912,
+            116,
+            4,
+            0,
+            850,
+            3
+          ],
+          [
+            1208,
+            6,
+            23,
+            2443,
+            1,
+            21879
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.8045,
+            0.0027,
+            0.0082,
+            0.0202,
+            0.0001,
+            0.1644
+          ],
+          [
+            0.0843,
+            0.5258,
+            0.0654,
+            0.3089,
+            0.0002,
+            0.0154
+          ],
+          [
+            0.0517,
+            0.1924,
+            0.5602,
+            0.1855,
+            0.0021,
+            0.008
+          ],
+          [
+            0.0658,
+            0.0021,
+            0.013,
+            0.852,
+            0.0008,
+            0.0663
+          ],
+          [
+            0.6627,
+            0.0402,
+            0.0014,
+            0.0,
+            0.2946,
+            0.001
+          ],
+          [
+            0.0473,
+            0.0002,
+            0.0009,
+            0.0956,
+            0.0,
+            0.856
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.8785,
+            "recall": 0.8045,
+            "f1_score": 0.8399,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.7978,
+            "recall": 0.5258,
+            "f1_score": 0.6338,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.7375,
+            "recall": 0.5602,
+            "f1_score": 0.6367,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5467,
+            "recall": 0.852,
+            "f1_score": 0.666,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.967,
+            "recall": 0.2946,
+            "f1_score": 0.4516,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.7159,
+            "recall": 0.856,
+            "f1_score": 0.7797,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_nsl": {
+        "accuracy": 0.7559,
+        "macro_precision": 0.557,
+        "macro_recall": 0.4145,
+        "macro_f1": 0.4366,
+        "benign_fpr": 0.0373,
+        "confusion_matrix_raw": [
+          [
+            9349,
+            120,
+            237,
+            2,
+            3,
+            0
+          ],
+          [
+            792,
+            5929,
+            732,
+            6,
+            1,
+            0
+          ],
+          [
+            231,
+            1268,
+            908,
+            0,
+            14,
+            0
+          ],
+          [
+            55,
+            0,
+            0,
+            4,
+            8,
+            0
+          ],
+          [
+            1912,
+            116,
+            4,
+            0,
+            850,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.9627,
+            0.0124,
+            0.0244,
+            0.0002,
+            0.0003,
+            0.0
+          ],
+          [
+            0.1062,
+            0.7948,
+            0.0981,
+            0.0008,
+            0.0001,
+            0.0
+          ],
+          [
+            0.0954,
+            0.5238,
+            0.3751,
+            0.0,
+            0.0058,
+            0.0
+          ],
+          [
+            0.8209,
+            0.0,
+            0.0,
+            0.0597,
+            0.1194,
+            0.0
+          ],
+          [
+            0.6627,
+            0.0402,
+            0.0014,
+            0.0,
+            0.2946,
+            0.001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.7577,
+            "recall": 0.9627,
+            "f1_score": 0.848,
+            "support": 9711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.7977,
+            "recall": 0.7948,
+            "f1_score": 0.7962,
+            "support": 7460
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.4827,
+            "recall": 0.3751,
+            "f1_score": 0.4221,
+            "support": 2421
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.3333,
+            "recall": 0.0597,
+            "f1_score": 0.1013,
+            "support": 67
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9703,
+            "recall": 0.2946,
+            "f1_score": 0.452,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          }
+        ]
+      },
+      "eval_unsw": {
+        "accuracy": 0.7639,
+        "macro_precision": 0.6474,
+        "macro_recall": 0.5297,
+        "macro_f1": 0.5191,
+        "benign_fpr": 0.2371,
+        "confusion_matrix_raw": [
+          [
+            28228,
+            4,
+            145,
+            943,
+            0,
+            7680
+          ],
+          [
+            182,
+            143,
+            23,
+            3562,
+            1,
+            178
+          ],
+          [
+            110,
+            1,
+            2786,
+            1223,
+            0,
+            53
+          ],
+          [
+            707,
+            24,
+            151,
+            9860,
+            1,
+            767
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1208,
+            6,
+            23,
+            2443,
+            1,
+            21879
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.7629,
+            0.0001,
+            0.0039,
+            0.0255,
+            0.0,
+            0.2076
+          ],
+          [
+            0.0445,
+            0.035,
+            0.0056,
+            0.8711,
+            0.0002,
+            0.0435
+          ],
+          [
+            0.0264,
+            0.0002,
+            0.6676,
+            0.2931,
+            0.0,
+            0.0127
+          ],
+          [
+            0.0614,
+            0.0021,
+            0.0131,
+            0.8566,
+            0.0001,
+            0.0666
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0473,
+            0.0002,
+            0.0009,
+            0.0956,
+            0.0,
+            0.856
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9275,
+            "recall": 0.7629,
+            "f1_score": 0.8372,
+            "support": 37000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.8034,
+            "recall": 0.035,
+            "f1_score": 0.067,
+            "support": 4089
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.8907,
+            "recall": 0.6676,
+            "f1_score": 0.7632,
+            "support": 4173
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5468,
+            "recall": 0.8566,
+            "f1_score": 0.6675,
+            "support": 11510
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.716,
+            "recall": 0.856,
+            "f1_score": 0.7798,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_combined": {
+        "accuracy": 0.7622,
+        "macro_precision": 0.7739,
+        "macro_recall": 0.6488,
+        "macro_f1": 0.668,
+        "benign_fpr": 0.1955,
+        "confusion_matrix_raw": [
+          [
+            37577,
+            124,
+            382,
+            945,
+            3,
+            7680
+          ],
+          [
+            974,
+            6072,
+            755,
+            3568,
+            2,
+            178
+          ],
+          [
+            341,
+            1269,
+            3694,
+            1223,
+            14,
+            53
+          ],
+          [
+            762,
+            24,
+            151,
+            9864,
+            9,
+            767
+          ],
+          [
+            1912,
+            116,
+            4,
+            0,
+            850,
+            3
+          ],
+          [
+            1208,
+            6,
+            23,
+            2443,
+            1,
+            21879
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.8045,
+            0.0027,
+            0.0082,
+            0.0202,
+            0.0001,
+            0.1644
+          ],
+          [
+            0.0843,
+            0.5258,
+            0.0654,
+            0.3089,
+            0.0002,
+            0.0154
+          ],
+          [
+            0.0517,
+            0.1924,
+            0.5602,
+            0.1855,
+            0.0021,
+            0.008
+          ],
+          [
+            0.0658,
+            0.0021,
+            0.013,
+            0.852,
+            0.0008,
+            0.0663
+          ],
+          [
+            0.6627,
+            0.0402,
+            0.0014,
+            0.0,
+            0.2946,
+            0.001
+          ],
+          [
+            0.0473,
+            0.0002,
+            0.0009,
+            0.0956,
+            0.0,
+            0.856
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.8785,
+            "recall": 0.8045,
+            "f1_score": 0.8399,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.7978,
+            "recall": 0.5258,
+            "f1_score": 0.6338,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.7375,
+            "recall": 0.5602,
+            "f1_score": 0.6367,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5467,
+            "recall": 0.852,
+            "f1_score": 0.666,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.967,
+            "recall": 0.2946,
+            "f1_score": 0.4516,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.7159,
+            "recall": 0.856,
+            "f1_score": 0.7797,
+            "support": 25560
+          }
+        ]
+      }
+    },
+    "model5": {
+      "id": "model5",
+      "name": "Model 5: Harmonized + Class-Weighted",
+      "description": "Trained on UNSW+NSL with inverse class frequencies applied to penalize minority misclassifications heavily.",
+      "dataset_scope": "Harmonized UNSW+NSL",
+      "feature_type": "19 Selected Core Features",
+      "train_rows": 301314,
+      "train_time_sec": 21.95,
+      "is_cross_evaluable": true,
+      "eval_in_domain": {
+        "accuracy": 0.6898,
+        "macro_precision": 0.7229,
+        "macro_recall": 0.6257,
+        "macro_f1": 0.5949,
+        "benign_fpr": 0.3484,
+        "confusion_matrix_raw": [
+          [
+            30437,
+            98,
+            1956,
+            2348,
+            27,
+            11845
+          ],
+          [
+            858,
+            3033,
+            3716,
+            3782,
+            1,
+            159
+          ],
+          [
+            83,
+            242,
+            4946,
+            1284,
+            14,
+            25
+          ],
+          [
+            147,
+            2,
+            356,
+            10519,
+            12,
+            541
+          ],
+          [
+            1898,
+            3,
+            113,
+            6,
+            862,
+            3
+          ],
+          [
+            75,
+            3,
+            37,
+            2894,
+            1,
+            22550
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.6516,
+            0.0021,
+            0.0419,
+            0.0503,
+            0.0006,
+            0.2536
+          ],
+          [
+            0.0743,
+            0.2626,
+            0.3218,
+            0.3275,
+            0.0001,
+            0.0138
+          ],
+          [
+            0.0126,
+            0.0367,
+            0.7501,
+            0.1947,
+            0.0021,
+            0.0038
+          ],
+          [
+            0.0127,
+            0.0002,
+            0.0308,
+            0.9086,
+            0.001,
+            0.0467
+          ],
+          [
+            0.6579,
+            0.001,
+            0.0392,
+            0.0021,
+            0.2988,
+            0.001
+          ],
+          [
+            0.0029,
+            0.0001,
+            0.0014,
+            0.1132,
+            0.0,
+            0.8822
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9086,
+            "recall": 0.6516,
+            "f1_score": 0.7589,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.8971,
+            "recall": 0.2626,
+            "f1_score": 0.4063,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.4446,
+            "recall": 0.7501,
+            "f1_score": 0.5583,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5049,
+            "recall": 0.9086,
+            "f1_score": 0.6491,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.94,
+            "recall": 0.2988,
+            "f1_score": 0.4534,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.642,
+            "recall": 0.8822,
+            "f1_score": 0.7432,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_nsl": {
+        "accuracy": 0.6757,
+        "macro_precision": 0.547,
+        "macro_recall": 0.4471,
+        "macro_f1": 0.4274,
+        "benign_fpr": 0.041,
+        "confusion_matrix_raw": [
+          [
+            9313,
+            94,
+            268,
+            11,
+            25,
+            0
+          ],
+          [
+            837,
+            2956,
+            3662,
+            5,
+            0,
+            0
+          ],
+          [
+            73,
+            242,
+            2092,
+            0,
+            14,
+            0
+          ],
+          [
+            45,
+            0,
+            0,
+            11,
+            11,
+            0
+          ],
+          [
+            1898,
+            3,
+            113,
+            6,
+            862,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.959,
+            0.0097,
+            0.0276,
+            0.0011,
+            0.0026,
+            0.0
+          ],
+          [
+            0.1122,
+            0.3962,
+            0.4909,
+            0.0007,
+            0.0,
+            0.0
+          ],
+          [
+            0.0302,
+            0.1,
+            0.8641,
+            0.0,
+            0.0058,
+            0.0
+          ],
+          [
+            0.6716,
+            0.0,
+            0.0,
+            0.1642,
+            0.1642,
+            0.0
+          ],
+          [
+            0.6579,
+            0.001,
+            0.0392,
+            0.0021,
+            0.2988,
+            0.001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.7655,
+            "recall": 0.959,
+            "f1_score": 0.8514,
+            "support": 9711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.8971,
+            "recall": 0.3962,
+            "f1_score": 0.5497,
+            "support": 7460
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.341,
+            "recall": 0.8641,
+            "f1_score": 0.489,
+            "support": 2421
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.3333,
+            "recall": 0.1642,
+            "f1_score": 0.22,
+            "support": 67
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9452,
+            "recall": 0.2988,
+            "f1_score": 0.454,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          }
+        ]
+      },
+      "eval_unsw": {
+        "accuracy": 0.6937,
+        "macro_precision": 0.6008,
+        "macro_recall": 0.5115,
+        "macro_f1": 0.463,
+        "benign_fpr": 0.4291,
+        "confusion_matrix_raw": [
+          [
+            21124,
+            4,
+            1688,
+            2337,
+            2,
+            11845
+          ],
+          [
+            21,
+            77,
+            54,
+            3777,
+            1,
+            159
+          ],
+          [
+            10,
+            0,
+            2854,
+            1284,
+            0,
+            25
+          ],
+          [
+            102,
+            2,
+            356,
+            10508,
+            1,
+            541
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            75,
+            3,
+            37,
+            2894,
+            1,
+            22550
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.5709,
+            0.0001,
+            0.0456,
+            0.0632,
+            0.0001,
+            0.3201
+          ],
+          [
+            0.0051,
+            0.0188,
+            0.0132,
+            0.9237,
+            0.0002,
+            0.0389
+          ],
+          [
+            0.0024,
+            0.0,
+            0.6839,
+            0.3077,
+            0.0,
+            0.006
+          ],
+          [
+            0.0089,
+            0.0002,
+            0.0309,
+            0.9129,
+            0.0001,
+            0.047
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0029,
+            0.0001,
+            0.0014,
+            0.1132,
+            0.0,
+            0.8822
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9902,
+            "recall": 0.5709,
+            "f1_score": 0.7243,
+            "support": 37000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.8953,
+            "recall": 0.0188,
+            "f1_score": 0.0369,
+            "support": 4089
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.5721,
+            "recall": 0.6839,
+            "f1_score": 0.623,
+            "support": 4173
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5052,
+            "recall": 0.9129,
+            "f1_score": 0.6504,
+            "support": 11510
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.6421,
+            "recall": 0.8822,
+            "f1_score": 0.7432,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_combined": {
+        "accuracy": 0.6898,
+        "macro_precision": 0.7229,
+        "macro_recall": 0.6257,
+        "macro_f1": 0.5949,
+        "benign_fpr": 0.3484,
+        "confusion_matrix_raw": [
+          [
+            30437,
+            98,
+            1956,
+            2348,
+            27,
+            11845
+          ],
+          [
+            858,
+            3033,
+            3716,
+            3782,
+            1,
+            159
+          ],
+          [
+            83,
+            242,
+            4946,
+            1284,
+            14,
+            25
+          ],
+          [
+            147,
+            2,
+            356,
+            10519,
+            12,
+            541
+          ],
+          [
+            1898,
+            3,
+            113,
+            6,
+            862,
+            3
+          ],
+          [
+            75,
+            3,
+            37,
+            2894,
+            1,
+            22550
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.6516,
+            0.0021,
+            0.0419,
+            0.0503,
+            0.0006,
+            0.2536
+          ],
+          [
+            0.0743,
+            0.2626,
+            0.3218,
+            0.3275,
+            0.0001,
+            0.0138
+          ],
+          [
+            0.0126,
+            0.0367,
+            0.7501,
+            0.1947,
+            0.0021,
+            0.0038
+          ],
+          [
+            0.0127,
+            0.0002,
+            0.0308,
+            0.9086,
+            0.001,
+            0.0467
+          ],
+          [
+            0.6579,
+            0.001,
+            0.0392,
+            0.0021,
+            0.2988,
+            0.001
+          ],
+          [
+            0.0029,
+            0.0001,
+            0.0014,
+            0.1132,
+            0.0,
+            0.8822
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9086,
+            "recall": 0.6516,
+            "f1_score": 0.7589,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.8971,
+            "recall": 0.2626,
+            "f1_score": 0.4063,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.4446,
+            "recall": 0.7501,
+            "f1_score": 0.5583,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5049,
+            "recall": 0.9086,
+            "f1_score": 0.6491,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.94,
+            "recall": 0.2988,
+            "f1_score": 0.4534,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.642,
+            "recall": 0.8822,
+            "f1_score": 0.7432,
+            "support": 25560
+          }
+        ]
+      }
+    },
+    "model6": {
+      "id": "model6",
+      "name": "Model 6: Hybrid (Borderline-SMOTE + Class Weights)",
+      "description": "Synergistic hybrid combining boundary vector synthesis with inverse class loss penalty.",
+      "dataset_scope": "Harmonized UNSW+NSL",
+      "feature_type": "19 Selected Core Features",
+      "train_rows": 325319,
+      "train_time_sec": 28.45,
+      "is_cross_evaluable": true,
+      "eval_in_domain": {
+        "accuracy": 0.6895,
+        "macro_precision": 0.724,
+        "macro_recall": 0.6251,
+        "macro_f1": 0.594,
+        "benign_fpr": 0.3483,
+        "confusion_matrix_raw": [
+          [
+            30443,
+            93,
+            2004,
+            2427,
+            9,
+            11735
+          ],
+          [
+            809,
+            3030,
+            3757,
+            3775,
+            7,
+            171
+          ],
+          [
+            74,
+            242,
+            4949,
+            1277,
+            14,
+            38
+          ],
+          [
+            139,
+            2,
+            338,
+            10532,
+            16,
+            550
+          ],
+          [
+            1907,
+            4,
+            114,
+            3,
+            854,
+            3
+          ],
+          [
+            78,
+            3,
+            24,
+            2951,
+            1,
+            22503
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.6517,
+            0.002,
+            0.0429,
+            0.052,
+            0.0002,
+            0.2512
+          ],
+          [
+            0.07,
+            0.2624,
+            0.3253,
+            0.3269,
+            0.0006,
+            0.0148
+          ],
+          [
+            0.0112,
+            0.0367,
+            0.7505,
+            0.1937,
+            0.0021,
+            0.0058
+          ],
+          [
+            0.012,
+            0.0002,
+            0.0292,
+            0.9097,
+            0.0014,
+            0.0475
+          ],
+          [
+            0.661,
+            0.0014,
+            0.0395,
+            0.001,
+            0.296,
+            0.001
+          ],
+          [
+            0.0031,
+            0.0001,
+            0.0009,
+            0.1155,
+            0.0,
+            0.8804
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9101,
+            "recall": 0.6517,
+            "f1_score": 0.7595,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.898,
+            "recall": 0.2624,
+            "f1_score": 0.4061,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.4424,
+            "recall": 0.7505,
+            "f1_score": 0.5567,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5024,
+            "recall": 0.9097,
+            "f1_score": 0.6473,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9478,
+            "recall": 0.296,
+            "f1_score": 0.4511,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.6429,
+            "recall": 0.8804,
+            "f1_score": 0.7432,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_nsl": {
+        "accuracy": 0.6763,
+        "macro_precision": 0.5531,
+        "macro_recall": 0.4523,
+        "macro_f1": 0.4326,
+        "benign_fpr": 0.0394,
+        "confusion_matrix_raw": [
+          [
+            9328,
+            93,
+            271,
+            11,
+            8,
+            0
+          ],
+          [
+            792,
+            2952,
+            3701,
+            9,
+            6,
+            0
+          ],
+          [
+            65,
+            242,
+            2100,
+            0,
+            14,
+            0
+          ],
+          [
+            39,
+            0,
+            0,
+            13,
+            15,
+            0
+          ],
+          [
+            1907,
+            4,
+            114,
+            3,
+            854,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.9606,
+            0.0096,
+            0.0279,
+            0.0011,
+            0.0008,
+            0.0
+          ],
+          [
+            0.1062,
+            0.3957,
+            0.4961,
+            0.0012,
+            0.0008,
+            0.0
+          ],
+          [
+            0.0268,
+            0.1,
+            0.8674,
+            0.0,
+            0.0058,
+            0.0
+          ],
+          [
+            0.5821,
+            0.0,
+            0.0,
+            0.194,
+            0.2239,
+            0.0
+          ],
+          [
+            0.661,
+            0.0014,
+            0.0395,
+            0.001,
+            0.296,
+            0.001
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.7689,
+            "recall": 0.9606,
+            "f1_score": 0.8541,
+            "support": 9711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.897,
+            "recall": 0.3957,
+            "f1_score": 0.5492,
+            "support": 7460
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.3395,
+            "recall": 0.8674,
+            "f1_score": 0.488,
+            "support": 2421
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.3611,
+            "recall": 0.194,
+            "f1_score": 0.2524,
+            "support": 67
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9521,
+            "recall": 0.296,
+            "f1_score": 0.4516,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          }
+        ]
+      },
+      "eval_unsw": {
+        "accuracy": 0.6931,
+        "macro_precision": 0.6076,
+        "macro_recall": 0.5111,
+        "macro_f1": 0.4624,
+        "benign_fpr": 0.4293,
+        "confusion_matrix_raw": [
+          [
+            21115,
+            0,
+            1733,
+            2416,
+            1,
+            11735
+          ],
+          [
+            17,
+            78,
+            56,
+            3766,
+            1,
+            171
+          ],
+          [
+            9,
+            0,
+            2849,
+            1277,
+            0,
+            38
+          ],
+          [
+            100,
+            2,
+            338,
+            10519,
+            1,
+            550
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            78,
+            3,
+            24,
+            2951,
+            1,
+            22503
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.5707,
+            0.0,
+            0.0468,
+            0.0653,
+            0.0,
+            0.3172
+          ],
+          [
+            0.0042,
+            0.0191,
+            0.0137,
+            0.921,
+            0.0002,
+            0.0418
+          ],
+          [
+            0.0022,
+            0.0,
+            0.6827,
+            0.306,
+            0.0,
+            0.0091
+          ],
+          [
+            0.0087,
+            0.0002,
+            0.0294,
+            0.9139,
+            0.0001,
+            0.0478
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0031,
+            0.0001,
+            0.0009,
+            0.1155,
+            0.0,
+            0.8804
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9904,
+            "recall": 0.5707,
+            "f1_score": 0.7241,
+            "support": 37000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.9398,
+            "recall": 0.0191,
+            "f1_score": 0.0374,
+            "support": 4089
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.5698,
+            "recall": 0.6827,
+            "f1_score": 0.6212,
+            "support": 4173
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5026,
+            "recall": 0.9139,
+            "f1_score": 0.6485,
+            "support": 11510
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.643,
+            "recall": 0.8804,
+            "f1_score": 0.7432,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_combined": {
+        "accuracy": 0.6895,
+        "macro_precision": 0.724,
+        "macro_recall": 0.6251,
+        "macro_f1": 0.594,
+        "benign_fpr": 0.3483,
+        "confusion_matrix_raw": [
+          [
+            30443,
+            93,
+            2004,
+            2427,
+            9,
+            11735
+          ],
+          [
+            809,
+            3030,
+            3757,
+            3775,
+            7,
+            171
+          ],
+          [
+            74,
+            242,
+            4949,
+            1277,
+            14,
+            38
+          ],
+          [
+            139,
+            2,
+            338,
+            10532,
+            16,
+            550
+          ],
+          [
+            1907,
+            4,
+            114,
+            3,
+            854,
+            3
+          ],
+          [
+            78,
+            3,
+            24,
+            2951,
+            1,
+            22503
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.6517,
+            0.002,
+            0.0429,
+            0.052,
+            0.0002,
+            0.2512
+          ],
+          [
+            0.07,
+            0.2624,
+            0.3253,
+            0.3269,
+            0.0006,
+            0.0148
+          ],
+          [
+            0.0112,
+            0.0367,
+            0.7505,
+            0.1937,
+            0.0021,
+            0.0058
+          ],
+          [
+            0.012,
+            0.0002,
+            0.0292,
+            0.9097,
+            0.0014,
+            0.0475
+          ],
+          [
+            0.661,
+            0.0014,
+            0.0395,
+            0.001,
+            0.296,
+            0.001
+          ],
+          [
+            0.0031,
+            0.0001,
+            0.0009,
+            0.1155,
+            0.0,
+            0.8804
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9101,
+            "recall": 0.6517,
+            "f1_score": 0.7595,
+            "support": 46711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.898,
+            "recall": 0.2624,
+            "f1_score": 0.4061,
+            "support": 11549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.4424,
+            "recall": 0.7505,
+            "f1_score": 0.5567,
+            "support": 6594
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5024,
+            "recall": 0.9097,
+            "f1_score": 0.6473,
+            "support": 11577
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9478,
+            "recall": 0.296,
+            "f1_score": 0.4511,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.6429,
+            "recall": 0.8804,
+            "f1_score": 0.7432,
+            "support": 25560
+          }
+        ]
+      }
+    },
+    "model7": {
+      "id": "model7",
+      "name": "Model 7: Quad Foundation + Borderline-SMOTE",
+      "description": "Trained on Quad Datasets (UNSW+NSL 301k + CIC+BoT 301k = 602k) with Borderline-SMOTE minority synthesis. Universal cross-era foundation.",
+      "dataset_scope": "Quad Harmonized (4 Datasets 1:1)",
+      "feature_type": "19 Selected Core Features",
+      "train_rows": 629582,
+      "raw_train_rows": 602628,
+      "train_time_sec": 35.68,
+      "smote_time_sec": 21.0,
+      "is_cross_evaluable": true,
+      "eval_in_domain": {
+        "accuracy": 0.8113,
+        "macro_precision": 0.8226,
+        "macro_recall": 0.7463,
+        "macro_f1": 0.7703,
+        "benign_fpr": 0.1444,
+        "confusion_matrix_raw": [
+          [
+            54509,
+            278,
+            290,
+            757,
+            16,
+            7861
+          ],
+          [
+            1322,
+            18451,
+            272,
+            3312,
+            6,
+            186
+          ],
+          [
+            323,
+            1279,
+            8437,
+            1151,
+            109,
+            95
+          ],
+          [
+            2928,
+            69,
+            223,
+            10108,
+            14,
+            835
+          ],
+          [
+            2002,
+            115,
+            5,
+            0,
+            2361,
+            2
+          ],
+          [
+            1607,
+            58,
+            25,
+            2193,
+            3,
+            23674
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.8556,
+            0.0044,
+            0.0046,
+            0.0119,
+            0.0003,
+            0.1234
+          ],
+          [
+            0.0561,
+            0.7835,
+            0.0116,
+            0.1406,
+            0.0003,
+            0.0079
+          ],
+          [
+            0.0283,
+            0.1123,
+            0.7405,
+            0.101,
+            0.0096,
+            0.0083
+          ],
+          [
+            0.2065,
+            0.0049,
+            0.0157,
+            0.713,
+            0.001,
+            0.0589
+          ],
+          [
+            0.4464,
+            0.0256,
+            0.0011,
+            0.0,
+            0.5264,
+            0.0004
+          ],
+          [
+            0.0583,
+            0.0021,
+            0.0009,
+            0.0796,
+            0.0001,
+            0.859
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.8695,
+            "recall": 0.8556,
+            "f1_score": 0.8625,
+            "support": 63711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.9112,
+            "recall": 0.7835,
+            "f1_score": 0.8425,
+            "support": 23549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.9119,
+            "recall": 0.7405,
+            "f1_score": 0.8173,
+            "support": 11394
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5769,
+            "recall": 0.713,
+            "f1_score": 0.6378,
+            "support": 14177
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.941,
+            "recall": 0.5264,
+            "f1_score": 0.6752,
+            "support": 4485
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.725,
+            "recall": 0.859,
+            "f1_score": 0.7863,
+            "support": 27560
+          }
+        ]
+      },
+      "eval_nsl": {
+        "accuracy": 0.7698,
+        "macro_precision": 0.5431,
+        "macro_recall": 0.4102,
+        "macro_f1": 0.4304,
+        "benign_fpr": 0.038,
+        "confusion_matrix_raw": [
+          [
+            9342,
+            122,
+            236,
+            1,
+            10,
+            0
+          ],
+          [
+            793,
+            6410,
+            245,
+            7,
+            5,
+            0
+          ],
+          [
+            219,
+            1268,
+            839,
+            0,
+            95,
+            0
+          ],
+          [
+            54,
+            0,
+            0,
+            2,
+            11,
+            0
+          ],
+          [
+            2002,
+            115,
+            5,
+            0,
+            761,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.962,
+            0.0126,
+            0.0243,
+            0.0001,
+            0.001,
+            0.0
+          ],
+          [
+            0.1063,
+            0.8592,
+            0.0328,
+            0.0009,
+            0.0007,
+            0.0
+          ],
+          [
+            0.0905,
+            0.5238,
+            0.3466,
+            0.0,
+            0.0392,
+            0.0
+          ],
+          [
+            0.806,
+            0.0,
+            0.0,
+            0.0299,
+            0.1642,
+            0.0
+          ],
+          [
+            0.6939,
+            0.0399,
+            0.0017,
+            0.0,
+            0.2638,
+            0.0007
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.7528,
+            "recall": 0.962,
+            "f1_score": 0.8446,
+            "support": 9711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.8099,
+            "recall": 0.8592,
+            "f1_score": 0.8338,
+            "support": 7460
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.6332,
+            "recall": 0.3466,
+            "f1_score": 0.4479,
+            "support": 2421
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.2,
+            "recall": 0.0299,
+            "f1_score": 0.0519,
+            "support": 67
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.8628,
+            "recall": 0.2638,
+            "f1_score": 0.404,
+            "support": 2885
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          }
+        ]
+      },
+      "eval_unsw": {
+        "accuracy": 0.7514,
+        "macro_precision": 0.5483,
+        "macro_recall": 0.5107,
+        "macro_f1": 0.5069,
+        "benign_fpr": 0.2247,
+        "confusion_matrix_raw": [
+          [
+            28685,
+            142,
+            53,
+            277,
+            2,
+            7841
+          ],
+          [
+            514,
+            95,
+            27,
+            3277,
+            0,
+            176
+          ],
+          [
+            104,
+            11,
+            2810,
+            1151,
+            2,
+            95
+          ],
+          [
+            1915,
+            67,
+            223,
+            8536,
+            3,
+            766
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            1579,
+            57,
+            25,
+            2159,
+            3,
+            21737
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.7753,
+            0.0038,
+            0.0014,
+            0.0075,
+            0.0001,
+            0.2119
+          ],
+          [
+            0.1257,
+            0.0232,
+            0.0066,
+            0.8014,
+            0.0,
+            0.043
+          ],
+          [
+            0.0249,
+            0.0026,
+            0.6734,
+            0.2758,
+            0.0005,
+            0.0228
+          ],
+          [
+            0.1664,
+            0.0058,
+            0.0194,
+            0.7416,
+            0.0003,
+            0.0666
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0618,
+            0.0022,
+            0.001,
+            0.0845,
+            0.0001,
+            0.8504
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.8746,
+            "recall": 0.7753,
+            "f1_score": 0.822,
+            "support": 37000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.2554,
+            "recall": 0.0232,
+            "f1_score": 0.0426,
+            "support": 4089
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.8955,
+            "recall": 0.6734,
+            "f1_score": 0.7687,
+            "support": 4173
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5543,
+            "recall": 0.7416,
+            "f1_score": 0.6344,
+            "support": 11510
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.71,
+            "recall": 0.8504,
+            "f1_score": 0.7739,
+            "support": 25560
+          }
+        ]
+      },
+      "eval_cic": {
+        "accuracy": 0.9245,
+        "macro_precision": 0.9055,
+        "macro_recall": 0.8861,
+        "macro_f1": 0.8943,
+        "benign_fpr": 0.0576,
+        "confusion_matrix_raw": [
+          [
+            8482,
+            14,
+            1,
+            479,
+            4,
+            20
+          ],
+          [
+            9,
+            4967,
+            0,
+            23,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            2388,
+            0,
+            12,
+            0
+          ],
+          [
+            882,
+            2,
+            0,
+            716,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1000,
+            0
+          ],
+          [
+            28,
+            0,
+            0,
+            34,
+            0,
+            938
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.9424,
+            0.0016,
+            0.0001,
+            0.0532,
+            0.0004,
+            0.0022
+          ],
+          [
+            0.0018,
+            0.9934,
+            0.0,
+            0.0046,
+            0.0002,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.995,
+            0.0,
+            0.005,
+            0.0
+          ],
+          [
+            0.5512,
+            0.0012,
+            0.0,
+            0.4475,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.028,
+            0.0,
+            0.0,
+            0.034,
+            0.0,
+            0.938
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9022,
+            "recall": 0.9424,
+            "f1_score": 0.9219,
+            "support": 9000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.9968,
+            "recall": 0.9934,
+            "f1_score": 0.9951,
+            "support": 5000
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.9996,
+            "recall": 0.995,
+            "f1_score": 0.9973,
+            "support": 2400
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5719,
+            "recall": 0.4475,
+            "f1_score": 0.5021,
+            "support": 1600
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.9833,
+            "recall": 1.0,
+            "f1_score": 0.9916,
+            "support": 1000
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.9791,
+            "recall": 0.938,
+            "f1_score": 0.9581,
+            "support": 1000
+          }
+        ]
+      },
+      "eval_bot": {
+        "accuracy": 0.9916,
+        "macro_precision": 0.9851,
+        "macro_recall": 0.975,
+        "macro_f1": 0.9789,
+        "benign_fpr": 0.0,
+        "confusion_matrix_raw": [
+          [
+            8000,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            6979,
+            0,
+            5,
+            0,
+            10
+          ],
+          [
+            0,
+            0,
+            2400,
+            0,
+            0,
+            0
+          ],
+          [
+            77,
+            0,
+            0,
+            854,
+            0,
+            69
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            600,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            999
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0009,
+            0.997,
+            0.0,
+            0.0007,
+            0.0,
+            0.0014
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.077,
+            0.0,
+            0.0,
+            0.854,
+            0.0,
+            0.069
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.001,
+            0.0,
+            0.0,
+            0.0,
+            0.999
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.9897,
+            "recall": 1.0,
+            "f1_score": 0.9948,
+            "support": 8000
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.9999,
+            "recall": 0.997,
+            "f1_score": 0.9984,
+            "support": 7000
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0,
+            "support": 2400
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.9942,
+            "recall": 0.854,
+            "f1_score": 0.9188,
+            "support": 1000
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0,
+            "support": 600
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.9267,
+            "recall": 0.999,
+            "f1_score": 0.9615,
+            "support": 1000
+          }
+        ]
+      },
+      "eval_combined": {
+        "accuracy": 0.8113,
+        "macro_precision": 0.8226,
+        "macro_recall": 0.7463,
+        "macro_f1": 0.7703,
+        "benign_fpr": 0.1444,
+        "confusion_matrix_raw": [
+          [
+            54509,
+            278,
+            290,
+            757,
+            16,
+            7861
+          ],
+          [
+            1322,
+            18451,
+            272,
+            3312,
+            6,
+            186
+          ],
+          [
+            323,
+            1279,
+            8437,
+            1151,
+            109,
+            95
+          ],
+          [
+            2928,
+            69,
+            223,
+            10108,
+            14,
+            835
+          ],
+          [
+            2002,
+            115,
+            5,
+            0,
+            2361,
+            2
+          ],
+          [
+            1607,
+            58,
+            25,
+            2193,
+            3,
+            23674
+          ]
+        ],
+        "confusion_matrix_norm": [
+          [
+            0.8556,
+            0.0044,
+            0.0046,
+            0.0119,
+            0.0003,
+            0.1234
+          ],
+          [
+            0.0561,
+            0.7835,
+            0.0116,
+            0.1406,
+            0.0003,
+            0.0079
+          ],
+          [
+            0.0283,
+            0.1123,
+            0.7405,
+            0.101,
+            0.0096,
+            0.0083
+          ],
+          [
+            0.2065,
+            0.0049,
+            0.0157,
+            0.713,
+            0.001,
+            0.0589
+          ],
+          [
+            0.4464,
+            0.0256,
+            0.0011,
+            0.0,
+            0.5264,
+            0.0004
+          ],
+          [
+            0.0583,
+            0.0021,
+            0.0009,
+            0.0796,
+            0.0001,
+            0.859
+          ]
+        ],
+        "per_class": [
+          {
+            "class_id": 0,
+            "class_name": "Benign / Normal",
+            "mitre_tactic": "Benign Baseline",
+            "mitre_technique": "N/A (Legitimate Traffic)",
+            "precision": 0.8695,
+            "recall": 0.8556,
+            "f1_score": 0.8625,
+            "support": 63711
+          },
+          {
+            "class_id": 1,
+            "class_name": "Denial of Service (DoS)",
+            "mitre_tactic": "TA0040: Impact",
+            "mitre_technique": "T1498 (Network DoS), T1499 (Endpoint DoS)",
+            "precision": 0.9112,
+            "recall": 0.7835,
+            "f1_score": 0.8425,
+            "support": 23549
+          },
+          {
+            "class_id": 2,
+            "class_name": "Reconnaissance & Probing",
+            "mitre_tactic": "TA0043/TA0007: Recon & Discovery",
+            "mitre_technique": "T1595 (Active Scanning), T1046 (Network Service Discovery)",
+            "precision": 0.9119,
+            "recall": 0.7405,
+            "f1_score": 0.8173,
+            "support": 11394
+          },
+          {
+            "class_id": 3,
+            "class_name": "Exploits & PrivEsc",
+            "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc",
+            "mitre_technique": "T1190 (Exploit Public-Facing App), T1068 (Privilege Escalation)",
+            "precision": 0.5769,
+            "recall": 0.713,
+            "f1_score": 0.6378,
+            "support": 14177
+          },
+          {
+            "class_id": 4,
+            "class_name": "Credential Abuse (R2L)",
+            "mitre_tactic": "TA0006/TA0001: Credential Access & R2L",
+            "mitre_technique": "T1110 (Brute Force), T1078 (Valid Accounts)",
+            "precision": 0.941,
+            "recall": 0.5264,
+            "f1_score": 0.6752,
+            "support": 4485
+          },
+          {
+            "class_id": 5,
+            "class_name": "Malware, C2 & Botnet",
+            "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement",
+            "mitre_technique": "T1071 (Application Layer Protocol), T1210 (Remote Services)",
+            "precision": 0.725,
+            "recall": 0.859,
+            "f1_score": 0.7863,
+            "support": 27560
+          }
+        ]
+      }
+    }
+  },
+  "feature_importances": [
+    {
+      "feature": "state_established",
+      "gain": 1755.47,
+      "weight": 321
+    },
+    {
+      "feature": "service_dns",
+      "gain": 1089.94,
+      "weight": 356
+    },
+    {
+      "feature": "proto_icmp",
+      "gain": 683.55,
+      "weight": 92
+    },
+    {
+      "feature": "service_ftp",
+      "gain": 425.22,
+      "weight": 419
+    },
+    {
+      "feature": "state_no-reply",
+      "gain": 389.62,
+      "weight": 209
+    },
+    {
+      "feature": "state_other",
+      "gain": 274.15,
+      "weight": 245
+    },
+    {
+      "feature": "state_reset",
+      "gain": 257.92,
+      "weight": 220
+    },
+    {
+      "feature": "signed_log_bytes_ratio",
+      "gain": 239.79,
+      "weight": 3284
+    },
+    {
+      "feature": "log_bytes_forward",
+      "gain": 210.9,
+      "weight": 5928
+    },
+    {
+      "feature": "service_other",
+      "gain": 171.95,
+      "weight": 490
+    },
+    {
+      "feature": "proto_tcp",
+      "gain": 170.9,
+      "weight": 451
+    },
+    {
+      "feature": "proto_other",
+      "gain": 164.32,
+      "weight": 587
+    },
+    {
+      "feature": "service_http",
+      "gain": 127.69,
+      "weight": 712
+    },
+    {
+      "feature": "service_smtp",
+      "gain": 126.19,
+      "weight": 324
+    },
+    {
+      "feature": "log_duration",
+      "gain": 102.56,
+      "weight": 4069
+    },
+    {
+      "feature": "log_bytes_backward",
+      "gain": 72.83,
+      "weight": 3060
+    },
+    {
+      "feature": "proto_udp",
+      "gain": 60.7,
+      "weight": 341
+    },
+    {
+      "feature": "service_ssh",
+      "gain": 11.35,
+      "weight": 35
+    },
+    {
+      "feature": "service_https_ssl",
+      "gain": 10.5,
+      "weight": 39
+    }
+  ],
+  "feature_importances_model7": [
+    {
+      "feature": "state_established",
+      "gain": 3634.63,
+      "weight": 362
+    },
+    {
+      "feature": "service_dns",
+      "gain": 1532.07,
+      "weight": 355
+    },
+    {
+      "feature": "service_ssh",
+      "gain": 761.03,
+      "weight": 87
+    },
+    {
+      "feature": "signed_log_bytes_ratio",
+      "gain": 543.81,
+      "weight": 3102
+    },
+    {
+      "feature": "state_reset",
+      "gain": 473.54,
+      "weight": 311
+    },
+    {
+      "feature": "proto_icmp",
+      "gain": 463.34,
+      "weight": 82
+    },
+    {
+      "feature": "state_other",
+      "gain": 454.97,
+      "weight": 241
+    },
+    {
+      "feature": "state_no-reply",
+      "gain": 447.82,
+      "weight": 449
+    },
+    {
+      "feature": "proto_udp",
+      "gain": 376.79,
+      "weight": 386
+    },
+    {
+      "feature": "log_bytes_forward",
+      "gain": 349.2,
+      "weight": 6176
+    },
+    {
+      "feature": "service_other",
+      "gain": 303.11,
+      "weight": 703
+    },
+    {
+      "feature": "proto_tcp",
+      "gain": 297.72,
+      "weight": 404
+    },
+    {
+      "feature": "log_bytes_backward",
+      "gain": 280.89,
+      "weight": 3384
+    },
+    {
+      "feature": "service_ftp",
+      "gain": 275.36,
+      "weight": 516
+    },
+    {
+      "feature": "service_http",
+      "gain": 208.99,
+      "weight": 722
+    },
+    {
+      "feature": "proto_other",
+      "gain": 205.89,
+      "weight": 747
+    },
+    {
+      "feature": "log_duration",
+      "gain": 136.48,
+      "weight": 4651
+    },
+    {
+      "feature": "service_https_ssl",
+      "gain": 134.18,
+      "weight": 258
+    },
+    {
+      "feature": "service_smtp",
+      "gain": 54.17,
+      "weight": 394
+    }
+  ]
+}
