@@ -1,22 +1,29 @@
-# Data Pipeline: NSL-KDD + UNSW-NB15
+# Data Pipeline: Quad-Dataset (NSL-KDD + UNSW-NB15 + CIC-IDS2017 + BoT-IoT)
 
-คู่มือ: [NSL-KDD](NSL-KDD/docs/dataset_guide.md) · [UNSW-NB15](UNSW-NB15/docs/dataset_guide.md) · [Dataset กลาง](common/docs/central_dataset_guide.md)
+คู่มือ: [NSL-KDD](NSL-KDD/docs/dataset_guide.md) · [UNSW-NB15](UNSW-NB15/docs/dataset_guide.md) · [CIC-IDS2017](CIC-IDS2017/docs/dataset_guide.md) · [BoT-IoT](BoT-IoT/docs/dataset_guide.md) · [Dataset กลาง (/CENTRAL)](CENTRAL/docs/central_dataset_guide.md)
 
-ขอบเขตปัจจุบันของ pipeline มี **2 datasets เท่านั้น**: NSL-KDD เป็นชุดที่มี raw data และผลทดลองเดิมอยู่แล้ว ส่วน UNSW-NB15 เป็นชุดที่สองสำหรับทดลองแปลงข้อมูลข้ามแหล่งและตรวจความเข้ากันได้ของ feature กลาง
+ขอบเขตของ pipeline รองรับ **4 Benchmark Datasets ครบวงจร**:
+1. **NSL-KDD**: ชุดข้อมูลคลาสสิกสำหรับตรวจจับทราฟฟิกเครือข่ายระดับ Host/OS
+2. **UNSW-NB15**: ชุดข้อมูลเครือข่ายสมัยใหม่ ครอบคลุมการโจมตีระดับแอปพลิเคชันและมัลแวร์
+3. **CIC-IDS2017**: ชุดข้อมูลทราฟฟิกขนาดใหญ่ บันทึกพฤติกรรมการโจมตี DoS, Recon, Exploits และ Brute-force
+4. **BoT-IoT**: ชุดข้อมูลเครือข่ายอินเทอร์เน็ตของสรรพสิ่ง (IoT) จากเซ็นเซอร์อัจฉริยะ
 
 ## มองภาพการทำงานใน 10 วินาที
 
 ```mermaid
 flowchart LR
-    A[NSL-KDD] --> A1[EDA → Cleansing → Harmonization]
-    B[UNSW-NB15] --> B1[EDA → Cleansing → Harmonization]
-    A1 --> C[ตรวจสอบและรวม]
-    B1 --> C
-    C --> D[Train / Validation / Test]
-    D --> E[Feature Engineering กลาง]
-    E --> F[X features]
-    E --> G[y labels แยก]
-    E --> H[metadata แยก]
+    A[NSL-KDD] --> A1[Cleansing → Harmonization]
+    B[UNSW-NB15] --> B1[Cleansing → Harmonization]
+    C[CIC-IDS2017] --> C1[Cleansing → Harmonization]
+    D[BoT-IoT] --> D1[Cleansing → Harmonization]
+    A1 --> M[CENTRAL Build: รวม 747,504 โฟลว์]
+    B1 --> M
+    C1 --> M
+    D1 --> M
+    M --> S[Splits: train / validation / test / train_full]
+    S --> BSMOTE[Borderline-SMOTE: สังเคราะห์ Class 4 R2L]
+    BSMOTE --> SMOTE_SPLIT[train_smote / train_full_smote]
+    SMOTE_SPLIT --> ML[Machine Learning Models: XGBoost / LightGBM]
 ```
 
 ตัวอย่างหนึ่งแถวก่อนและหลังจัดมาตรฐาน (ตัวเลขเป็น **ตัวอย่างประกอบ** ไม่ใช่สถิติที่คำนวณจากไฟล์จริง):

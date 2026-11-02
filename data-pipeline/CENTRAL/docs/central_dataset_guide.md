@@ -1,8 +1,8 @@
-# คู่มือ Dataset กลาง: รวม NSL-KDD และ UNSW-NB15
+# คู่มือ Dataset กลาง (/CENTRAL): รวม 4 ชุดข้อมูล (NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT)
 
-เอกสารนี้อธิบายว่า “dataset กลาง” ในโปรเจกต์หมายถึงอะไร ข้อมูลเดินทางจากแต่ละชุดเข้ามารวมกันอย่างไร คอลัมน์ใดเป็นข้อมูลให้โมเดล (`X`), คอลัมน์ใดเป็นคำตอบ (`y`) และจุดใดที่ต้องระวังเมื่อใช้ Isolation Forest แบบ unsupervised
+เอกสารนี้อธิบายโครงสร้างของ **Dataset กลาง (/CENTRAL)** ซึ่งรวบรวมทราฟฟิกเครือข่าย 747,504 โฟลว์ จาก 4 ชุดข้อมูลมาตรฐาน และสังเคราะห์กลุ่มตัวอย่างส่วนน้อยด้วย **Borderline-SMOTE** บนฟีเจอร์ร่วม 19 มิติ และจัดหมวดหมู่ภัยคุกคามตาม **MITRE ATT&CK 6-Class Taxonomy**
 
-> **สถานะจากการรันล่าสุด:** ทั้ง NSL-KDD และ UNSW-NB15 ผ่าน readiness check และรวมได้ 406,190 records ดูค่าปัจจุบันได้จาก `common/output/reports/dataset_readiness.csv` และ `build_report.json` ทุกครั้ง เพราะสถานะอาจเปลี่ยนเมื่อไฟล์ต้นทางหรือ contract เปลี่ยน
+> **สถานะจากการรันล่าสุด:** ทั้ง 4 Datasets (NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT) ผ่านการตรวจสอบ Cleansing และ Harmonization ครบ 100% รวม 747,504 records และสร้างชุดข้อมูลสุ่มตัวอย่าง Borderline-SMOTE สำเร็จที่ 629,582 records (train_full_smote) และ 511,643 records (train_smote) โดยขยาย Class 4: Credential Abuse (R2L) เป็น 40,000 ตัวอย่าง
 
 ข้อมูลดิบและผลลัพธ์ pipeline ไม่ถูกอัปโหลดเข้า Git; สมาชิกที่ clone repository ใหม่ต้องเตรียมไฟล์ raw และรัน notebook ก่อน รายงานตัวเลขข้างต้นเป็นผลจากเครื่องที่ตรวจล่าสุด ไม่ใช่ไฟล์ output ที่รับประกันว่าจะอยู่ในทุก clone
 
