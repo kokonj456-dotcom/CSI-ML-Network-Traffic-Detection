@@ -208,3 +208,4 @@ python data-pipeline/build_quad_dataset.py
 * **ชุด Test สากล (4 Datasets)**: `data-pipeline/CENTRAL/output/splits/test/` (144,876 โฟลว์)
 * **เมทริกซ์ 19 ฟีเจอร์สำเร็จรูป**: `data-pipeline/CENTRAL/output/smote/features_encoded_19.csv`
 * **รายงานสถิติ SMOTE**: `data-pipeline/CENTRAL/output/smote/smote_report.json`
+
