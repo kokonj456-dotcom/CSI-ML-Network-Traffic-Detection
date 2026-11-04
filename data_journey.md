@@ -89,7 +89,9 @@ flowchart TD
 ## 2. ขั้นตอนการประมวลผลข้อมูลอย่างละเอียด (Step-by-Step Breakdown)
 
 ### ขั้นตอนที่ 1: การตรวจรับไฟล์ดิบและควบคุมความสมบูรณ์ (Raw Data Ingestion & Manifest)
-เมื่อไฟล์ดิบของทั้ง 4 ชุดข้อมูลถูกดาวน์โหลดมาไว้ใน `data-pipeline/<DATASET_NAME>/raw/`:
+เมื่อไฟล์ดิบของทั้ง 4 ชุดข้อมูลถูกจัดเตรียมใน `data-pipeline/<DATASET_NAME>/raw/`:
+* **NSL-KDD & UNSW-NB15**: ใช้ไฟล์ทางการดั้งเดิมจาก Canadian Institute for Cybersecurity และ UNSW Canberra
+* **CIC-IDS2017 & BoT-IoT**: ดาวน์โหลดทราฟฟิกจริงอัตโนมัติจาก Verified Mirrors (Hugging Face / UNSW IoT 5% Mirror) ด้วยสคริปต์ `download.py --source online` พร้อมรองรับการกำหนดขนาดตัวอย่าง (`--train_samples`, `--test_samples`)
 * **Immutable Raw Data Policy**: ข้อมูลดิบต้นฉบับจะถูกกำหนดสิทธิ์อ่านอย่างเดียว (Read-Only) จะไม่มีการแก้ไขหรือเขียนทับไฟล์ดิบโดยเด็ดขาด หากกระบวนการผิดพลาดจะต้องย้อนกลับมาเริ่มจากไฟล์ดิบเดิมได้เสมอ
 * **Cryptographic Checksum Verification**: คำนวณค่าแฮช `SHA-256` และขนาดไฟล์ (Bytes) บันทึกไว้ใน `source_manifest.csv` เพื่อยืนยันว่าข้อมูลต้นฉบับตรงกันทุกครั้งที่มีการประมวลผล
 

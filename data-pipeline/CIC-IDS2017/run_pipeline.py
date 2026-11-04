@@ -28,6 +28,22 @@ def sha256_file(path: Path) -> str:
             digest.update(chunk)
     return digest.hexdigest()
 
+def map_cic_attack_family(cat_str: str) -> str:
+    c = str(cat_str).lower().strip()
+    if "benign" in c:
+        return "Normal"
+    elif "patator" in c:
+        return "R2L"
+    elif any(term in c for term in ["hulk", "goldeneye", "slowloris", "slowhttp", "ddos", "dos", "heartbleed"]):
+        return "DoS"
+    elif "portscan" in c or "scan" in c:
+        return "Probe"
+    elif any(term in c for term in ["web attack", "injection", "xss", "sql"]):
+        return "Exploits"
+    elif "bot" in c or "infiltration" in c:
+        return "Generic"
+    return "Generic"
+
 def map_port_to_service(port: int) -> str:
     if port == 53:
         return "dns"
@@ -145,7 +161,7 @@ def run_harmonization():
 
         # 2. Labels Table
         binary = df["label"].astype(int)
-        src_cat = df["attack_cat"].astype(str)
+        src_cat = df["attack_cat"].apply(map_cic_attack_family)
         lbl_df = pd.DataFrame({
             "record_id": rec_ids,
             "label_raw": df["attack_cat"].astype(str),

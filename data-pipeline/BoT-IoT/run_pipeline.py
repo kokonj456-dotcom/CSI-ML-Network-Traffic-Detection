@@ -44,6 +44,18 @@ def map_port_to_service(port: int) -> str:
     else:
         return "other"
 
+def map_bot_attack_family(cat_str: str) -> str:
+    c = str(cat_str).lower().strip()
+    if "normal" in c:
+        return "Normal"
+    elif "theft" in c:
+        return "R2L"
+    elif "dos" in c:
+        return "DoS"
+    elif "recon" in c or "scan" in c:
+        return "Reconnaissance"
+    return "Generic"
+
 def map_state_to_group(state_str: str) -> str:
     s = str(state_str).upper()
     if s in ("CON", "FIN", "ESTABLISHED"):
@@ -155,7 +167,7 @@ def run_harmonization():
 
         # 2. Labels Table
         binary = df["attack"].astype(int)
-        src_cat = df["category"].astype(str)
+        src_cat = df["category"].apply(map_bot_attack_family)
         lbl_df = pd.DataFrame({
             "record_id": rec_ids,
             "label_raw": df["subcategory"].astype(str),
