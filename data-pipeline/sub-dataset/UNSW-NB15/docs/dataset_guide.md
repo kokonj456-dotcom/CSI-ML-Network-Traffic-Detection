@@ -131,7 +131,7 @@ pipeline รุ่นนี้เก็บคอลัมน์ต้นฉบ�
 2. แปลงข้อความว่างและ sentinel เช่น `nan`, `null`, `n/a`, `inf` เป็น missing; ไม่เติมศูนย์แทน missing
 3. เพิ่ม `orig_row_id` จาก path ของไฟล์และลำดับแถวเดิม และติด `duplicate_flag` เมื่อพบ record เนื้อหาซ้ำในไฟล์เดียวกัน
 4. **ไม่ลบแถวซ้ำ** และไม่ตัด outlier อัตโนมัติ เพื่อเก็บ audit trail; ตรวจจำนวนแถวก่อน/หลังใน `cleansing_audit.csv`
-5. บันทึกไฟล์ cleansed แบบ CSV ทีละ chunk พร้อม checksum manifest ของ raw input และรายงาน audit ไว้ใน `UNSW-NB15/output/cleansing/`
+5. บันทึกไฟล์ cleansed แบบ CSV ทีละ chunk พร้อม checksum manifest ของ raw input และรายงาน audit ไว้ใน `data-pipeline/sub-dataset/UNSW-NB15/output/cleansing/`
 
 การทำซ้ำถูกทำเครื่องหมาย ไม่ได้แปลว่าต้องลบทิ้งเสมอ การตัดแถวซ้ำควรเป็นการทดลองที่ระบุกฎชัดและประเมินผลแยก
 
@@ -162,7 +162,7 @@ python data-pipeline/sub-dataset/UNSW-NB15/download.py
 4. `data-pipeline/common/build_dataset.ipynb`
 5. `data-pipeline/common/feature_engineering.ipynb`
 
-ผลหลักของ UNSW อยู่ใต้ `UNSW-NB15/output/cleansing/` และ `UNSW-NB15/output/harmonized/`; ผลรวมและ feature สำหรับโมเดลอยู่ใต้ `common/output/` ดูจำนวนแถวและความพร้อมจาก `common/output/reports/dataset_readiness.csv`, `feature_compatibility.json` และ `build_report.json`
+ผลหลักของ UNSW อยู่ใต้ `data-pipeline/sub-dataset/UNSW-NB15/output/cleansing/` และ `data-pipeline/sub-dataset/UNSW-NB15/output/harmonized/`; ผลรวมและ feature สำหรับโมเดลอยู่ใต้ `common/output/` ดูจำนวนแถวและความพร้อมจาก `common/output/reports/dataset_readiness.csv`, `feature_compatibility.json` และ `build_report.json`
 
 ## 8. ข้อจำกัดที่ควรจำ
 

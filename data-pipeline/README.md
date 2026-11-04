@@ -38,7 +38,7 @@ flowchart LR
 | NSL-KDD | `src_bytes=120`, `dst_bytes=30`, `label=neptune` | `bytes_forward=120`, `bytes_backward=30`; label แยกเป็น `DoS/DDoS` | ชื่อกลางทำให้โค้ด downstream ใช้ schema เดียวกันได้; label แยกไว้จึงไม่ปนเข้า `X` |
 | UNSW-NB15 | `sbytes=120`, `dbytes=30`, `label=1`, `attack_cat=DoS` | `bytes_forward=120`, `bytes_backward=30`; label แยกเป็น `DoS/DDoS` | ค่า bytes ใช้คำนวณ feature ได้ด้วยสูตรเดียวกัน; label ใช้ประเมินภายหลัง ไม่ใช้แบ่ง split |
 
-เครื่องที่ใช้ตรวจรอบนี้มี raw ของ UNSW-NB15 แล้ว และรายงานล่าสุดยืนยันว่า NSL-KDD กับ UNSW-NB15 ผ่าน readiness พร้อมรวม 406,190 records อย่างไรก็ตาม raw data และ output ถูกละเว้นจาก Git; หลัง clone สมาชิกต้องเตรียม raw ตามสิทธิ์การใช้งานและรัน pipeline เอง จากนั้นตรวจหัวข้อ [ความพร้อมของข้อมูล](common/docs/central_dataset_guide.md#8-พร้อมรวม-ในรายงานหมายถึงอะไร) ก่อนนำผลไปใช้
+เครื่องที่ใช้ตรวจรอบนี้มี raw ของ UNSW-NB15 แล้ว และรายงานล่าสุดยืนยันว่า NSL-KDD กับ UNSW-NB15 ผ่าน readiness พร้อมรวม 406,190 records อย่างไรก็ตาม raw data และ output ถูกละเว้นจาก Git; หลัง clone สมาชิกต้องเตรียม raw ตามสิทธิ์การใช้งานและรัน pipeline เอง จากนั้นตรวจหัวข้อ [ความพร้อมของข้อมูล](CENTRAL/docs/central_dataset_guide.md#8-พร้อมรวม-ในรายงานหมายถึงอะไร) ก่อนนำผลไปใช้
 
 ## ขั้นตอนทั้งหมด: จากไฟล์ดิบจนถึงข้อมูลที่โมเดลอ่านได้
 
@@ -175,7 +175,7 @@ Harmonization ไม่ใช่แค่เปลี่ยนชื่อคอ
 
 ตัวอย่างจำลอง: ถ้า `bytes_forward=120` และ `bytes_backward=30`, signed ratio จะได้ `ln(121)-ln(31)≈1.36`; เมื่อสลับ bytes สองทิศทางจะได้ค่าประมาณ `-1.36` จึงแสดงความไม่สมดุลได้สองด้าน
 
-โปรไฟล์หลักพัก `log_total_bytes` ไว้เพราะซ้ำกับ bytes สองทิศทาง และพัก `log_bytes_per_second` เพราะ duration ศูนย์ที่แทนด้วย epsilon อาจทำให้ความหมายของอัตราคลาดเคลื่อน ปัจจุบัน Notebook สร้างเฉพาะ 19 model features ของ `joint_v1`; ดูสูตรและขั้นตอนใน [คู่มือ Dataset กลาง](common/docs/central_dataset_guide.md#7-feature-engineering-กลาง--สร้างและปรับสเกล-feature).
+โปรไฟล์หลักพัก `log_total_bytes` ไว้เพราะซ้ำกับ bytes สองทิศทาง และพัก `log_bytes_per_second` เพราะ duration ศูนย์ที่แทนด้วย epsilon อาจทำให้ความหมายของอัตราคลาดเคลื่อน ปัจจุบัน Notebook สร้างเฉพาะ 19 model features ของ `joint_v1`; ดูสูตรและขั้นตอนใน [คู่มือ Dataset กลาง](CENTRAL/docs/central_dataset_guide.md#7-feature-engineering-กลาง--สร้างและปรับสเกล-feature).
 
 `StandardScaler` และ `OneHotEncoder` เรียนรู้จาก `train` เท่านั้น แล้วใช้ transformer ชุดเดิมแปลง `train_full`, `validation` และ `test` เพื่อไม่ให้ชุดประเมินมีอิทธิพลต่อค่าที่เรียนรู้ หาก feature ที่เลือกมี missing/infinite ระบบหยุดพร้อมรายงาน ไม่เติมศูนย์หรือลบแถวเงียบ ๆ
 

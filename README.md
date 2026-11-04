@@ -34,7 +34,7 @@ CSI_ML_Final/
 
 2. สำหรับ NSL-KDD ให้รัน EDA, Cleansing และ Harmonization; สำหรับ UNSW-NB15 ให้วางไฟล์ train/test ทางการใน `data-pipeline/sub-dataset/UNSW-NB15/raw/` แล้วรัน `download.py`, EDA, Cleansing และ Harmonization ตามลำดับ
 
-3. สำหรับ Dataset กลาง ติดตั้ง `data-pipeline/requirements.txt` แล้วรัน `data-pipeline/common/build_dataset.ipynb` และ `feature_engineering.ipynb` ตามลำดับ ขอบเขตปัจจุบันมี NSL-KDD และ UNSW-NB15 เท่านั้น; อ่าน [คู่มือ pipeline](data-pipeline/README.md) สำหรับขั้นตอนและสถานะข้อมูล
+3. สำหรับ Dataset กลาง ติดตั้ง dependency จาก `data-pipeline/requirements.txt` แล้วรัน `python data-pipeline/build_quad_dataset.py` เพื่อเตรียมข้อมูลและสร้าง split กลาง; อ่าน [คู่มือ pipeline](data-pipeline/README.md) และ [แผนผังไฟล์](data-pipeline/PIPELINE_FILE_GUIDE.md) ก่อนใช้งาน
 
 4. สำหรับ Isolation Forest/MLP รุ่นที่ใช้ NSL-KDD เดิม ให้รัน NSL `cleansing.ipynb` และ `feature_engineering.ipynb` ก่อน แล้วติดตั้ง dependency และรัน Isolation Forest:
 
@@ -43,7 +43,7 @@ CSI_ML_Final/
    python model/isolation-forest/train.py --alert-rate 0.05 --clusters 5
    ```
 
-ผลลัพธ์ของ NSL-KDD อยู่ใต้ `data-pipeline/sub-dataset/NSL-KDD/output/` แยกเป็น `cleansing/`, `harmonized/`, `feature_engineering/` และ `model_runs/` ส่วนชุดข้อมูลกลางอยู่ใน `data-pipeline/common/output/`; raw data และผลลัพธ์ที่สร้างซ้ำได้ถูกละเว้นจาก Git.
+ผลลัพธ์ของ NSL-KDD อยู่ใต้ `data-pipeline/sub-dataset/NSL-KDD/output/` แยกเป็น `cleansing/`, `harmonized/`, `feature_engineering/` และ `model_runs/` ส่วนชุดข้อมูลกลางอยู่ใน `data-pipeline/CENTRAL/output/`; raw data และผลลัพธ์ที่สร้างซ้ำได้ถูกละเว้นจาก Git.
 
 ## Dataset กลาง
 
