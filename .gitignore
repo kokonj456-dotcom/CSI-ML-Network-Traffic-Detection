@@ -33,17 +33,17 @@ data-pipeline/**/output/
 dataset/rawdata/
 data-pipeline/output/
 # Keep the existing MLP reports and plots tracked at their new location.
-!data-pipeline/NSL-KDD/output/
-data-pipeline/NSL-KDD/output/*
-!data-pipeline/NSL-KDD/output/model_runs/
-data-pipeline/NSL-KDD/output/model_runs/*
-!data-pipeline/NSL-KDD/output/model_runs/mlp/
-data-pipeline/NSL-KDD/output/model_runs/mlp/*
-!data-pipeline/NSL-KDD/output/model_runs/mlp/results_binary.json
-!data-pipeline/NSL-KDD/output/model_runs/mlp/results_multiclass.json
-!data-pipeline/NSL-KDD/output/model_runs/mlp/plots/
-data-pipeline/NSL-KDD/output/model_runs/mlp/plots/*
-!data-pipeline/NSL-KDD/output/model_runs/mlp/plots/*.png
+!data-pipeline/sub-dataset/NSL-KDD/output/
+data-pipeline/sub-dataset/NSL-KDD/output/*
+!data-pipeline/sub-dataset/NSL-KDD/output/model_runs/
+data-pipeline/sub-dataset/NSL-KDD/output/model_runs/*
+!data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/
+data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/*
+!data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/results_binary.json
+!data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/results_multiclass.json
+!data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/plots/
+data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/plots/*
+!data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/plots/*.png
 # Trained model artifacts and experiment logs
 # Ignore model artifacts by default
 *.pkl

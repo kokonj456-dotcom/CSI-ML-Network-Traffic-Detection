@@ -135,7 +135,7 @@ def run_experiment(task="multiclass", epochs=30, batch_size=256, lr=1e-3, seed=4
     print(f"=======================================================")
     
     script_dir = Path(__file__).resolve().parent
-    data_dir = script_dir.parent.parent / "data-pipeline" / "NSL-KDD" / "output" / "feature_engineering"
+    data_dir = script_dir.parent.parent / "data-pipeline" / "sub-dataset" / "NSL-KDD" / "output" / "feature_engineering"
     model_output_dir = data_dir.parent / "model_runs" / "mlp"
     plots_dir = model_output_dir / "plots"
     model_output_dir.mkdir(parents=True, exist_ok=True)

@@ -2,7 +2,7 @@
 
 คู่มือนี้อธิบายว่า UNSW-NB15 มาจากไหน แต่ละฟิลด์ที่ pipeline สนใจหมายถึงอะไร ผ่านการเตรียมข้อมูลอย่างไร และข้อมูลใดถูกส่งต่อไปยัง dataset กลาง เนื้อหาแยก **คำตอบจริงของชุดข้อมูล** ออกจาก **feature ที่โมเดลใช้** เพื่อไม่ให้ label รั่วเข้าโมเดล
 
-> **สถานะข้อมูลในโปรเจกต์:** ณ วันที่จัดทำเอกสาร โฟลเดอร์ `data-pipeline/UNSW-NB15/raw/` ยังไม่มีไฟล์ต้นทาง และรายงาน readiness ระบุว่า UNSW-NB15 ยังไม่พร้อม ดังนั้นตัวเลขสถิติของ UNSW ด้านล่างเป็นข้อมูลอ้างอิงจากหน้าโครงการ ไม่ใช่ผลคำนวณจากไฟล์ในเครื่อง รายงาน EDA จริงจะมีได้หลังวางไฟล์และรัน notebook
+> **สถานะข้อมูลในโปรเจกต์:** ณ วันที่จัดทำเอกสาร โฟลเดอร์ `data-pipeline/sub-dataset/UNSW-NB15/raw/` ยังไม่มีไฟล์ต้นทาง และรายงาน readiness ระบุว่า UNSW-NB15 ยังไม่พร้อม ดังนั้นตัวเลขสถิติของ UNSW ด้านล่างเป็นข้อมูลอ้างอิงจากหน้าโครงการ ไม่ใช่ผลคำนวณจากไฟล์ในเครื่อง รายงาน EDA จริงจะมีได้หลังวางไฟล์และรัน notebook
 
 ## มองเห็นเส้นทางข้อมูลและผลของการแปลง
 
@@ -41,7 +41,7 @@ UNSW-NB15 เป็นชุดข้อมูลสำหรับศึกษ�
 วางไฟล์ที่ดาวน์โหลดจากแหล่งที่ได้รับอนุญาตไว้ที่:
 
 ```text
-data-pipeline/UNSW-NB15/raw/
+data-pipeline/sub-dataset/UNSW-NB15/raw/
 ├── UNSW_NB15_training-set.csv
 └── UNSW_NB15_testing-set.csv
 ```
@@ -151,14 +151,14 @@ pipeline รุ่นนี้เก็บคอลัมน์ต้นฉบ�
 
 ```powershell
 python -m pip install -r data-pipeline/requirements.txt
-python data-pipeline/UNSW-NB15/download.py
+python data-pipeline/sub-dataset/UNSW-NB15/download.py
 ```
 
 จากนั้นเปิดและรัน notebook ตามลำดับ:
 
-1. `data-pipeline/UNSW-NB15/eda.ipynb`
-2. `data-pipeline/UNSW-NB15/cleansing.ipynb`
-3. `data-pipeline/UNSW-NB15/harmonization.ipynb`
+1. `data-pipeline/sub-dataset/UNSW-NB15/eda.ipynb`
+2. `data-pipeline/sub-dataset/UNSW-NB15/cleansing.ipynb`
+3. `data-pipeline/sub-dataset/UNSW-NB15/harmonization.ipynb`
 4. `data-pipeline/common/build_dataset.ipynb`
 5. `data-pipeline/common/feature_engineering.ipynb`
 

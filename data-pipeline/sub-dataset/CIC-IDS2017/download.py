@@ -13,7 +13,7 @@ import pandas as pd
 
 OFFICIAL_PAGE = "https://www.unb.ca/cic/datasets/ids-2017.html"
 RAW_DIR = Path(__file__).resolve().parent / "raw"
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 DATA_FILES = {
     "training": {

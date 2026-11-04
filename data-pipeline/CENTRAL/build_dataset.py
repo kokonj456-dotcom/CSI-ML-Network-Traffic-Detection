@@ -58,7 +58,7 @@ def main():
     feature_parts, label_parts, metadata_parts = [], [], []
 
     for name in DATASETS:
-        ds_dir = PROJECT_ROOT / "data-pipeline" / name / "output" / "harmonized"
+        ds_dir = PROJECT_ROOT / "data-pipeline" / "sub-dataset" / name / "output" / "harmonized"
         print(f"Loading {name} harmonized tables from: {ds_dir} ...")
 
         f_path = ds_dir / "features.csv"

@@ -1,10 +1,14 @@
 # คู่มือ Dataset กลาง (/CENTRAL): รวม 4 ชุดข้อมูล (NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT)
 
-เอกสารนี้อธิบายโครงสร้างของ **Dataset กลาง (/CENTRAL)** ซึ่งรวบรวมทราฟฟิกเครือข่าย 747,504 โฟลว์ จาก 4 ชุดข้อมูลมาตรฐาน และสังเคราะห์กลุ่มตัวอย่างส่วนน้อยด้วย **Borderline-SMOTE** บนฟีเจอร์ร่วม 19 มิติ และจัดหมวดหมู่ภัยคุกคามตาม **MITRE ATT&CK 6-Class Taxonomy**
+เอกสารนี้อธิบายโครงสร้างของ **Dataset กลาง (/CENTRAL)** ซึ่งนำตาราง harmonized จากชุดข้อมูลต้นทางมารวม แยก features/labels/metadata และเตรียม training splits; สามารถใช้ **Borderline-SMOTE** สร้างตัวอย่างสังเคราะห์ของ class ที่กำหนดได้
 
-> **สถานะจากการรันล่าสุด:** ทั้ง 4 Datasets (NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT) ผ่านการตรวจสอบ Cleansing และ Harmonization ครบ 100% รวม 747,504 records และสร้างชุดข้อมูลสุ่มตัวอย่าง Borderline-SMOTE สำเร็จที่ 629,582 records (train_full_smote) และ 511,643 records (train_smote) โดยขยาย Class 4: Credential Abuse (R2L) เป็น 40,000 ตัวอย่าง
+> **สถานะของตัวเลขเดิม:** 747,504, 629,582 และ 511,643 เป็นผลจากการรันก่อนหน้าใน working copy; CIC/BoT รอบนั้นมาจาก generator ที่สร้างข้อมูลตัวอย่าง ไม่ใช่ raw benchmark ทางการ และ output ปัจจุบันยังเป็นผลจากรอบเดิม เพราะยังไม่ได้ execute notebooks รุ่นที่จัดใหม่นี้ อย่าอ้างตัวเลขดังกล่าวเป็นผล benchmark ทางการ
 
-ข้อมูลดิบและผลลัพธ์ pipeline ไม่ถูกอัปโหลดเข้า Git; สมาชิกที่ clone repository ใหม่ต้องเตรียมไฟล์ raw และรัน notebook ก่อน รายงานตัวเลขข้างต้นเป็นผลจากเครื่องที่ตรวจล่าสุด ไม่ใช่ไฟล์ output ที่รับประกันว่าจะอยู่ในทุก clone
+ข้อมูลดิบและผลลัพธ์ pipeline ไม่ถูกอัปโหลดเข้า Git; สมาชิกที่ clone repository ใหม่ต้องเตรียมไฟล์ raw และรัน workflow ปัจจุบันก่อน ตัวเลขเดิมเป็นประวัติผลจาก working copy ไม่รับประกันว่าจะมีในทุก clone
+
+
+
+> **อัปเดตโครงสร้าง 4 พฤศจิกายน 2026:** cleansing/harmonization ของ CIC-IDS2017 และ BoT-IoT อยู่ใน `../../sub-dataset/CIC-IDS2017/*.ipynb` และ `../../sub-dataset/BoT-IoT/*.ipynb`; Borderline-SMOTE อยู่ใน `../borderline_smote.ipynb` และ master runner execute code cells เหล่านั้น ส่วน CENTRAL builder สี่ยังใช้ `build_dataset.py`. รายละเอียดเส้นทางปัจจุบันดู [`PIPELINE_FILE_GUIDE.md`](../../PIPELINE_FILE_GUIDE.md); ขั้นตอนที่อ้าง `common/` ด้านล่างเป็นเอกสาร workflow รุ่นก่อน
 
 ## ภาพรวม: หนึ่ง record เดินทางอย่างไร
 
@@ -243,8 +247,8 @@ Availability masks เช่น `has_packet_stats` อยู่ใน metadata �
 
 ```text
 data-pipeline/
-├── NSL-KDD/output/harmonized/        # harmonized triplet ของ NSL-KDD
-├── UNSW-NB15/output/harmonized/      # harmonized triplet ของ UNSW-NB15 เมื่อรันผ่าน
+├── sub-dataset/NSL-KDD/output/harmonized/        # harmonized triplet ของ NSL-KDD
+├── sub-dataset/UNSW-NB15/output/harmonized/      # harmonized triplet ของ UNSW-NB15 เมื่อรันผ่าน
 └── common/output/
     ├── harmonized/                   # ข้อมูลจาก source ที่พร้อมใน build
     ├── splits/{train,train_full,validation,test}/
@@ -263,7 +267,7 @@ data-pipeline/
 
 ```powershell
 python -m pip install -r data-pipeline/requirements.txt
-python data-pipeline/UNSW-NB15/download.py
+python data-pipeline/sub-dataset/UNSW-NB15/download.py
 ```
 
 จากนั้นรัน notebook ตามลำดับ: EDA → Cleansing → Harmonization ของแต่ละ dataset, แล้ว `common/build_dataset.ipynb`, และสุดท้าย `common/feature_engineering.ipynb` ตรวจไฟล์รายงานก่อนนำไปเทรนทุกครั้ง ถ้า UNSW ยังไม่มีไฟล์ ระบบควรแจ้ง incomplete/partial build ไม่ควรเรียกว่า combined dataset

@@ -51,15 +51,15 @@ Clean CSVs
 
 Notebook อ่านไฟล์ที่ได้จาก cleansing:
 
-- `data-pipeline/NSL-KDD/output/cleansing/KDDTrain_clean.csv`
-- `data-pipeline/NSL-KDD/output/cleansing/KDDTest_clean.csv`
-- `data-pipeline/NSL-KDD/output/cleansing/KDDTest-21_clean.csv`
+- `data-pipeline/sub-dataset/NSL-KDD/output/cleansing/KDDTrain_clean.csv`
+- `data-pipeline/sub-dataset/NSL-KDD/output/cleansing/KDDTest_clean.csv`
+- `data-pipeline/sub-dataset/NSL-KDD/output/cleansing/KDDTest-21_clean.csv`
 
 โฟลเดอร์ input และ output ถูกค้นจากตำแหน่งโปรเจกต์ จึงไม่จำเป็นต้องเขียน path ของเครื่องใครลงใน notebook ต้องรัน cleansing ก่อน หากไฟล์เหล่านี้ไม่มี notebook จะแจ้งให้ทำขั้นนั้นก่อน
 
 ### Output
 
-บันทึกไว้ที่ `data-pipeline/NSL-KDD/output/feature_engineering/`
+บันทึกไว้ที่ `data-pipeline/sub-dataset/NSL-KDD/output/feature_engineering/`
 
 | ไฟล์ | ใช้ทำอะไร |
 |---|---|
@@ -95,8 +95,8 @@ Notebook อ่านไฟล์ที่ได้จาก cleansing:
 ```python
 import pandas as pd
 
-X_train = pd.read_csv("data-pipeline/NSL-KDD/output/feature_engineering/KDDTrain_features.csv")
-train_targets = pd.read_csv("data-pipeline/NSL-KDD/output/feature_engineering/KDDTrain_targets.csv")
+X_train = pd.read_csv("data-pipeline/sub-dataset/NSL-KDD/output/feature_engineering/KDDTrain_features.csv")
+train_targets = pd.read_csv("data-pipeline/sub-dataset/NSL-KDD/output/feature_engineering/KDDTrain_targets.csv")
 y_train = train_targets["attack_family"]  # หรือเลือก is_attack / label
 ```
 
@@ -316,7 +316,7 @@ Notebook ตรวจสิ่งต่อไปนี้ก่อนบัน�
 ```python
 import pandas as pd
 
-base = "data-pipeline/NSL-KDD/output/feature_engineering"
+base = "data-pipeline/sub-dataset/NSL-KDD/output/feature_engineering"
 X_train = pd.read_csv(f"{base}/KDDTrain_features.csv")
 train_targets = pd.read_csv(f"{base}/KDDTrain_targets.csv")
 X_test = pd.read_csv(f"{base}/KDDTest_features.csv")

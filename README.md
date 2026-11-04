@@ -7,9 +7,13 @@
 ```text
 CSI_ML_Final/
 ├── data-pipeline/
-│   ├── NSL-KDD/                  # raw, notebooks, docs และ output ของ NSL
-│   ├── UNSW-NB15/                # raw และ pipeline เฉพาะ UNSW
-│   └── common/                   # notebook รวมข้อมูล, registry, contract และเอกสาร dataset กลาง
+│   ├── sub-dataset/
+│   │   ├── NSL-KDD/
+│   │   ├── UNSW-NB15/
+│   │   ├── CIC-IDS2017/
+│   │   └── BoT-IoT/
+│   ├── CENTRAL/                  # รวมและแบ่งชุดข้อมูลกลาง
+│   └── build_quad_dataset.py     # ตัวรัน pipeline หลัก
 ├── model/
 │   ├── README.md                 # แนวทางเพิ่มโมเดลของสมาชิกในทีม
 │   └── isolation-forest/
@@ -25,10 +29,10 @@ CSI_ML_Final/
 1. ดาวน์โหลด NSL-KDD จากโฟลเดอร์รากของ repository:
 
    ```powershell
-   python data-pipeline/NSL-KDD/download.py
+   python data-pipeline/sub-dataset/NSL-KDD/download.py
    ```
 
-2. สำหรับ NSL-KDD ให้รัน EDA, Cleansing และ Harmonization; สำหรับ UNSW-NB15 ให้วางไฟล์ train/test ทางการใน `data-pipeline/UNSW-NB15/raw/` แล้วรัน `download.py`, EDA, Cleansing และ Harmonization ตามลำดับ
+2. สำหรับ NSL-KDD ให้รัน EDA, Cleansing และ Harmonization; สำหรับ UNSW-NB15 ให้วางไฟล์ train/test ทางการใน `data-pipeline/sub-dataset/UNSW-NB15/raw/` แล้วรัน `download.py`, EDA, Cleansing และ Harmonization ตามลำดับ
 
 3. สำหรับ Dataset กลาง ติดตั้ง `data-pipeline/requirements.txt` แล้วรัน `data-pipeline/common/build_dataset.ipynb` และ `feature_engineering.ipynb` ตามลำดับ ขอบเขตปัจจุบันมี NSL-KDD และ UNSW-NB15 เท่านั้น; อ่าน [คู่มือ pipeline](data-pipeline/README.md) สำหรับขั้นตอนและสถานะข้อมูล
 
@@ -39,11 +43,11 @@ CSI_ML_Final/
    python model/isolation-forest/train.py --alert-rate 0.05 --clusters 5
    ```
 
-ผลลัพธ์ของ NSL-KDD อยู่ใต้ `data-pipeline/NSL-KDD/output/` แยกเป็น `cleansing/`, `harmonized/`, `feature_engineering/` และ `model_runs/` ส่วนชุดข้อมูลกลางอยู่ใน `data-pipeline/common/output/`; raw data และผลลัพธ์ที่สร้างซ้ำได้ถูกละเว้นจาก Git.
+ผลลัพธ์ของ NSL-KDD อยู่ใต้ `data-pipeline/sub-dataset/NSL-KDD/output/` แยกเป็น `cleansing/`, `harmonized/`, `feature_engineering/` และ `model_runs/` ส่วนชุดข้อมูลกลางอยู่ใน `data-pipeline/common/output/`; raw data และผลลัพธ์ที่สร้างซ้ำได้ถูกละเว้นจาก Git.
 
 ## Dataset กลาง
 
-โฟลเดอร์ `data-pipeline/common/` เก็บทะเบียน dataset, สัญญาความหมายของ feature, notebook รวมข้อมูล และผลลัพธ์กลาง การนำ NSL-KDD และ UNSW-NB15 เข้าร่วมจะผ่านการตรวจ schema, หน่วย, แถวซ้ำ และความพร้อมของ feature ก่อนสร้างไฟล์รวม ดูขั้นตอนและสถานะชุดข้อมูลได้ใน [`data-pipeline/README.md`](data-pipeline/README.md).
+โฟลเดอร์ `data-pipeline/CENTRAL/` เก็บ registry, feature contract, ตัวสร้างชุดข้อมูลกลาง, notebook Borderline-SMOTE และผลลัพธ์รวม การนำข้อมูลจากสี่ชุดเข้าร่วมจะผ่านการตรวจ schema และแบ่งชุดก่อนส่งต่อให้โมเดล ดูขั้นตอนและสถานะชุดข้อมูลได้ใน [`data-pipeline/README.md`](data-pipeline/README.md).
 
 ## Dashboard ที่วางแผนไว้
 

@@ -7,13 +7,13 @@ This experiment uses Isolation Forest as an **unsupervised anomaly scorer** and 
 1. Download the dataset if it is not already present:
 
    ```powershell
-   python data-pipeline/NSL-KDD/download.py
+   python data-pipeline/sub-dataset/NSL-KDD/download.py
    ```
 
 2. Run these notebooks in order:
 
-   - `data-pipeline/NSL-KDD/cleansing.ipynb`
-   - `data-pipeline/NSL-KDD/feature_engineering.ipynb`
+   - `data-pipeline/sub-dataset/NSL-KDD/cleansing.ipynb`
+   - `data-pipeline/sub-dataset/NSL-KDD/feature_engineering.ipynb`
 
 3. Install this experiment's dependencies and run it:
 
@@ -22,7 +22,7 @@ This experiment uses Isolation Forest as an **unsupervised anomaly scorer** and 
    python model/isolation-forest/train.py --alert-rate 0.05 --clusters 5
    ```
 
-   For a training-only walkthrough in one file, run `python model/isolation-forest/train_single.py` instead. It fits Isolation Forest on KDDTrain features only; it does not evaluate test data or create clusters. Its model and training configuration are saved under `data-pipeline/NSL-KDD/output/model_runs/isolation_forest_single/`.
+   For a training-only walkthrough in one file, run `python model/isolation-forest/train_single.py` instead. It fits Isolation Forest on KDDTrain features only; it does not evaluate test data or create clusters. Its model and training configuration are saved under `data-pipeline/sub-dataset/NSL-KDD/output/model_runs/isolation_forest_single/`.
 
 The scripts resolve data paths from their own locations. To start one while the current directory is elsewhere, invoke the Python file by its absolute path.
 
@@ -63,7 +63,7 @@ Run the experiment through `train.py`; implementation modules are grouped under 
 Generated reports are written to the ignored local directory:
 
 ```text
-data-pipeline/NSL-KDD/output/model_runs/isolation_forest/
+data-pipeline/sub-dataset/NSL-KDD/output/model_runs/isolation_forest/
 ```
 
 - `KDDTrain_anomaly_results.csv`, `KDDTest_anomaly_results.csv`, `KDDTest-21_anomaly_results.csv`: row index, anomaly score, flag, cluster, and reference targets for post-hoc inspection.

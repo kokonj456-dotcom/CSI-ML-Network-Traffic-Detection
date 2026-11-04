@@ -4,16 +4,16 @@
 และไม่อ่านไฟล์ targets เพราะ Isolation Forest เป็นการเรียนรู้แบบ unsupervised
 
 ก่อนรัน
-1. รัน data-pipeline/NSL-KDD/cleansing.ipynb
-2. รัน data-pipeline/NSL-KDD/feature_engineering.ipynb
+1. รัน data-pipeline/sub-dataset/NSL-KDD/cleansing.ipynb
+2. รัน data-pipeline/sub-dataset/NSL-KDD/feature_engineering.ipynb
 3. ติดตั้ง dependencies: python -m pip install -r model/isolation-forest/requirements.txt
 4. จากโฟลเดอร์รากโปรเจกต์ รัน:
    python model/isolation-forest/train_single.py
 
 ผลลัพธ์
-- data-pipeline/NSL-KDD/output/model_runs/isolation_forest_single/isolation_forest_model.joblib
+- data-pipeline/sub-dataset/NSL-KDD/output/model_runs/isolation_forest_single/isolation_forest_model.joblib
   ตัวโมเดลที่ฝึกเสร็จแล้ว สำหรับนำไปใช้ทำนายกับข้อมูลใหม่ในขั้นตอนถัดไป
-- data-pipeline/NSL-KDD/output/model_runs/isolation_forest_single/training_config.json
+- data-pipeline/sub-dataset/NSL-KDD/output/model_runs/isolation_forest_single/training_config.json
   สรุปข้อมูลและพารามิเตอร์ที่ใช้ฝึก เพื่อให้ตรวจสอบหรือทำซ้ำการทดลองได้
 
 หมายเหตุ: ไฟล์ output ถูกตั้งค่าให้ Git ไม่อัปโหลด เพราะเป็นไฟล์ที่สร้างจากการรัน
@@ -38,13 +38,13 @@ from sklearn.ensemble import IsolationForest
 # คอมพิวเตอร์เครื่องใดเครื่องหนึ่ง เช่น C:\\Users\\ชื่อคน\\Desktop\\...
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 FEATURE_FOLDER = (
-    PROJECT_ROOT / "data-pipeline" / "NSL-KDD" / "output" / "feature_engineering"
+    PROJECT_ROOT / "data-pipeline" / "sub-dataset" / "NSL-KDD" / "output" / "feature_engineering"
 )
 TRAIN_FEATURES_FILE = FEATURE_FOLDER / "KDDTrain_features.csv"
 FEATURE_SCHEMA_FILE = FEATURE_FOLDER / "feature_schema.csv"
 
 MODEL_OUTPUT_FOLDER = (
-    PROJECT_ROOT / "data-pipeline" / "NSL-KDD" / "output" / "model_runs" / "isolation_forest_single"
+    PROJECT_ROOT / "data-pipeline" / "sub-dataset" / "NSL-KDD" / "output" / "model_runs" / "isolation_forest_single"
 )
 MODEL_OUTPUT_FILE = MODEL_OUTPUT_FOLDER / "isolation_forest_model.joblib"
 CONFIG_OUTPUT_FILE = MODEL_OUTPUT_FOLDER / "training_config.json"
@@ -88,14 +88,14 @@ def load_training_features() -> pd.DataFrame:
     if not TRAIN_FEATURES_FILE.is_file():
         raise FileNotFoundError(
             f"ไม่พบไฟล์ข้อมูลฝึก: {TRAIN_FEATURES_FILE}\n"
-            "โปรดรัน data-pipeline/NSL-KDD/cleansing.ipynb และ "
-            "data-pipeline/NSL-KDD/feature_engineering.ipynb ก่อน"
+            "โปรดรัน data-pipeline/sub-dataset/NSL-KDD/cleansing.ipynb และ "
+            "data-pipeline/sub-dataset/NSL-KDD/feature_engineering.ipynb ก่อน"
         )
 
     if not FEATURE_SCHEMA_FILE.is_file():
         raise FileNotFoundError(
             f"ไม่พบไฟล์อธิบายคอลัมน์: {FEATURE_SCHEMA_FILE}\n"
-            "โปรดรัน data-pipeline/NSL-KDD/feature_engineering.ipynb ก่อน"
+            "โปรดรัน data-pipeline/sub-dataset/NSL-KDD/feature_engineering.ipynb ก่อน"
         )
 
     all_training_features = pd.read_csv(TRAIN_FEATURES_FILE)

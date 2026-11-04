@@ -14,11 +14,12 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PIPELINE_DIR = PROJECT_ROOT / "data-pipeline"
+DATASETS_DIR = PIPELINE_DIR / "sub-dataset"
 DATASETS = ["NSL-KDD", "UNSW-NB15", "CIC-IDS2017", "BoT-IoT"]
 CENTRAL_DIR = PIPELINE_DIR / "CENTRAL"
 
 def audit_cleansing(dataset_name):
-    clean_dir = PIPELINE_DIR / dataset_name / "output" / "cleansing"
+    clean_dir = DATASETS_DIR / dataset_name / "output" / "cleansing"
     audit_file = clean_dir / "cleansing_audit.csv" if (clean_dir / "cleansing_audit.csv").is_file() else clean_dir / "cleaning_report.csv"
     manifest_file = clean_dir / "source_manifest.csv"
     
@@ -32,7 +33,7 @@ def audit_cleansing(dataset_name):
     }
 
 def audit_harmonized(dataset_name):
-    harm_dir = PIPELINE_DIR / dataset_name / "output" / "harmonized"
+    harm_dir = DATASETS_DIR / dataset_name / "output" / "harmonized"
     f = pd.read_csv(harm_dir / "features.csv", low_memory=False)
     l = pd.read_csv(harm_dir / "labels.csv", low_memory=False)
     m = pd.read_csv(harm_dir / "metadata.csv", low_memory=False)

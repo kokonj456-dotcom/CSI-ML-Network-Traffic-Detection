@@ -59,8 +59,8 @@ flowchart LR
 
 | ที่อยู่/ไฟล์ | เนื้อหา | ใช้ทำอะไร |
 |---|---|---|
-| `data-pipeline/NSL-KDD/raw/*.txt` | ข้อมูลดิบ ไม่มี header; notebook กำหนดชื่อคอลัมน์ 43 ช่องให้ตามลำดับ | ต้นทางของ pipeline; ไม่ควรแก้ด้วยมือ |
-| `data-pipeline/NSL-KDD/output/cleansing/*_clean.csv` | ข้อมูลหลัง normalize, ตรวจสอบ, ตัดคอลัมน์ที่กำหนด และเพิ่ม targets | input ให้ feature engineering เฉพาะ NSL |
+| `data-pipeline/sub-dataset/NSL-KDD/raw/*.txt` | ข้อมูลดิบ ไม่มี header; notebook กำหนดชื่อคอลัมน์ 43 ช่องให้ตามลำดับ | ต้นทางของ pipeline; ไม่ควรแก้ด้วยมือ |
+| `data-pipeline/sub-dataset/NSL-KDD/output/cleansing/*_clean.csv` | ข้อมูลหลัง normalize, ตรวจสอบ, ตัดคอลัมน์ที่กำหนด และเพิ่ม targets | input ให้ feature engineering เฉพาะ NSL |
 | `cleaning_report.csv` | จำนวนแถว/คอลัมน์ที่ตรวจหรือถูกลบในแต่ละขั้น | ตรวจย้อนกลับคุณภาพ cleansing |
 | `cleaned_schema.csv` | ชื่อคอลัมน์และชนิดข้อมูลหลัง cleansing | ตรวจ schema และ dtype |
 | `cleaning_config.json` | กติกาที่ notebook ใช้ เช่น คอลัมน์ที่ลบ/เพิ่ม | ตรวจสอบการตั้งค่าและทำซ้ำ |
@@ -146,7 +146,7 @@ flowchart LR
 
 ## สิ่งที่ cleansing ทำและผลที่ได้จริง
 
-ลำดับงานอยู่ใน `data-pipeline/NSL-KDD/cleansing.ipynb` และกติกาสรุปใน `output/cleansing/cleaning_config.json`
+ลำดับงานอยู่ใน `data-pipeline/sub-dataset/NSL-KDD/cleansing.ipynb` และกติกาสรุปใน `output/cleansing/cleaning_config.json`
 
 1. อ่าน raw ตามลำดับ schema 43 ช่อง เพราะไฟล์ไม่มี header
 2. ตัดช่องว่างและเปลี่ยน `protocol_type`, `service`, `flag`, `label` เป็นตัวพิมพ์เล็ก เพื่อให้ค่าที่สะกดเหมือนกันถูกนับเป็นหมวดเดียวกัน
@@ -328,4 +328,4 @@ Raw: 41 predictors + label + difficulty = 43 columns
 
 - [SIGKDD, KDD Cup 1999: Computer Network Intrusion Detection](https://kdd.org/kdd-cup/view/kdd-cup-1999/Tasks) — เป้าหมายของชุดข้อมูลและนิยามกลุ่ม basic/content/traffic features
 - [NIST-hosted paper: NSL-KDD feature list and preprocessing](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=926377) — ตารางคุณลักษณะ 41 ตัว, กลุ่ม feature, One-Hot Encoding และรายละเอียด NSL-KDD
-- ไฟล์ที่ใช้เทียบกับเอกสารใน repository: `data-pipeline/NSL-KDD/cleansing.ipynb`, `data-pipeline/NSL-KDD/feature_engineering.ipynb`, `data-pipeline/NSL-KDD/output/cleansing/cleaning_report.csv`, `cleaned_schema.csv`, `data-pipeline/NSL-KDD/output/feature_engineering/feature_schema.csv`, `feature_engineering_config.json` และ `model/isolation-forest/src/data.py`
+- ไฟล์ที่ใช้เทียบกับเอกสารใน repository: `data-pipeline/sub-dataset/NSL-KDD/cleansing.ipynb`, `data-pipeline/sub-dataset/NSL-KDD/feature_engineering.ipynb`, `data-pipeline/sub-dataset/NSL-KDD/output/cleansing/cleaning_report.csv`, `cleaned_schema.csv`, `data-pipeline/sub-dataset/NSL-KDD/output/feature_engineering/feature_schema.csv`, `feature_engineering_config.json` และ `model/isolation-forest/src/data.py`

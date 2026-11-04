@@ -257,8 +257,8 @@ def main():
     print("\n" + "="*50)
     print("[Step 2/7] Training Model 1: NSL Native Features...")
     print("="*50)
-    nsl_train_raw = pd.read_csv("data-pipeline/NSL-KDD/output/cleansing/KDDTrain_clean.csv")
-    nsl_test_raw = pd.read_csv("data-pipeline/NSL-KDD/output/cleansing/KDDTest_clean.csv")
+    nsl_train_raw = pd.read_csv("data-pipeline/sub-dataset/NSL-KDD/output/cleansing/KDDTrain_clean.csv")
+    nsl_test_raw = pd.read_csv("data-pipeline/sub-dataset/NSL-KDD/output/cleansing/KDDTest_clean.csv")
 
     nsl_train_y = nsl_train_raw["attack_family"].map(CATEGORY_MAPPING).fillna(0).astype(int).values
     nsl_test_y = nsl_test_raw["attack_family"].map(CATEGORY_MAPPING).fillna(0).astype(int).values
@@ -309,8 +309,8 @@ def main():
     print("\n" + "="*50)
     print("[Step 3/7] Training Model 2: UNSW Native Features...")
     print("="*50)
-    unsw_train_raw = pd.read_csv("data-pipeline/UNSW-NB15/output/cleansing/UNSW_NB15_training-set.csv")
-    unsw_test_raw = pd.read_csv("data-pipeline/UNSW-NB15/output/cleansing/UNSW_NB15_testing-set.csv")
+    unsw_train_raw = pd.read_csv("data-pipeline/sub-dataset/UNSW-NB15/output/cleansing/UNSW_NB15_training-set.csv")
+    unsw_test_raw = pd.read_csv("data-pipeline/sub-dataset/UNSW-NB15/output/cleansing/UNSW_NB15_testing-set.csv")
 
     unsw_train_y = unsw_train_raw["attack_cat"].map(CATEGORY_MAPPING).fillna(0).astype(int).values
     unsw_test_y = unsw_test_raw["attack_cat"].map(CATEGORY_MAPPING).fillna(0).astype(int).values

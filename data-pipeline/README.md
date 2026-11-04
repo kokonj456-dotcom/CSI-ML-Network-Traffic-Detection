@@ -1,6 +1,11 @@
 # Data Pipeline: Quad-Dataset (NSL-KDD + UNSW-NB15 + CIC-IDS2017 + BoT-IoT)
 
-คู่มือ: [NSL-KDD](NSL-KDD/docs/dataset_guide.md) · [UNSW-NB15](UNSW-NB15/docs/dataset_guide.md) · [CIC-IDS2017](CIC-IDS2017/docs/dataset_guide.md) · [BoT-IoT](BoT-IoT/docs/dataset_guide.md) · [Dataset กลาง (/CENTRAL)](CENTRAL/docs/central_dataset_guide.md)
+> **สถานะโครงสร้างไฟล์:** CIC/BoT cleansing และ harmonization รวมถึง Borderline-SMOTE มี implementation ใน notebook โดยตรงตามรูปแบบ NSL/UNSW; master runner execute code cells เหล่านั้น ดู [PIPELINE_FILE_GUIDE.md](PIPELINE_FILE_GUIDE.md). CIC/BoT `download.py` สร้างข้อมูลตัวอย่าง ไม่ใช่ official raw benchmark.
+
+
+
+
+คู่มือ: [NSL-KDD](sub-dataset/NSL-KDD/docs/dataset_guide.md) · [UNSW-NB15](sub-dataset/UNSW-NB15/docs/dataset_guide.md) · [CIC-IDS2017](sub-dataset/CIC-IDS2017/docs/dataset_guide.md) · [BoT-IoT](sub-dataset/BoT-IoT/docs/dataset_guide.md) · [Dataset กลาง (/CENTRAL)](CENTRAL/docs/central_dataset_guide.md)
 
 ขอบเขตของ pipeline รองรับ **4 Benchmark Datasets ครบวงจร**:
 1. **NSL-KDD**: ชุดข้อมูลคลาสสิกสำหรับตรวจจับทราฟฟิกเครือข่ายระดับ Host/OS
@@ -68,8 +73,8 @@ Raw คือไฟล์ที่ได้จากผู้จัดทำ dat
 
 | Dataset | ไฟล์ที่ใช้ | ข้อสำคัญ |
 |---|---|---|
-| NSL-KDD | `NSL-KDD/raw/` มีไฟล์ Train, Test และ `KDDTest-21` | `KDDTrain+_20Percent` เป็นชุดย่อย ไม่เอามาต่อซ้ำกับ Train เต็ม |
-| UNSW-NB15 | `UNSW-NB15/raw/UNSW_NB15_training-set.csv` และ `UNSW_NB15_testing-set.csv` | ดาวน์โหลดจากแหล่งที่ได้รับอนุญาตและวางไฟล์ไว้เอง; ขั้น Cleansing บันทึก manifest สำหรับตรวจความเปลี่ยนแปลง |
+| NSL-KDD | `sub-dataset/NSL-KDD/raw/` มีไฟล์ Train, Test และ `KDDTest-21` | `KDDTrain+_20Percent` เป็นชุดย่อย ไม่เอามาต่อซ้ำกับ Train เต็ม |
+| UNSW-NB15 | `sub-dataset/UNSW-NB15/raw/UNSW_NB15_training-set.csv` และ `UNSW_NB15_testing-set.csv` | ดาวน์โหลดจากแหล่งที่ได้รับอนุญาตและวางไฟล์ไว้เอง; ขั้น Cleansing บันทึก manifest สำหรับตรวจความเปลี่ยนแปลง |
 
 **เหตุ → ผล:** แยก raw ออกจาก output ทำให้การทดลองทำซ้ำได้ และป้องกันไม่ให้การแก้ค่าว่าง/ชื่อคอลัมน์ไปเปลี่ยนต้นฉบับโดยไม่รู้ตัว
 
@@ -182,19 +187,21 @@ Data pipeline เตรียมและจัดเก็บข้อมูล
 
 ก่อนสร้าง `X` ให้อ่าน `features.csv` เลือกเฉพาะคอลัมน์ตัวเลข/หมวดหมู่และตัด `record_id` ออก ส่วน `labels.csv` เชื่อมกลับด้วย `record_id` หลังโมเดลให้ prediction/score แล้วเท่านั้น ส่วน Isolation Forest ฝึกแบบ unsupervised จึงไม่ส่ง `y` เข้า `fit()`; labels ยังมีประโยชน์ต่อการวัด precision/recall และตรวจ FP/FN หลังจากนั้น
 
-> Feature engineering เฉพาะ NSL ใน `NSL-KDD/feature_engineering.ipynb` เป็นอีก pipeline สำหรับทดลองกับ Isolation Forest/MLP เดิม ผล 157 features และ baseline 121 features ในเอกสาร NSL จึงไม่ใช่ output เดียวกับ feature engineering กลาง
+> Feature engineering เฉพาะ NSL ใน `sub-dataset/NSL-KDD/feature_engineering.ipynb` เป็นอีก pipeline สำหรับทดลองกับ Isolation Forest/MLP เดิม ผล 157 features และ baseline 121 features ในเอกสาร NSL จึงไม่ใช่ output เดียวกับ feature engineering กลาง
 
 ## โครงสร้าง
 
 ```text
 data-pipeline/
-├── NSL-KDD/       # raw, notebooks, docs และผล cleansing/harmonization/feature engineering
-├── UNSW-NB15/     # raw, downloader และ notebooks ของชุดข้อมูล
-└── common/        # โค้ดและการตั้งค่าที่ใช้สร้าง dataset กลาง
-    ├── build_dataset.ipynb              # ตรวจ รวมผล harmonization และแบ่งชุดข้อมูล
-    ├── feature_engineering.ipynb        # สร้าง feature กลางจากชุดที่รวมแล้ว
-    ├── *.json     # dataset registry และ feature contract
-    └── output/    # ตาราง split และ feature กลางที่สร้างขึ้น
+├── sub-dataset/
+│   ├── NSL-KDD/       # raw, notebooks, docs และ output ของชุดข้อมูล
+│   ├── UNSW-NB15/     # raw, downloader, notebooks และ output
+│   ├── CIC-IDS2017/   # raw, notebooks และ output
+│   └── BoT-IoT/       # raw, notebooks และ output
+├── CENTRAL/           # รวมข้อมูล แบ่ง split และทำ Borderline-SMOTE
+├── build_quad_dataset.py
+├── audit_all_pipelines.py
+└── PIPELINE_FILE_GUIDE.md
 ```
 
 แผนภาพนี้ละ `model_runs/` และ `reports/` ไว้ก่อนเพื่อให้เห็นเส้นทางหลักชัดขึ้นเท่านั้น ไฟล์ผลลัพธ์เดิมและการสร้างรายงานของ pipeline ยังอยู่เหมือนเดิม ไม่ได้ลบหรือย้ายข้อมูล
@@ -205,8 +212,8 @@ data-pipeline/
 
 | ไฟล์ | หน้าที่ | ฟังก์ชัน/ผลลัพธ์สำคัญ |
 |---|---|---|
-| `NSL-KDD/eda.ipynb`, `cleansing.ipynb`, `harmonization.ipynb` | สำรวจ ทำความสะอาด และแปลง NSL-KDD ให้ตรงกับ schema กลาง โดยแสดงโค้ดไว้ใน notebook | รันทีละ cell และตรวจผลแต่ละขั้นได้โดยไม่ต้องเปิด helper เฉพาะชุดจาก `common/` |
-| `UNSW-NB15/eda.ipynb`, `cleansing.ipynb`, `harmonization.ipynb` | ทำสามขั้นของ UNSW-NB15 ในโฟลเดอร์ของชุดข้อมูลเอง | แสดงโค้ดของแต่ละขั้นใน notebook เช่นเดียวกัน |
+| `sub-dataset/NSL-KDD/eda.ipynb`, `cleansing.ipynb`, `harmonization.ipynb` | สำรวจ ทำความสะอาด และแปลง NSL-KDD ให้ตรงกับ schema กลาง โดยแสดงโค้ดไว้ใน notebook | รันทีละ cell และตรวจผลแต่ละขั้นได้โดยไม่ต้องเปิด helper เฉพาะชุดจาก `common/` |
+| `sub-dataset/UNSW-NB15/eda.ipynb`, `cleansing.ipynb`, `harmonization.ipynb` | ทำสามขั้นของ UNSW-NB15 ในโฟลเดอร์ของชุดข้อมูลเอง | แสดงโค้ดของแต่ละขั้นใน notebook เช่นเดียวกัน |
 | `common/build_dataset.ipynb` | แสดงโค้ดทั้งหมดสำหรับตรวจผล harmonization, รวมชุดข้อมูล, แบ่ง split และสุ่ม Train ให้จำนวนต่อ dataset เท่ากัน | รันตามลำดับ cell; ผลหลักคือ `build_summary` |
 | `common/feature_engineering.ipynb` | แสดงโค้ดทั้งหมดสำหรับคำนวณ feature กลางและ fit scaler/encoder จาก Train ก่อนแปลง split อื่น | รันหลัง Build; ผลหลักคือ `feature_engineering_summary` |
 
@@ -223,15 +230,15 @@ python -m pip install -r data-pipeline/requirements.txt
 ```
 
 1. **ติดตั้งแพ็กเกจ** จาก project root: `python -m pip install -r data-pipeline/requirements.txt` (รวม Jupyter, pandas และ scikit-learn; CSV อ่าน/เขียนได้ผ่าน pandas)
-2. **เตรียม Raw:** NSL-KDD ใช้ `data-pipeline/NSL-KDD/download.py` ดาวน์โหลดไฟล์ที่กำหนดและสร้าง checksum manifest; UNSW-NB15 ให้ดาวน์โหลดไฟล์ official จากแหล่งที่ได้รับอนุญาตแล้ววางไว้ใน `UNSW-NB15/raw/` จากนั้นเริ่มที่ `eda.ipynb` และ `cleansing.ipynb` ซึ่งบันทึก manifest ของไฟล์ต้นทางไว้ให้ขั้นถัดไปตรวจสอบ
-3. **เปิดและรัน notebook รายชุดตามลำดับ** `eda.ipynb` → `cleansing.ipynb` → `harmonization.ipynb` ทั้งใน `NSL-KDD/` และ `UNSW-NB15/` (ถ้า UNSW ยังไม่มี raw ให้ข้ามชุดนั้นได้ แต่ build จะเป็นผลเฉพาะแหล่งที่พร้อม)
+2. **เตรียม Raw:** NSL-KDD ใช้ `data-pipeline/sub-dataset/NSL-KDD/download.py` ดาวน์โหลดไฟล์ที่กำหนดและสร้าง checksum manifest; UNSW-NB15 ให้ดาวน์โหลดไฟล์ official จากแหล่งที่ได้รับอนุญาตแล้ววางไว้ใน `sub-dataset/UNSW-NB15/raw/` จากนั้นเริ่มที่ `eda.ipynb` และ `cleansing.ipynb` ซึ่งบันทึก manifest ของไฟล์ต้นทางไว้ให้ขั้นถัดไปตรวจสอบ
+3. **เปิดและรัน notebook รายชุดตามลำดับ** `eda.ipynb` → `cleansing.ipynb` → `harmonization.ipynb` ทั้งใน `sub-dataset/NSL-KDD/` และ `sub-dataset/UNSW-NB15/` (ถ้า UNSW ยังไม่มี raw ให้ข้ามชุดนั้นได้ แต่ build จะเป็นผลเฉพาะแหล่งที่พร้อม)
 4. **สร้างตารางรวมและ split:** รัน `data-pipeline/common/build_dataset.ipynb` หลัง harmonization; ตรวจ `common/output/reports/dataset_readiness.csv` และ `build_report.json` ก่อนตีความว่าได้รวมกี่ dataset
 5. **สร้าง model features กลาง:** รัน `data-pipeline/common/feature_engineering.ipynb`; ตรวจ `common/output/feature_engineering/feature_engineering_report.csv` และ `feature_schema.json`
 6. **ฝึกโมเดลแยกต่างหาก:** อ่าน CSV ของ split ที่ต้องการ แยก `X` จาก features โดย drop `record_id`; ไม่เอา labels/metadata เข้าฝึก Isolation Forest แล้ว join labels กลับมาเพื่อ evaluation ภายหลัง
 
 ตัวอย่างตรวจความสำเร็จหลัง build: ถ้า `dataset_readiness.csv` แสดง NSL `ready=True` และ UNSW `ready=False` หมายความว่า pipeline ทำงานได้กับ NSL แต่ **ยังไม่ได้** ทดสอบความเข้ากันได้ข้ามสองชุด อย่าตีความคำว่า `common` หรือการมีไฟล์ CSV ว่าเป็นหลักฐานว่ามีข้อมูลจากสองแหล่งแล้ว
 
-raw data และ generated pipeline outputs ถูกละเว้นจาก Git ยกเว้นรายงาน/กราฟ MLP เดิมที่ย้ายมาไว้ใต้ `NSL-KDD/output/model_runs/mlp/` เพื่อคงผลที่เคยติดตามใน repository ก่อนหน้านี้
+raw data และ generated pipeline outputs ถูกละเว้นจาก Git ยกเว้นรายงาน/กราฟ MLP เดิมที่ย้ายมาไว้ใต้ `sub-dataset/NSL-KDD/output/model_runs/mlp/` เพื่อคงผลที่เคยติดตามใน repository ก่อนหน้านี้
 
 แต่ละขั้นบันทึก SHA-256 ของ raw inputs และเวอร์ชัน registry/contract กำกับผล harmonization; หาก raw file, registry หรือ feature contract เปลี่ยน ระบบจะปฏิเสธการใช้ผล harmonization เก่า ต้องรันขั้นที่เกี่ยวข้องใหม่
 

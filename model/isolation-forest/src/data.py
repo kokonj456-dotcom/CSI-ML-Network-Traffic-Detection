@@ -8,8 +8,8 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-FEATURE_DIR = PROJECT_ROOT / "data-pipeline" / "NSL-KDD" / "output" / "feature_engineering"
-OUTPUT_DIR = PROJECT_ROOT / "data-pipeline" / "NSL-KDD" / "output" / "model_runs" / "isolation_forest"
+FEATURE_DIR = PROJECT_ROOT / "data-pipeline" / "sub-dataset" / "NSL-KDD" / "output" / "feature_engineering"
+OUTPUT_DIR = PROJECT_ROOT / "data-pipeline" / "sub-dataset" / "NSL-KDD" / "output" / "model_runs" / "isolation_forest"
 SPLITS = ("KDDTrain", "KDDTest", "KDDTest-21")
 TARGET_COLUMNS = ("label", "attack_family", "is_attack")
 MODEL_FEATURE_KINDS = {"original_numeric", "one_hot"}
@@ -21,8 +21,8 @@ def load_inputs() -> tuple[dict[str, pd.DataFrame], dict[str, pd.DataFrame], pd.
         expected = FEATURE_DIR / "KDDTrain_features.csv"
         raise FileNotFoundError(
             f"Feature files not found: {expected}\n"
-            "Run data-pipeline/NSL-KDD/cleansing.ipynb, then "
-            "data-pipeline/NSL-KDD/feature_engineering.ipynb first."
+            "Run data-pipeline/sub-dataset/NSL-KDD/cleansing.ipynb, then "
+            "data-pipeline/sub-dataset/NSL-KDD/feature_engineering.ipynb first."
         )
 
     features = {

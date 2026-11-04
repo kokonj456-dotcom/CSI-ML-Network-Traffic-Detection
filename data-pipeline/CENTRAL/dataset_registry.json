@@ -5,7 +5,7 @@
     "NSL-KDD": {
       "status": "local_available",
       "version": "NSL-KDD official benchmark files present in repository",
-      "raw_directory": "data-pipeline/NSL-KDD/raw",
+      "raw_directory": "data-pipeline/sub-dataset/NSL-KDD/raw",
       "official_train_files": ["KDDTrain+.txt"],
       "official_test_files": ["KDDTest+.txt"],
       "evaluation_views": ["KDDTest-21.txt"],
@@ -19,7 +19,7 @@
     "UNSW-NB15": {
       "status": "local_available",
       "version": "UNSW-NB15 official train/test CSV release",
-      "raw_directory": "data-pipeline/UNSW-NB15/raw",
+      "raw_directory": "data-pipeline/sub-dataset/UNSW-NB15/raw",
       "expected_files": ["UNSW_NB15_training-set.csv", "UNSW_NB15_testing-set.csv"],
       "source_url": "https://research.unsw.edu.au/projects/unsw-nb15-dataset",
       "download_note": "Official university benchmark release.",
@@ -31,7 +31,7 @@
     "CIC-IDS2017": {
       "status": "local_available",
       "version": "CIC-IDS2017 Canadian Institute for Cybersecurity benchmark",
-      "raw_directory": "data-pipeline/CIC-IDS2017/raw",
+      "raw_directory": "data-pipeline/sub-dataset/CIC-IDS2017/raw",
       "expected_files": ["CIC_IDS2017_training-set.csv", "CIC_IDS2017_testing-set.csv"],
       "source_url": "https://www.unb.ca/cic/datasets/ids-2017.html",
       "download_note": "Harmonized network flow capture across 5 days of enterprise campus traffic.",
@@ -43,7 +43,7 @@
     "BoT-IoT": {
       "status": "local_available",
       "version": "BoT-IoT Smart Home & IoT Sensor Network benchmark",
-      "raw_directory": "data-pipeline/BoT-IoT/raw",
+      "raw_directory": "data-pipeline/sub-dataset/BoT-IoT/raw",
       "expected_files": ["BoT_IoT_training-set.csv", "BoT_IoT_testing-set.csv"],
       "source_url": "https://research.unsw.edu.au/projects/bot-iot-dataset",
       "download_note": "UNSW Canberra Cyber Range IoT attack environment.",

@@ -114,6 +114,6 @@ Neural Network       MLP (ของเรา)                   Autoencoder (ข
   ```
 - [ ] **2. นำข้อมูลไปแปะในรายงานกลุ่ม / สไลด์พรีเซนต์:**
   - นำตัวเลขตารางผลลัพธ์จากไฟล์ [`model/mlp/README.md`](README.md) ไปใส่ในบทผลการทดลอง
-  - หยิบรูปภาพในโฟลเดอร์ [`data-pipeline/NSL-KDD/output/model_runs/mlp/plots/`](../../data-pipeline/NSL-KDD/output/model_runs/mlp/plots/) (กราฟเส้นการเรียนรู้ และตาราง Confusion Matrix สีฟ้าสวยงาม) ไปวางในสไลด์
+  - หยิบรูปภาพในโฟลเดอร์ [`data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/plots/`](../../data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/plots/) (กราฟเส้นการเรียนรู้ และตาราง Confusion Matrix สีฟ้าสวยงาม) ไปวางในสไลด์
 - [ ] **3. ทบทวนข้อ 5 และ 6 ในคู่มือนี้:** เอาไว้เป็นแนวทางตอบคำถามอาจารย์ตอนสอบพรีเซนต์ครับ
 

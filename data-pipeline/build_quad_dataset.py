@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-Master Quad-Dataset Build Runner
-Executes the full pipeline to prepare the Central Harmonized Dataset and Borderline-SMOTE splits:
-1. Generates/verifies CIC-IDS2017 benchmark data
-2. Runs CIC-IDS2017 cleansing and harmonization
-3. Generates/verifies BoT-IoT benchmark data
-4. Runs BoT-IoT cleansing and harmonization
-5. Builds Central Harmonized Dataset across all 4 datasets (747,504 flows)
-6. Applies Borderline-SMOTE oversampling for Class 4 (R2L) (629,582 flows)
+"""Master runner for the four-dataset preparation workflow.
+
+CIC-IDS2017, BoT-IoT, and Borderline-SMOTE processing lives in notebooks;
+this runner executes their code cells in order without writing execution
+outputs back into the source notebooks. CENTRAL dataset assembly remains in
+build_dataset.py.
 """
 
+import json
+import os
 import sys
 import time
 import subprocess
@@ -17,69 +16,99 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PIPELINE_DIR = PROJECT_ROOT / "data-pipeline"
+DATASETS_DIR = PIPELINE_DIR / "sub-dataset"
+
 
 def run_step(step_name, cmd_args, cwd=None):
     print("\n" + "=" * 80)
     print(f"STEP: {step_name}")
-    print("Command:", " ".join(cmd_args))
+    print("Command:", " ".join(str(arg) for arg in cmd_args))
     print("=" * 80)
-    t0 = time.time()
-    res = subprocess.run(cmd_args, cwd=cwd or PROJECT_ROOT, check=True)
-    print(f"Finished {step_name} in {time.time() - t0:.2f}s (Exit code: {res.returncode})")
+    started = time.time()
+    result = subprocess.run(cmd_args, cwd=cwd or PROJECT_ROOT, check=True)
+    print(f"Finished {step_name} in {time.time() - started:.2f}s (Exit code: {result.returncode})")
+
+
+def run_notebook(step_name, notebook_path, cwd=None, parameters=None):
+    notebook_path = Path(notebook_path).resolve()
+    working_dir = Path(cwd or notebook_path.parent).resolve()
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    namespace = {"__name__": "__main__", "__file__": str(notebook_path)}
+    parameters = parameters or {}
+
+    print("\n" + "=" * 80)
+    print(f"STEP: {step_name}")
+    print(f"Notebook: {notebook_path}")
+    print("=" * 80)
+    started = time.time()
+    previous_dir = Path.cwd()
+    try:
+        os.chdir(working_dir)
+        parameter_cell_found = not parameters
+        for cell_number, cell in enumerate(notebook.get("cells", []), start=1):
+            if cell.get("cell_type") != "code":
+                continue
+            source = "".join(cell.get("source", []))
+            tags = cell.get("metadata", {}).get("tags", [])
+            exec(compile(source, f"{notebook_path.name}:cell-{cell_number}", "exec"), namespace)
+            if "parameters" in tags:
+                parameter_cell_found = True
+                for key, value in parameters.items():
+                    namespace[key] = value
+        if not parameter_cell_found:
+            raise ValueError(f"Notebook has no cell tagged 'parameters': {notebook_path}")
+    except Exception as error:
+        raise RuntimeError(f"{step_name} failed while executing {notebook_path.name}") from error
+    finally:
+        os.chdir(previous_dir)
+    print(f"Finished {step_name} in {time.time() - started:.2f}s")
+
 
 def main():
-    py_exec = sys.executable
     print("=" * 80)
     print("QUAD-DOMAIN NETWORK INTRUSION DETECTION PIPELINE BUILDER")
     print("Datasets: NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT")
-    print("Target: 6-Class MITRE ATT&CK Harmonized + Borderline-SMOTE Central Dataset")
+    print("CIC/BoT cleansing and harmonization plus SMOTE run from notebooks.")
     print("=" * 80)
+    started = time.time()
 
-    t_start = time.time()
+    for dataset, raw_train, download_label in [
+        ("CIC-IDS2017", "CIC_IDS2017_training-set.csv", "CIC-IDS2017"),
+        ("BoT-IoT", "BoT_IoT_training-set.csv", "BoT-IoT"),
+    ]:
+        dataset_dir = DATASETS_DIR / dataset
+        if not (dataset_dir / "raw" / raw_train).is_file():
+            run_step(f"Prepare {download_label} input files", [sys.executable, "download.py"], cwd=dataset_dir)
+        else:
+            print(f"\n[OK] {download_label} training input exists.")
 
-    # Step 1: CIC-IDS2017 Raw Data Verification
-    cic_dir = PIPELINE_DIR / "CIC-IDS2017"
-    if not (cic_dir / "raw" / "CIC_IDS2017_training-set.csv").is_file():
-        run_step("1. Generate CIC-IDS2017 Benchmark Data", [py_exec, "download.py"], cwd=cic_dir)
-    else:
-        print("\n[OK] CIC-IDS2017 raw data already exists.")
+        if not (dataset_dir / "output" / "harmonized" / "features.csv").is_file():
+            run_notebook(f"{download_label} cleansing", dataset_dir / "cleansing.ipynb", cwd=dataset_dir)
+            run_notebook(f"{download_label} harmonization", dataset_dir / "harmonization.ipynb", cwd=dataset_dir)
+        else:
+            print(f"[OK] {download_label} harmonized output exists.")
 
-    # Step 2: CIC-IDS2017 Pipeline
-    if not (cic_dir / "output" / "harmonized" / "features.csv").is_file():
-        run_step("2. Run CIC-IDS2017 Cleansing & Harmonization", [py_exec, "run_pipeline.py"], cwd=cic_dir)
-    else:
-        print("[OK] CIC-IDS2017 harmonized output already exists.")
-
-    # Step 3: BoT-IoT Raw Data Verification
-    bot_dir = PIPELINE_DIR / "BoT-IoT"
-    if not (bot_dir / "raw" / "BoT_IoT_training-set.csv").is_file():
-        run_step("3. Generate BoT-IoT Benchmark Data", [py_exec, "download.py"], cwd=bot_dir)
-    else:
-        print("\n[OK] BoT-IoT raw data already exists.")
-
-    # Step 4: BoT-IoT Pipeline
-    if not (bot_dir / "output" / "harmonized" / "features.csv").is_file():
-        run_step("4. Run BoT-IoT Cleansing & Harmonization", [py_exec, "run_pipeline.py"], cwd=bot_dir)
-    else:
-        print("[OK] BoT-IoT harmonized output already exists.")
-
-    # Step 5: Build Central Harmonized Dataset (747k flows)
     central_dir = PIPELINE_DIR / "CENTRAL"
-    run_step("5. Build Central Harmonized Dataset & Splits", [py_exec, "build_dataset.py"], cwd=central_dir)
+    run_step("Build Central Dataset and splits", [sys.executable, "build_dataset.py"], cwd=central_dir)
+    run_notebook(
+        "Borderline-SMOTE on train_full",
+        central_dir / "borderline_smote.ipynb",
+        cwd=central_dir,
+        parameters={"SMOTE_SPLIT": "train_full"},
+    )
+    run_notebook(
+        "Borderline-SMOTE on train",
+        central_dir / "borderline_smote.ipynb",
+        cwd=central_dir,
+        parameters={"SMOTE_SPLIT": "train"},
+    )
+    run_step("Quad-dataset quality audit", [sys.executable, "audit_all_pipelines.py"], cwd=PIPELINE_DIR)
 
-    # Step 6: Apply Borderline-SMOTE
-    run_step("6. Apply Borderline-SMOTE to Train Full", [py_exec, "apply_borderline_smote.py", "--split", "train_full", "--target_samples", "40000"], cwd=central_dir)
-    run_step("7. Apply Borderline-SMOTE to Train 80%", [py_exec, "apply_borderline_smote.py", "--split", "train", "--target_samples", "40000"], cwd=central_dir)
-
-    # Step 7: Final Audit
-    run_step("8. Run Quad-Dataset Quality Audit", [py_exec, "audit_all_pipelines.py"], cwd=PIPELINE_DIR)
-
-    total_time = round(time.time() - t_start, 2)
     print("\n" + "=" * 80)
-    print(f"ALL STEPS COMPLETED SUCCESSFULLY IN {total_time}s!")
-    print("The harmonized dataset is ready in data-pipeline/CENTRAL/output/splits/")
+    print(f"ALL STEPS COMPLETED SUCCESSFULLY IN {time.time() - started:.2f}s!")
+    print("The prepared splits are in data-pipeline/CENTRAL/output/splits/")
     print("=" * 80)
+
 
 if __name__ == "__main__":
     main()
-
