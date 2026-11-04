@@ -213,20 +213,21 @@ data-pipeline/
 
 แผนภาพนี้ละ `model_runs/` และ `reports/` ไว้ก่อนเพื่อให้เห็นเส้นทางหลักชัดขึ้นเท่านั้น ไฟล์ผลลัพธ์เดิมและการสร้างรายงานของ pipeline ยังอยู่เหมือนเดิม ไม่ได้ลบหรือย้ายข้อมูล
 
-ในโฟลเดอร์ของแต่ละชุดทำ `EDA → Cleansing → Harmonization` ตามลำดับ โดยคำอธิบายและโค้ดของแต่ละขั้นอยู่ใน notebook ของ dataset นั้นโดยตรง จากนั้น `common/` อ่านเฉพาะผล harmonization ที่ได้มาตรฐานแล้ว เพื่อตรวจและรวมชุดข้อมูล แบ่ง Train/Validation/Test และทำ Feature Engineering กลาง จึงไม่มีการทำ EDA, Cleansing หรือ Harmonization ซ้ำใน `common/`
+ในแต่ละชุดข้อมูลทำ `EDA → Cleansing → Harmonization` ภายใน notebook ของชุดนั้น แล้ว `CENTRAL/build_dataset.ipynb` อ่านผลที่ `sub-dataset/<ชุด>/output/harmonized/` มารวม labels กลางและสร้าง split โดยเก็บ `features`, `labels`, `metadata` แยกกัน ส่วน `CENTRAL/feature_engineering.ipynb` เป็นขั้นเสริมและไม่ได้ถูกรันโดย master runner; การปรับข้อมูลสำหรับ Borderline-SMOTE อยู่ใน `CENTRAL/borderline_smote.ipynb`
 
 ### โค้ดแต่ละส่วนทำหน้าที่อะไร
 
-| ไฟล์ | หน้าที่ | ฟังก์ชัน/ผลลัพธ์สำคัญ |
+| ไฟล์ | หน้าที่ | วิธีเรียกใช้ |
 |---|---|---|
-| `sub-dataset/NSL-KDD/eda.ipynb`, `cleansing.ipynb`, `harmonization.ipynb` | สำรวจ ทำความสะอาด และแปลง NSL-KDD ให้ตรงกับ schema กลาง โดยแสดงโค้ดไว้ใน notebook | รันทีละ cell และตรวจผลแต่ละขั้นได้โดยไม่ต้องเปิด helper เฉพาะชุดจาก `common/` |
-| `sub-dataset/UNSW-NB15/eda.ipynb`, `cleansing.ipynb`, `harmonization.ipynb` | ทำสามขั้นของ UNSW-NB15 ในโฟลเดอร์ของชุดข้อมูลเอง | แสดงโค้ดของแต่ละขั้นใน notebook เช่นเดียวกัน |
-| `common/build_dataset.ipynb` | แสดงโค้ดทั้งหมดสำหรับตรวจผล harmonization, รวมชุดข้อมูล, แบ่ง split และสุ่ม Train ให้จำนวนต่อ dataset เท่ากัน | รันตามลำดับ cell; ผลหลักคือ `build_summary` |
-| `common/feature_engineering.ipynb` | แสดงโค้ดทั้งหมดสำหรับคำนวณ feature กลางและ fit scaler/encoder จาก Train ก่อนแปลง split อื่น | รันหลัง Build; ผลหลักคือ `feature_engineering_summary` |
+| `sub-dataset/<ชุด>/eda.ipynb`, `cleansing.ipynb`, `harmonization.ipynb` | สำรวจ ทำความสะอาด และแปลงข้อมูลของแต่ละ dataset | เปิด notebook ของชุดนั้นและรันตามลำดับ |
+| `CENTRAL/build_dataset.ipynb` | รวม harmonized tables, จัด taxonomy กลาง และสร้าง train/validation/test | `python data-pipeline/build_quad_dataset.py` เรียก notebook นี้ |
+| `CENTRAL/borderline_smote.ipynb` | สร้างตัวอย่างสังเคราะห์เพื่อปรับสมดุลเฉพาะ split ฝึก | master runner เรียกแยกสำหรับ `train` และ `train_full` |
+| `CENTRAL/feature_engineering.ipynb` | สร้าง numeric/one-hot representation 19 ช่อง โดย fit ตัวแปลงจาก train | เลือกรันเอง; ไม่ใช่ขั้นใน master runner และ representation แยกจากทาง SMOTE |
+| `CENTRAL/eda.ipynb`, `analyze_dataset_relationships.ipynb` | สำรวจและเปรียบเทียบผลข้อมูลที่เตรียมแล้ว | รันเองหลัง build; ไม่เปลี่ยนข้อมูลฝึก |
 
-โค้ดช่วยหา project root, คำนวณ checksum และตรวจการจัดแนวของตารางถูกรวมไว้ใน notebook ที่ใช้โค้ดนั้นโดยตรง จึงเปิด notebook แล้วอ่านขั้นตอนการทำงานได้ครบ ไม่ต้องตามไปเปิดไฟล์ `.py` แยก ส่วน EDA/Cleansing/Harmonization ยังคงอยู่ใน notebook ของแต่ละ dataset; `common/` ทำงานกับผลที่ผ่าน Harmonization แล้วเท่านั้น.
+โค้ด implementation ของ CENTRAL อยู่ใน notebook โดยตรงตามรูปแบบของ notebook ราย dataset; Python ที่ระดับ `data-pipeline/` ทำหน้าที่ orchestration และ audit เท่านั้น ไม่มีไฟล์ `.py` คู่กับ builder หรือ analysis notebook ของ CENTRAL
 
-เริ่มอ่านโค้ดตามลำดับนี้ได้: notebook ของ NSL-KDD หรือ UNSW-NB15 เพื่อดูงานราย dataset ทีละ cell → `common/build_dataset.ipynb` เพื่อดูการรวมและแบ่งข้อมูล → `common/feature_engineering.ipynb` เพื่อดูการเตรียมข้อมูลก่อนเข้าโมเดล แต่ละช่วงยังคงแยก labels และ metadata ออกจาก features.
+อ่านโค้ดตามลำดับนี้ได้: notebook ของ dataset → `CENTRAL/build_dataset.ipynb` → (ถ้าต้องการ) `CENTRAL/feature_engineering.ipynb` หรือ `CENTRAL/borderline_smote.ipynb` โดยเก็บ labels และ metadata ไว้นอก features เสมอ
 
 ## ติดตั้งและเริ่มทำงาน
 
@@ -236,14 +237,12 @@ data-pipeline/
 python -m pip install -r data-pipeline/requirements.txt
 ```
 
-1. **ติดตั้งแพ็กเกจ** จาก project root: `python -m pip install -r data-pipeline/requirements.txt` (รวม Jupyter, pandas และ scikit-learn; CSV อ่าน/เขียนได้ผ่าน pandas)
-2. **เตรียม Raw:** NSL-KDD ใช้ `data-pipeline/sub-dataset/NSL-KDD/download.py` ดาวน์โหลดไฟล์ที่กำหนดและสร้าง checksum manifest; UNSW-NB15 ให้ดาวน์โหลดไฟล์ official จากแหล่งที่ได้รับอนุญาตแล้ววางไว้ใน `sub-dataset/UNSW-NB15/raw/` จากนั้นเริ่มที่ `eda.ipynb` และ `cleansing.ipynb` ซึ่งบันทึก manifest ของไฟล์ต้นทางไว้ให้ขั้นถัดไปตรวจสอบ
-3. **เปิดและรัน notebook รายชุดตามลำดับ** `eda.ipynb` → `cleansing.ipynb` → `harmonization.ipynb` ทั้งใน `sub-dataset/NSL-KDD/` และ `sub-dataset/UNSW-NB15/` (ถ้า UNSW ยังไม่มี raw ให้ข้ามชุดนั้นได้ แต่ build จะเป็นผลเฉพาะแหล่งที่พร้อม)
-4. **สร้างตารางรวมและ split:** รัน `data-pipeline/common/build_dataset.ipynb` หลัง harmonization; ตรวจ `common/output/reports/dataset_readiness.csv` และ `build_report.json` ก่อนตีความว่าได้รวมกี่ dataset
-5. **สร้าง model features กลาง:** รัน `data-pipeline/common/feature_engineering.ipynb`; ตรวจ `common/output/feature_engineering/feature_engineering_report.csv` และ `feature_schema.json`
-6. **ฝึกโมเดลแยกต่างหาก:** อ่าน CSV ของ split ที่ต้องการ แยก `X` จาก features โดย drop `record_id`; ไม่เอา labels/metadata เข้าฝึก Isolation Forest แล้ว join labels กลับมาเพื่อ evaluation ภายหลัง
-
-ตัวอย่างตรวจความสำเร็จหลัง build: ถ้า `dataset_readiness.csv` แสดง NSL `ready=True` และ UNSW `ready=False` หมายความว่า pipeline ทำงานได้กับ NSL แต่ **ยังไม่ได้** ทดสอบความเข้ากันได้ข้ามสองชุด อย่าตีความคำว่า `common` หรือการมีไฟล์ CSV ว่าเป็นหลักฐานว่ามีข้อมูลจากสองแหล่งแล้ว
+1. **ติดตั้งแพ็กเกจ** จาก project root: `python -m pip install -r data-pipeline/requirements.txt`
+2. **เตรียม input ของทั้งสี่ชุด** ตาม README ใน `data-pipeline/sub-dataset/<ชุด>/`; วาง raw files ตามที่แต่ละชุดกำหนด แล้วรัน EDA/Cleansing/Harmonization สำหรับชุดที่ยังไม่มีผล harmonized
+3. **สร้างข้อมูล CENTRAL และ oversampling:** จาก project root รัน `python data-pipeline/build_quad_dataset.py`; runner จะเรียก notebook ตามลำดับและทำ quality audit ตอนท้าย
+4. **ตรวจผลก่อนฝึก:** ตารางกลางอยู่ใน `data-pipeline/CENTRAL/output/harmonized/`; split อยู่ใน `data-pipeline/CENTRAL/output/splits/{train,validation,train_full,test}/` แต่ละ split มี `features.csv`, `labels.csv`, `metadata.csv`; ผล Borderline-SMOTE แยกอยู่ใต้ `CENTRAL/output/smote/`
+5. **เตรียม model features หากต้องการ:** รัน `CENTRAL/feature_engineering.ipynb` แยกเอง; ผลจะอยู่ใน `CENTRAL/output/feature_engineering/` และใช้ representation คนละทางกับ SMOTE
+6. **ฝึกโมเดลแยกต่างหาก:** เลือก split ให้ตรงกับการทดลอง ใช้ `features` เป็น X โดย drop `record_id`; ใช้ `labels` สำหรับ target/evaluation และ `metadata` สำหรับแบ่งกลุ่ม/ตรวจย้อนกลับ ห้ามใช้ Test เพื่อ fit preprocessing หรือ SMOTE
 
 raw data และ generated pipeline outputs ถูกละเว้นจาก Git ยกเว้นรายงาน/กราฟ MLP เดิมที่ย้ายมาไว้ใต้ `sub-dataset/NSL-KDD/output/model_runs/mlp/` เพื่อคงผลที่เคยติดตามใน repository ก่อนหน้านี้
 
@@ -257,7 +256,7 @@ raw data และ generated pipeline outputs ถูกละเว้นจา�
 - `labels`: เก็บ label ต้นทางและ taxonomy กลางไว้ประเมินภายหลัง ไม่ป้อนเป็น `X`
 - `metadata`: เก็บชื่อ dataset, รหัสแถวเดิม, official split, เวลา, duplicate flag, availability masks และคุณภาพข้อมูล
 
-ฟีเจอร์ core ที่นำเข้าร่วมได้ต้องมีนิยาม/หน่วยที่ยืนยันแล้วในทั้งสองชุด Extensions ที่ไม่มีในอีกชุดเก็บเป็น null พร้อม availability mask ใน metadata และไม่ส่งเข้าโมเดลกลางโดยอัตโนมัติ ดู [feature contract](common/feature_contract.json)
+ฟีเจอร์ core ที่นำเข้าร่วมได้ต้องมีนิยาม/หน่วยที่ยืนยันแล้วในทั้งสองชุด Extensions ที่ไม่มีในอีกชุดเก็บเป็น null พร้อม availability mask ใน metadata และไม่ส่งเข้าโมเดลกลางโดยอัตโนมัติ ดู [feature contract](CENTRAL/feature_contract.json)
 
 NSL-KDD และ UNSW-NB15 คง official Test แยกจาก Train; validation ถูกสุ่มจาก official Train ด้วย seed คงที่ โดยไม่ใช้ label ในการแบ่ง Train จัดเก็บ split `train_full` ก่อนสุ่มจำนวนต่อ dataset ให้เท่ากันใน `train`; labels ไม่ถูกใช้กรอง Normal หรือปรับสมดุล class ส่วน `KDDTest-21` เป็น evaluation view ที่ชี้กลับไปยังแถวใน KDDTest เท่านั้น
 

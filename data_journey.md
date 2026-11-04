@@ -37,7 +37,7 @@ flowchart TD
     end
 
     subgraph S4["4. Central Integration & Quad Balancing (CENTRAL)"]
-        B1["build_dataset.py: รวม 747,504 โฟลว์"]
+        B1["build_dataset.ipynb: รวม 747,504 โฟลว์"]
         H1 --> B1
         H2 --> B1
         H3 --> B1
@@ -131,8 +131,8 @@ flowchart TD
 
 ---
 
-### ขั้นตอนที่ 4: การรวบรวมเข้าสู่ CENTRAL และปรับสมดุล Quad-Dataset (`build_dataset.py`)
-สคริปต์ `data-pipeline/CENTRAL/build_dataset.py` ทำการอ่านผลลัพธ์ Harmonized จากทั้ง 4 โฟลเดอร์มารวมกัน:
+### ขั้นตอนที่ 4: การรวบรวมเข้าสู่ CENTRAL และปรับสมดุล Quad-Dataset (`build_dataset.ipynb`)
+Notebook `data-pipeline/CENTRAL/build_dataset.ipynb` ทำการอ่านผลลัพธ์ Harmonized จากทั้ง 4 โฟลเดอร์มารวมกัน:
 1. **การรวมข้อมูล 747,504 โฟลว์**:
    * `UNSW-NB15`: 257,673 โฟลว์
    * `CIC-IDS2017`: 170,657 โฟลว์

@@ -3,8 +3,7 @@
 
 CIC-IDS2017, BoT-IoT, and Borderline-SMOTE processing lives in notebooks;
 this runner executes their code cells in order without writing execution
-outputs back into the source notebooks. CENTRAL dataset assembly remains in
-build_dataset.py.
+outputs back into the source notebooks. CENTRAL dataset assembly lives in build_dataset.ipynb.
 """
 
 import json
@@ -89,7 +88,7 @@ def main():
             print(f"[OK] {download_label} harmonized output exists.")
 
     central_dir = PIPELINE_DIR / "CENTRAL"
-    run_step("Build Central Dataset and splits", [sys.executable, "build_dataset.py"], cwd=central_dir)
+    run_notebook("Build Central Dataset and splits", central_dir / "build_dataset.ipynb", cwd=central_dir)
     run_notebook(
         "Borderline-SMOTE on train_full",
         central_dir / "borderline_smote.ipynb",

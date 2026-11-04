@@ -115,7 +115,7 @@ data-pipeline/sub-dataset/UNSW-NB15/raw/
 
 UNSW-NB15 มีฟิลด์อีกหลายกลุ่ม เช่น `rate`, `sload`/`dload`, `sloss`/`dloss`, interval/jitter, TCP timing และ sequence/window details, สถิติขนาด packet, ฟิลด์ HTTP/FTP, และตัวนับบริบทชื่อ `ct_*` หน้าโครงการมีไฟล์ `UNSW-NB15_features.csv` สำหรับนิยามฟิลด์ตาม release
 
-pipeline รุ่นนี้เก็บคอลัมน์ต้นฉบับเหล่านั้นไว้ในผล cleansing เพื่อ audit แต่ **ยังไม่ส่งเข้าชุด feature กลางโดยอัตโนมัติ** จนกว่าจะเพิ่ม mapping พร้อมนิยาม หน่วย ความหมาย และการตรวจความเข้ากันได้ใน `common/feature_contract.json` ฟิลด์ `srcip`, `dstip`, port, Flow ID หรือ timestamp ดิบ (หากมีใน release ที่นำเข้า) เป็นตัวระบุ/metadata ไม่ใช้เป็น feature กลางโดยตรง เพราะเสี่ยงทำให้โมเดลจำเครื่องหรือชุด capture แทนพฤติกรรม
+pipeline รุ่นนี้เก็บคอลัมน์ต้นฉบับเหล่านั้นไว้ในผล cleansing เพื่อ audit แต่ **ยังไม่ส่งเข้าชุด feature กลางโดยอัตโนมัติ** จนกว่าจะเพิ่ม mapping พร้อมนิยาม หน่วย ความหมาย และการตรวจความเข้ากันได้ใน `data-pipeline/CENTRAL/feature_contract.json` ฟิลด์ `srcip`, `dstip`, port, Flow ID หรือ timestamp ดิบ (หากมีใน release ที่นำเข้า) เป็นตัวระบุ/metadata ไม่ใช้เป็น feature กลางโดยตรง เพราะเสี่ยงทำให้โมเดลจำเครื่องหรือชุด capture แทนพฤติกรรม
 
 ## 6. การเตรียมข้อมูลในโปรเจกต์
 
@@ -159,10 +159,10 @@ python data-pipeline/sub-dataset/UNSW-NB15/download.py
 1. `data-pipeline/sub-dataset/UNSW-NB15/eda.ipynb`
 2. `data-pipeline/sub-dataset/UNSW-NB15/cleansing.ipynb`
 3. `data-pipeline/sub-dataset/UNSW-NB15/harmonization.ipynb`
-4. `data-pipeline/common/build_dataset.ipynb`
-5. `data-pipeline/common/feature_engineering.ipynb`
+4. `data-pipeline/build_quad_dataset.py`
+5. `data-pipeline/CENTRAL/feature_engineering.ipynb` (ขั้นทางเลือก ไม่ได้อยู่ใน master runner)
 
-ผลหลักของ UNSW อยู่ใต้ `data-pipeline/sub-dataset/UNSW-NB15/output/cleansing/` และ `data-pipeline/sub-dataset/UNSW-NB15/output/harmonized/`; ผลรวมและ feature สำหรับโมเดลอยู่ใต้ `common/output/` ดูจำนวนแถวและความพร้อมจาก `common/output/reports/dataset_readiness.csv`, `feature_compatibility.json` และ `build_report.json`
+ผลหลักของ UNSW อยู่ใต้ `data-pipeline/sub-dataset/UNSW-NB15/output/cleansing/` และ `data-pipeline/sub-dataset/UNSW-NB15/output/harmonized/`; ผลรวมและ splits อยู่ใต้ `data-pipeline/CENTRAL/output/`; feature engineering แบบทางเลือกจะเขียนไป `data-pipeline/CENTRAL/output/feature_engineering/` เมื่อรัน notebook นั้นแยกต่างหาก
 
 ## 8. ข้อจำกัดที่ควรจำ
 

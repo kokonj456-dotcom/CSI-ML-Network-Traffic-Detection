@@ -1,32 +1,35 @@
-# จัดระเบียบไฟล์ Data Pipeline
-
-อัปเดต 4 พฤศจิกายน 2026: ปรับ CIC-IDS2017, BoT-IoT และ Borderline-SMOTE ให้เดินตามรูปแบบ notebook ของ NSL-KDD/UNSW-NB15
+# แผนผังไฟล์ Data Pipeline
 
 ## คำสั่งหลัก
 
-จากโฟลเดอร์โปรเจกต์ `CSI_ML_Final` รัน `python data-pipeline/build_quad_dataset.py` ตัว runner จะอ่านและ execute code cells ใน notebook ตามลำดับ โดยไม่บันทึกผล execution กลับไปทับไฟล์ notebook
+จาก project root ให้รัน <code>python data-pipeline/build_quad_dataset.py</code>. ตัว runner รัน code cells ใน notebook ตามลำดับโดยไม่เขียน execution output กลับไปทับไฟล์ notebook
 
 ## Notebook ที่เป็น implementation
 
-| Notebook | ทำงานอะไร |
+| Notebook | หน้าที่ |
 |---|---|
-| `sub-dataset/CIC-IDS2017/cleansing.ipynb` | อ่าน raw CSV, normalize header, เพิ่ม record ID/duplicate flag, export cleaned files และ audit |
-| `sub-dataset/CIC-IDS2017/harmonization.ipynb` | map raw CIC fields เป็น features/labels/metadata และ export รายงาน |
-| `sub-dataset/BoT-IoT/cleansing.ipynb` | ขั้น cleansing ที่มี code อยู่ใน notebook โดยตรง |
-| `sub-dataset/BoT-IoT/harmonization.ipynb` | map `dur/proto/sbytes/dbytes` และ labels เป็น schema กลาง |
-| `CENTRAL/borderline_smote.ipynb` | fit Borderline-SMOTE ใน training split ที่เลือก และ export split พร้อม flags |
+| <code>sub-dataset/NSL-KDD/eda.ipynb</code>, <code>cleansing.ipynb</code>, <code>harmonization.ipynb</code> | สำรวจ ตรวจ/ทำความสะอาด และแปลง NSL-KDD เป็น schema กลาง |
+| <code>sub-dataset/UNSW-NB15/eda.ipynb</code>, <code>cleansing.ipynb</code>, <code>harmonization.ipynb</code> | สำรวจ ทำความสะอาด และแปลง UNSW-NB15 เป็น schema กลาง |
+| <code>sub-dataset/CIC-IDS2017/cleansing.ipynb</code> | อ่านและจัดรูป raw input พร้อม audit |
+| <code>sub-dataset/CIC-IDS2017/harmonization.ipynb</code> | สร้าง features, labels และ metadata ตาม schema กลาง |
+| <code>sub-dataset/BoT-IoT/cleansing.ipynb</code> | ทำความสะอาดข้อมูล BoT-IoT |
+| <code>sub-dataset/BoT-IoT/harmonization.ipynb</code> | map ข้อมูล BoT-IoT เป็น schema กลาง |
+| <code>CENTRAL/build_dataset.ipynb</code> | รวม harmonized tables ทั้งสี่ชุดและสร้าง splits |
+| <code>CENTRAL/borderline_smote.ipynb</code> | สร้างตัวอย่างสังเคราะห์เฉพาะ train และ train_full |
 
-เปิดแต่ละสมุดแล้วรันทุก cell จากบนลงล่างได้เอง; ไม่มี `run_pipeline.py` หรือ `apply_borderline_smote.py` เป็น implementation คู่กันแล้ว
+เปิด notebook แล้วรัน cell จากบนลงล่างได้เอง โค้ดสร้าง CENTRAL อยู่ใน <code>build_dataset.ipynb</code> โดยตรง; ไม่มี <code>build_dataset.py</code> ที่เป็น implementation คู่กัน
 
-## ไฟล์ Python ที่ยังเป็นขั้นตอนหลัก
+## ไฟล์ Python ที่ยังทำหน้าที่ orchestration/audit
 
-- `build_quad_dataset.py` เป็นตัวจัดลำดับและรัน notebooks
-- `CENTRAL/build_dataset.py` เป็น builder สี่ dataset ที่ master runner เรียก
-- `audit_all_pipelines.py` เป็น final audit
-- `download.py` ของ CIC/BoT ใน checkout นี้สร้างข้อมูลตัวอย่างสังเคราะห์ ไม่ได้ดาวน์โหลด raw benchmark ทางการ; ตรวจ provenance ก่อนใช้งาน
+- <code>build_quad_dataset.py</code> จัดลำดับและ execute notebooks
+- <code>audit_all_pipelines.py</code> ตรวจ output จากแต่ละ dataset, splits และ SMOTE
+- downloader ของแต่ละชุดใช้เตรียม raw input; downloader CIC/BoT อาจ fallback ไปสร้างข้อมูลตัวอย่าง หากโหลดแหล่งออนไลน์ไม่สำเร็จ
 
-## ไฟล์ที่ลบและไฟล์ที่ยังเก็บ
+## Notebook วิเคราะห์แยกจาก runner
 
-implementation `.py` รุ่นก่อน, สมุด review-only และ generator เก่าถูกลบออกแล้ว; เส้นทางปัจจุบันใช้ notebook ที่ระบุไว้ด้านบน
+- <code>CENTRAL/analyze_dataset_relationships.ipynb</code> เปรียบเทียบความสัมพันธ์และการกระจายของ NSL-KDD/UNSW-NB15 จาก train_full; โค้ดวิเคราะห์อยู่ใน notebook โดยตรง
+- <code>CENTRAL/eda.ipynb</code> สำรวจ harmonized data ของ NSL-KDD/UNSW-NB15
+- <code>CENTRAL/analyze_dataset_relationships.ipynb</code> วิเคราะห์ distribution ของ NSL-KDD/UNSW-NB15 จาก train_full
+- <code>CENTRAL/feature_engineering.ipynb</code> เป็นเส้นทาง preprocessing ทางเลือก ไม่ได้อยู่ใน master runner; ตัวแทนนี้ใช้ scaler/encoder ต่างจาก representation ภายใน SMOTE จึงอย่ารวม CSV สองทางเข้าด้วยกัน
 
-`CENTRAL/build_dataset.ipynb` ยังเป็น prototype สำหรับ NSL-KDD/UNSW-NB15 สองชุดและต่างจาก `.py` builder สี่ชุด จึงคงไว้พร้อมคำเตือน ไม่รันสลับกับ builder หลัก ส่วน `CENTRAL/feature_engineering.ipynb` ยังไม่อยู่ใน runnerและยังอ้าง `common/` ที่ไม่มีใน working copy
+ดูหน้าที่และ input/output ของ CENTRAL ได้ใน <code>CENTRAL/README.md</code>.

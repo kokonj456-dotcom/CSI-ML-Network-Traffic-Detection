@@ -38,8 +38,11 @@ KS เป็นระยะห่างสูงสุดระหว่าง�
 
 ## ทำซ้ำและอ่านผลเต็ม
 
-รันจากรากโครงการ: `python data-pipeline/common/analyze_dataset_relationships.py`
+รันจากรากโครงการ: `เปิด data-pipeline/CENTRAL/analyze_dataset_relationships.ipynb แล้วรันทุก cell ตามลำดับ`
 
-ผล CSV อยู่ที่ `data-pipeline/common/output/reports/dataset_relationships/`: sample_counts, numeric_correlations (Pearson/Spearman ทั้งค่าดิบและ log1p), correlation_comparison, numeric_distribution_shift, categorical_distribution_shift, categorical_associations และ analysis_manifest.json
+ผล CSV อยู่ที่ `data-pipeline/CENTRAL/output/reports/dataset_relationships/`: sample_counts, numeric_correlations (Pearson/Spearman ทั้งค่าดิบและ log1p), correlation_comparison, numeric_distribution_shift, categorical_distribution_shift, categorical_associations และ analysis_manifest.json
 
 ข้อจำกัด: วัดบน output harmonization ปัจจุบัน ยังไม่ยืนยันความเทียบเท่าด้านความหมาย ไม่ใช่ผลประเมินโมเดล และการแยก Normal/Attack ยังไม่ควบคุมความต่างของ protocol/service หรือชนิดการโจมตีทั้งหมด
+
+
+หมายเหตุ: ตารางตัวเลขในเอกสารนี้เป็น snapshot จากการวิเคราะห์ครั้งก่อน; ให้รัน notebook เพื่อสร้าง CSV จาก train_full ปัจจุบันก่อนใช้อ้างอิงผลล่าสุด.

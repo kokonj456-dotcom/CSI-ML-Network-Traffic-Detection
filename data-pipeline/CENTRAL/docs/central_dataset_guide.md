@@ -8,7 +8,7 @@
 
 
 
-> **อัปเดตโครงสร้าง 4 พฤศจิกายน 2026:** cleansing/harmonization ของ CIC-IDS2017 และ BoT-IoT อยู่ใน `../../sub-dataset/CIC-IDS2017/*.ipynb` และ `../../sub-dataset/BoT-IoT/*.ipynb`; Borderline-SMOTE อยู่ใน `../borderline_smote.ipynb` และ master runner execute code cells เหล่านั้น ส่วน CENTRAL builder สี่ยังใช้ `build_dataset.py`. รายละเอียดเส้นทางปัจจุบันดู [`PIPELINE_FILE_GUIDE.md`](../../PIPELINE_FILE_GUIDE.md); ขั้นตอนที่อ้าง `common/` ด้านล่างเป็นเอกสาร workflow รุ่นก่อน
+> **อัปเดตโครงสร้าง 4 พฤศจิกายน 2026:** cleansing/harmonization ของ CIC-IDS2017 และ BoT-IoT อยู่ใน `../../sub-dataset/CIC-IDS2017/*.ipynb` และ `../../sub-dataset/BoT-IoT/*.ipynb`; Borderline-SMOTE อยู่ใน `../borderline_smote.ipynb` และ master runner execute code cells เหล่านั้น CENTRAL builder ใช้ `build_dataset.ipynb` โดยโค้ดอยู่ใน notebook ไม่ต้องเปิดไฟล์ Python คู่กัน. รายละเอียดเส้นทางปัจจุบันดู [`PIPELINE_FILE_GUIDE.md`](../../PIPELINE_FILE_GUIDE.md); ขั้นตอนที่อ้าง `common/` ด้านล่างเป็นเอกสาร workflow รุ่นก่อน
 
 ## ภาพรวม: หนึ่ง record เดินทางอย่างไร
 

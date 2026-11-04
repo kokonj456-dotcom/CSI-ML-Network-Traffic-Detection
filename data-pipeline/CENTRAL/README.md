@@ -1,7 +1,18 @@
 # CENTRAL Dataset Pipeline
 
-Master runner ใช้ `build_dataset.py` รวม harmonized data สี่ชุด จากนั้น execute `borderline_smote.ipynb` สองรอบ โดยกำหนด `SMOTE_SPLIT=train_full` และ `train`; algorithm อยู่ใน notebook นี้โดยตรง
+โฟลเดอร์นี้เก็บขั้นตอนที่ทำกับข้อมูลรวม โดยโค้ดของแต่ละงานอยู่ใน notebook โดยตรงตามรูปแบบของ NSL-KDD และ UNSW-NB15
 
-`build_dataset.ipynb` เป็น prototype เก่าสำหรับ NSL-KDD/UNSW-NB15 สองชุดและผลไม่เทียบเท่า builder ปัจจุบัน ส่วน `feature_engineering.ipynb` มี preprocessing จริงแต่ยังไม่อยู่ใน runner และ path `common/` ยังใช้ไม่ได้ใน checkout นี้
+## Notebook ที่ master runner ใช้
 
-ดู [`../PIPELINE_FILE_GUIDE.md`](../PIPELINE_FILE_GUIDE.md) สำหรับรายละเอียด
+- <code>build_dataset.ipynb</code> อ่าน features/labels/metadata ที่ harmonized จากทั้ง 4 ชุด รวมป้ายกำกับกลาง แบ่ง train/validation/test และเขียนผลลง <code>CENTRAL/output/</code>
+- <code>borderline_smote.ipynb</code> ทำ oversampling กับ train และ train_full แยกกัน โดย runner กำหนด split ให้
+
+เรียกจาก project root ด้วย <code>python data-pipeline/build_quad_dataset.py</code>. ตัว runner ไม่บันทึกผลรันกลับเข้า notebook ต้นฉบับ
+
+## Notebook วิเคราะห์ที่รันแยกได้
+
+- <code>eda.ipynb</code> สำรวจ harmonized NSL-KDD และ UNSW-NB15; ผลกราฟ/ตารางอยู่ใน <code>CENTRAL/output/eda/</code>
+- <code>analyze_dataset_relationships.ipynb</code> เปรียบเทียบการกระจายของฟีเจอร์จาก train_full; ผลอยู่ใน <code>CENTRAL/output/reports/dataset_relationships/</code>
+- <code>feature_engineering.ipynb</code> เป็นทางเลือกสำหรับ StandardScaler/One-Hot ที่ fit จาก train; master runner ไม่ได้เรียก notebook นี้ และ representation ต่างจากทาง SMOTE จึงเก็บผลไว้คนละโฟลเดอร์
+
+ไฟล์ <code>dataset_registry.json</code> และ <code>feature_contract.json</code> เป็นค่ากำกับข้อมูล ไม่ใช่ตัวรัน pipeline. CENTRAL ไม่มีไฟล์ Python ที่ซ้ำกับ implementation ใน notebook แล้ว; ตัวรันและ final audit อยู่ระดับ <code>data-pipeline/</code>.

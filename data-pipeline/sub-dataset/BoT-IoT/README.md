@@ -28,6 +28,7 @@ flowchart TD
 ## 2. วิธีใช้งาน (Usage Guide)
 
 ### คำสั่งดาวน์โหลดข้อมูลจริงแบบอัตโนมัติ (Online Mode)
+
 รันคำสั่งจากโฟลเดอร์นี้ (`data-pipeline/sub-dataset/BoT-IoT`):
 
 ```bash
@@ -42,17 +43,20 @@ python download.py --source emulate --train_samples 150657 --test_samples 20000
 ```
 
 ### การประมวลผลข้อมูล (Data Processing)
+
 สามารถเลือกทำได้ 2 วิธี:
 
 1. **รันผ่าน Master Runner อัตโนมัติ (แนะนำ)**:
+
    ```bash
    cd ../..
    python build_quad_dataset.py
    ```
-   ระบบจะตรวจสอบไฟล์ใน `output/harmonized/` หากยังไม่มี จะเรียกประมวลผลเซลล์ใน Notebook ให้อัตโนมัติ
 
+   ระบบจะตรวจสอบไฟล์ใน `output/harmonized/` หากยังไม่มี จะเรียกประมวลผลเซลล์ใน Notebook ให้อัตโนมัติ
 2. **รันผ่าน Jupyter Notebooks ด้วยตนเอง**:
    เปิดและรันเรียงตามลำดับ:
+
    * `cleansing.ipynb`
    * `harmonization.ipynb`
    * `eda.ipynb` (สำหรับตรวจสอบการกระจายตัวของข้อมูลหลังทำ Harmonization)
