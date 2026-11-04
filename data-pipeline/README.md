@@ -73,8 +73,32 @@ Raw คือไฟล์ที่ได้จากผู้จัดทำ dat
 
 | Dataset | ไฟล์ที่ใช้ | ข้อสำคัญ |
 |---|---|---|
+<<<<<<< HEAD
 | NSL-KDD | `sub-dataset/NSL-KDD/raw/` มีไฟล์ Train, Test และ `KDDTest-21` | `KDDTrain+_20Percent` เป็นชุดย่อย ไม่เอามาต่อซ้ำกับ Train เต็ม |
 | UNSW-NB15 | `sub-dataset/UNSW-NB15/raw/UNSW_NB15_training-set.csv` และ `UNSW_NB15_testing-set.csv` | ดาวน์โหลดจากแหล่งที่ได้รับอนุญาตและวางไฟล์ไว้เอง; ขั้น Cleansing บันทึก manifest สำหรับตรวจความเปลี่ยนแปลง |
+=======
+| NSL-KDD | `NSL-KDD/raw/` มีไฟล์ Train, Test และ `KDDTest-21` | `KDDTrain+_20Percent` เป็นชุดย่อย ไม่เอามาต่อซ้ำกับ Train เต็ม |
+| UNSW-NB15 | `UNSW-NB15/raw/UNSW_NB15_training-set.csv` และ `UNSW_NB15_testing-set.csv` | ดาวน์โหลดจากแหล่งที่ได้รับอนุญาตและวางไฟล์ไว้เอง; ขั้น Cleansing บันทึก manifest สำหรับตรวจความเปลี่ยนแปลง |
+| CIC-IDS2017 | `CIC-IDS2017/raw/CIC_IDS2017_training-set.csv` และ `testing-set.csv` | ดาวน์โหลดอัตโนมัติจาก Hugging Face Mirror ด้วย `download.py --source online` หรือจำลองแบบออฟไลน์ได้ |
+| BoT-IoT | `BoT-IoT/raw/BoT_IoT_training-set.csv` และ `testing-set.csv` | ดาวน์โหลดอัตโนมัติจาก UNSW IoT 5% Mirror ด้วย `download.py --source online` หรือจำลองแบบออฟไลน์ได้ |
+
+### คำสั่งดาวน์โหลดและสร้างชุดข้อมูลทั้งหมดอัตโนมัติ (Automated Build)
+
+เพื่อนร่วมทีมสามารถสั่งสร้างข้อมูลทั้งหมดได้ในคำสั่งเดียว:
+```bash
+# รันกระบวนการทั้งหมด: โหลดข้อมูลจริง ทำความสะอาด รวมตารางกลาง และทำ Borderline-SMOTE
+python data-pipeline/build_quad_dataset.py
+```
+
+หากต้องการดาวน์โหลดชุดข้อมูลจริงเฉพาะชุดพร้อมกำหนดจำนวนแถว:
+```bash
+# กำหนดจำนวนแถวสำหรับ CIC-IDS2017
+python data-pipeline/CIC-IDS2017/download.py --source online --train_samples 150657 --test_samples 20000 --force
+
+# กำหนดจำนวนแถวสำหรับ BoT-IoT
+python data-pipeline/BoT-IoT/download.py --source online --train_samples 150657 --test_samples 20000 --force
+```
+>>>>>>> 43bb5f0aa7105b19fff642e27ac43fadfe778fff
 
 **เหตุ → ผล:** แยก raw ออกจาก output ทำให้การทดลองทำซ้ำได้ และป้องกันไม่ให้การแก้ค่าว่าง/ชื่อคอลัมน์ไปเปลี่ยนต้นฉบับโดยไม่รู้ตัว
 
