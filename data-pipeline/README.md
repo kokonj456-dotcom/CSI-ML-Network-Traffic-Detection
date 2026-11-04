@@ -2,6 +2,8 @@
 
 > **สถานะโครงสร้างไฟล์:** CIC/BoT cleansing และ harmonization รวมถึง Borderline-SMOTE มี implementation ใน notebook โดยตรงตามรูปแบบ NSL/UNSW; master runner execute code cells เหล่านั้น ดู [PIPELINE_FILE_GUIDE.md](PIPELINE_FILE_GUIDE.md). CIC/BoT `download.py` สร้างข้อมูลตัวอย่าง ไม่ใช่ official raw benchmark.
 
+> **ตำแหน่งปัจจุบัน:** โฟลเดอร์ dataset ทั้งสี่อยู่ใต้ `sub-dataset/`; `CENTRAL/` อยู่ระดับเดียวกัน. ใช้ [PIPELINE_FILE_GUIDE.md](PIPELINE_FILE_GUIDE.md) สำหรับเส้นทางและคำสั่งที่ตรงกับ working copy; ส่วนที่ยังอ้าง `common/` เป็นเอกสาร workflow รุ่นก่อน.
+
 
 
 
@@ -73,32 +75,13 @@ Raw คือไฟล์ที่ได้จากผู้จัดทำ dat
 
 | Dataset | ไฟล์ที่ใช้ | ข้อสำคัญ |
 |---|---|---|
-<<<<<<< HEAD
 | NSL-KDD | `sub-dataset/NSL-KDD/raw/` มีไฟล์ Train, Test และ `KDDTest-21` | `KDDTrain+_20Percent` เป็นชุดย่อย ไม่เอามาต่อซ้ำกับ Train เต็ม |
-| UNSW-NB15 | `sub-dataset/UNSW-NB15/raw/UNSW_NB15_training-set.csv` และ `UNSW_NB15_testing-set.csv` | ดาวน์โหลดจากแหล่งที่ได้รับอนุญาตและวางไฟล์ไว้เอง; ขั้น Cleansing บันทึก manifest สำหรับตรวจความเปลี่ยนแปลง |
-=======
-| NSL-KDD | `NSL-KDD/raw/` มีไฟล์ Train, Test และ `KDDTest-21` | `KDDTrain+_20Percent` เป็นชุดย่อย ไม่เอามาต่อซ้ำกับ Train เต็ม |
-| UNSW-NB15 | `UNSW-NB15/raw/UNSW_NB15_training-set.csv` และ `UNSW_NB15_testing-set.csv` | ดาวน์โหลดจากแหล่งที่ได้รับอนุญาตและวางไฟล์ไว้เอง; ขั้น Cleansing บันทึก manifest สำหรับตรวจความเปลี่ยนแปลง |
-| CIC-IDS2017 | `CIC-IDS2017/raw/CIC_IDS2017_training-set.csv` และ `testing-set.csv` | ดาวน์โหลดอัตโนมัติจาก Hugging Face Mirror ด้วย `download.py --source online` หรือจำลองแบบออฟไลน์ได้ |
-| BoT-IoT | `BoT-IoT/raw/BoT_IoT_training-set.csv` และ `testing-set.csv` | ดาวน์โหลดอัตโนมัติจาก UNSW IoT 5% Mirror ด้วย `download.py --source online` หรือจำลองแบบออฟไลน์ได้ |
+| UNSW-NB15 | `sub-dataset/UNSW-NB15/raw/UNSW_NB15_training-set.csv` และ `UNSW_NB15_testing-set.csv` | วางไฟล์ official ที่ได้รับอนุญาตไว้ใน `raw/` ก่อนรัน pipeline |
+| CIC-IDS2017 | `sub-dataset/CIC-IDS2017/raw/CIC_IDS2017_training-set.csv` และ `CIC_IDS2017_testing-set.csv` | ใน working copy นี้ downloader สร้างข้อมูลตัวอย่าง ไม่ใช่ raw benchmark ทางการ |
+| BoT-IoT | `sub-dataset/BoT-IoT/raw/BoT_IoT_training-set.csv` และ `BoT_IoT_testing-set.csv` | ใน working copy นี้ downloader สร้างข้อมูลตัวอย่าง ไม่ใช่ raw benchmark ทางการ |
 
-### คำสั่งดาวน์โหลดและสร้างชุดข้อมูลทั้งหมดอัตโนมัติ (Automated Build)
+ตัวรันหลักอยู่ที่ `data-pipeline/build_quad_dataset.py` โดยเตรียม CIC/BoT เมื่อจำเป็น จากนั้นเรียก CENTRAL builder, Borderline-SMOTE และการตรวจคุณภาพ; NSL-KDD และ UNSW-NB15 ต้องมี input ที่ผ่าน harmonization พร้อมก่อนสร้างชุดกลาง
 
-เพื่อนร่วมทีมสามารถสั่งสร้างข้อมูลทั้งหมดได้ในคำสั่งเดียว:
-```bash
-# รันกระบวนการทั้งหมด: โหลดข้อมูลจริง ทำความสะอาด รวมตารางกลาง และทำ Borderline-SMOTE
-python data-pipeline/build_quad_dataset.py
-```
-
-หากต้องการดาวน์โหลดชุดข้อมูลจริงเฉพาะชุดพร้อมกำหนดจำนวนแถว:
-```bash
-# กำหนดจำนวนแถวสำหรับ CIC-IDS2017
-python data-pipeline/CIC-IDS2017/download.py --source online --train_samples 150657 --test_samples 20000 --force
-
-# กำหนดจำนวนแถวสำหรับ BoT-IoT
-python data-pipeline/BoT-IoT/download.py --source online --train_samples 150657 --test_samples 20000 --force
-```
->>>>>>> 43bb5f0aa7105b19fff642e27ac43fadfe778fff
 
 **เหตุ → ผล:** แยก raw ออกจาก output ทำให้การทดลองทำซ้ำได้ และป้องกันไม่ให้การแก้ค่าว่าง/ชื่อคอลัมน์ไปเปลี่ยนต้นฉบับโดยไม่รู้ตัว
 
