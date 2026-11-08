@@ -1,3 +1,5 @@
+> ผล snapshot ก่อนแก้ harmonization รอบล่าสุด ดู [HARMONIZATION_VALIDATION_2026-11-08.md](HARMONIZATION_VALIDATION_2026-11-08.md) สำหรับผลปัจจุบันและจำนวนแถวหลัง quarantine
+
 # ผลตรวจ pipeline หลังแก้ไข — 8 พฤศจิกายน 2026
 
 รอบที่ตรวจ: `20261108-171332-637616` — เริ่มจาก raw ในเครื่อง โดยไม่ใช้ output เก่า และไม่ดาวน์โหลดข้อมูลมาแทนต้นฉบับ

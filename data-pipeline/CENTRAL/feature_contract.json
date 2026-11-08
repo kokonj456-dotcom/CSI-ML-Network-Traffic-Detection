@@ -1,5 +1,5 @@
 {
-  "contract_version": 5,
+  "contract_version": 6,
   "record_key": "record_id",
   "supported_datasets": [
     "NSL-KDD",
@@ -41,7 +41,20 @@
       "has_nsl_content",
       "has_nsl_window",
       "is_kddtest21_view",
-      "data_split"
+      "data_split",
+      "source_protocol",
+      "source_connection_state",
+      "source_service",
+      "service_basis",
+      "service_identified",
+      "state_reclassified",
+      "connection_state_basis",
+      "duration_unit",
+      "quality_ok",
+      "quality_issues",
+      "invalid_required_value",
+      "bytes_packet_conflict",
+      "state_counter_conflict"
     ]
   },
   "candidate_features": {
@@ -207,5 +220,18 @@
     "distance_inputs": "three standardized log numeric fields and three categorical fields; numeric scaler fit on train",
     "encoded_outputs": "same saved preprocessor as unresampled splits",
     "sample_weight": "uniform mean-one after resampling"
+  },
+  "harmonization_policy": {
+    "version": 6,
+    "canonical_labels": "Shared map_labels used by all four adapters and CENTRAL",
+    "state": "S1/S2/S3 established; request/initial with reverse traffic maps to other; no-reply requires no reverse bytes/packets",
+    "service": "Shared aliases; port hints explicitly distinguished from identified services",
+    "quality": "Retain all source rows; quality_ok=False rows copied to quarantine and excluded from CENTRAL with per-source/split counts",
+    "nsl_taxonomy_reference": "https://www.csit.carleton.ca/wshi/wp-content/uploads/2021/05/TNSE3004312.pdf",
+    "nsl_taxonomy_changes": {
+      "worm": "R2L",
+      "httptunnel": "U2R"
+    },
+    "duration_unit": "seconds in adapted raw schema; CIC online importer converts microseconds exactly once"
   }
 }

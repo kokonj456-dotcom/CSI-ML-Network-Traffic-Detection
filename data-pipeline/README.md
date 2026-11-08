@@ -62,3 +62,8 @@ Baseline source weights have equal total contribution per source and mean row we
 A new run is built under `.pipeline-runs/<run-id>/work`; its UTF-8 log is alongside `work`. Every stage runs afresh. Published outputs are moved into place only after the complete audit passes and original code/raw fingerprints still match. Previous output directories are retained under `.pipeline-archives/<run-id>`; unrelated model-run folders are retained. A failed run leaves published data unchanged. Publishing has rollback on Python exceptions; it is a sequence of directory moves, not a filesystem transaction against power loss.
 
 Audit failures exit nonzero. Diagnostic success is explicitly marked diagnostic, with source/availability and official-test overlap warnings. Passing structural validation does not certify benchmark authenticity or model quality.
+## Harmonization contract 6 and quarantine
+
+See [HARMONIZATION_POLICY.md](HARMONIZATION_POLICY.md) for current state/service/protocol rules, taxonomy reference and quality criteria. Source harmonized tables retain all rows; flagged records are also written under each source's `output/harmonized/quarantine/`. CENTRAL excludes flagged rows with explicit counts in `output/reports/quarantine_summary.csv`, including any source test exclusions. Thus CENTRAL row counts differ from the old snapshots.
+
+Audit now verifies supplied-test membership, recomputes input groups from features, checks cleaned artifacts and source scope, validates resampling targets, and auto-detects resampled outputs. Source provenance and unavailable/inferred services remain visible; diagnostic success is not official-data certification.

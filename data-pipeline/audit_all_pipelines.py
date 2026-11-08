@@ -10,7 +10,7 @@ def main():
     args=parser.parse_args()
     pipeline=Path(__file__).resolve().parent
     try:
-        report=audit_pipeline(pipeline,args.resampled)
+        report=audit_pipeline(pipeline,True if args.resampled else None)
     except Exception as error:
         write_json(pipeline/'CENTRAL/output/reports/audit.json',{'status':'failed','error':str(error)})
         raise

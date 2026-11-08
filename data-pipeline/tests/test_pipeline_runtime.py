@@ -19,12 +19,15 @@ def tables(n=30):
                     'protocol':['tcp','udp','icmp']*(n//3),
                     'service_group':['http','dns','other']*(n//3),
                     'conn_state_group':['established','no-reply','reset']*(n//3)})
-    ids=pd.Series([4]*8+[0]*(n-8))
+    f.loc[f.conn_state_group.eq('no-reply'),'bytes_backward']=0
+    ids=pd.Series([4]*min(8,n)+[0]*max(0,n-8))
     l=pd.DataFrame({'record_id':f.record_id,'label_raw':'test','label_source_category':ids.map({4:'R2L',0:'Normal'}),
                     'attack_category':ids.map(dict(enumerate(rt.CLASS_NAMES))),'attack_category_id':ids,
                     'label_binary':ids.ne(0).astype(int),'mitre_tactic':ids.map(dict(enumerate(rt.TACTICS)))})
     m=pd.DataFrame({'record_id':f.record_id,'source_dataset':'NSL-KDD','source_split':'train',
                     'data_split':'train','sample_weight':1.0,'split_group':f.record_id})
+    for col in ['dedup_flag','is_kddtest21_view','state_reclassified','has_packet_stats','has_tcp_details','has_nsl_content','has_nsl_window','invalid_duration','invalid_bytes_forward','invalid_bytes_backward']:m[col]=False
+    for col in ['has_duration','has_protocol','has_directional_bytes','has_service','has_connection_state','service_identified']:m[col]=True
     return f,l,m
 
 
@@ -97,6 +100,7 @@ class PipelineRegressionTests(unittest.TestCase):
             for ds,attack in [('NSL-KDD','R2L'),('UNSW-NB15','Exploits'),('CIC-IDS2017','SSH-Patator'),('BoT-IoT','DoS')]:
                 d=p/'sub-dataset'/ds;(d/'raw').mkdir(parents=True)
                 (d/'raw/data.csv').write_text('value\n1\n')
+                if ds=='CIC-IDS2017':(d/'raw/CIC_IDS2017_training-set.csv').write_text('id\nfixture\n')
                 clean=d/'output/cleansing';clean.mkdir(parents=True)
                 pd.DataFrame(rt.raw_manifest(d)).to_csv(clean/'source_manifest.csv',index=False)
                 pd.DataFrame({'rows':[30]}).to_csv(clean/'cleansing_audit.csv',index=False)
@@ -105,12 +109,27 @@ class PipelineRegressionTests(unittest.TestCase):
                 if ds=='UNSW-NB15':l['label_raw']=l.label_binary.astype(int)
                 m['source_dataset']=ds;m['orig_row_id']=np.arange(len(m));m.loc[24:,'source_split']='test'
                 for flag in ['has_service','has_connection_state','has_protocol']:m[flag]=True
+                l=rt.map_labels(l,m)
+                from harmonization_rules import quality_flags
+                m['source_protocol']=f.protocol;m['source_connection_state']=f.conn_state_group;m['source_service']=f.service_group
+                m['service_basis']='source_service_name';m['service_identified']=True;m['state_reclassified']=False
+                m['connection_state_basis']='fixture';m['duration_unit']='seconds';m['quality_issues']=''
+                for flag in ['invalid_duration','invalid_bytes_forward','invalid_bytes_backward']:m[flag]=False
+                flags=quality_flags(f,m)
+                for col in flags:m[col]=flags[col]
+                m['quality_ok']=~flags.any(axis=1)
+                m['has_duration']=True;m['has_directional_bytes']=True;m['has_packet_stats']=False
+                l['source_attack_category']=l.attack_category
+                cleaned_names={'NSL-KDD':['KDDTrain_clean.csv','KDDTest_clean.csv','KDDTest-21_clean.csv'],
+                               'UNSW-NB15':['UNSW_NB15_training-set.csv','UNSW_NB15_testing-set.csv'],
+                               'CIC-IDS2017':['CIC_IDS2017_training-set.csv','CIC_IDS2017_testing-set.csv'],
+                               'BoT-IoT':['BoT_IoT_training-set.csv','BoT_IoT_testing-set.csv']}[ds]
+                for name in cleaned_names:(clean/name).write_text('fixture\n1\n')
                 dest=d/'output/harmonized';dest.mkdir()
                 for name,frame in zip(['features','labels','metadata'],[f,l,m]):frame.to_csv(dest/(name+'.csv'),index=False)
                 pd.DataFrame(rt.raw_manifest(d)).to_csv(dest/'source_manifest.csv',index=False)
                 rt.stamp_dataset(d)
             with patch.dict('os.environ',{'PIPELINE_ALLOW_UNVERIFIED':'1'}):rt.build_central(c)
-            rt.write_json(c/'output/data_sources.json',{ds:{'mode':'unverified','files':rt.raw_manifest(p/'sub-dataset'/ds)} for ds in rt.DATASETS})
             rt.engineer(c)
             self.assertEqual(rt.audit_pipeline(p)['status'],'passed')
             original_train=set(rt.read_tables(c/'output/splits/train')[0].record_id)
@@ -132,9 +151,9 @@ class PipelineRegressionTests(unittest.TestCase):
                     if Path(path)==c/'output/splits/train/features.csv':z.loc[0,'duration']=value
                     return z
                 with patch.object(pd,'read_csv',side_effect=corrupt):
-                    with self.assertRaisesRegex(ValueError,'duration'):rt.audit_pipeline(p)
+                    with self.assertRaisesRegex(ValueError,'duration|quality_ok'):rt.audit_pipeline(p)
             (p/'sub-dataset/NSL-KDD/raw/data.csv').write_text('value\n2\n')
-            with self.assertRaisesRegex(ValueError,'Raw changed'):rt.audit_pipeline(p)
+            with self.assertRaisesRegex(ValueError,'Raw changed|raw evidence'):rt.audit_pipeline(p)
 
     def test_demo_preparation_records_source_mode_and_cannot_be_relabelled_online(self):
         import json
