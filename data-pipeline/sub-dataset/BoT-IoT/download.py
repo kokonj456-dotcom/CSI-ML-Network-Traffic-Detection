@@ -1,11 +1,12 @@
-"""Prepare and verify the official BoT-IoT benchmark CSV files.
-Supports automated online downloading of authentic BoT-IoT traffic from verified mirrors
-with customizable sample sizes (train_samples, test_samples) or offline emulation.
+"""Prepare source-traced mirror samples or explicitly requested demo records.
+Mirror provenance is recorded; online failures never generate demo replacements.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
+from datetime import datetime, timezone
 import csv
 import hashlib
 import io
@@ -43,13 +44,14 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 def download_real_bot(train_samples: int, test_samples: int, seed: int = 42) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Download authentic BoT-IoT flows from public mirror and sample."""
+    """Download BoT-IoT flows from a public mirror and sample."""
     print("Connecting to real BoT-IoT online mirrors...")
-    cols = ["pkSeqID", "proto", "dur", "sbytes", "dbytes", "spkts", "dpkts", "state", "category", "subcategory", "attack"]
+    cols = ["pkSeqID", "proto", "dur", "sbytes", "dbytes", "spkts", "dpkts", "dport", "state", "category", "subcategory", "attack"]
 
     # 1. Download Part 4 (contains Normal, Theft, Reconnaissance, and DDoS)
     print(f"Downloading BoT-IoT Part 4 (Recon, Normal, Theft, DDoS)...")
     r4 = requests.get(MIRROR_PART4, timeout=60)
+    r4.raise_for_status()
     zf4 = zipfile.ZipFile(io.BytesIO(r4.content))
     with zf4.open(zf4.namelist()[0]) as f:
         # Load all Normal, Theft, and Reconnaissance + sample of DDoS
@@ -58,22 +60,21 @@ def download_real_bot(train_samples: int, test_samples: int, seed: int = 42) -> 
     # 2. Download Part 1 (contains DoS HTTP/TCP/UDP)
     print(f"Downloading BoT-IoT Part 1 (DoS HTTP/TCP/UDP)...")
     r1 = requests.get(MIRROR_PART1, timeout=60)
+    r1.raise_for_status()
     zf1 = zipfile.ZipFile(io.BytesIO(r1.content))
     with zf1.open(zf1.namelist()[0]) as f:
         df1 = pd.read_csv(f, nrows=200000, low_memory=False)
 
     print("Combining real IoT traffic flows...")
-    # Add dummy spkts/dpkts if missing
-    for d in [df4, df1]:
-        if "spkts" not in d.columns and "pkts" in d.columns:
-            d["spkts"] = np.ceil(d["pkts"].astype(float) * 0.6).astype(int)
-            d["dpkts"] = np.floor(d["pkts"].astype(float) * 0.4).astype(int)
-        if "attack" not in d.columns:
-            d["attack"] = (d["category"].astype(str).str.lower() != "normal").astype(int)
-
+    # Directional counts are measurements, never invented from total packets.
+    for frame in [df4, df1]:
+        required = {"pkSeqID", "proto", "dur", "sbytes", "dbytes", "spkts", "dpkts", "state", "category", "subcategory", "attack"}
+        missing = required.difference(frame.columns)
+        if missing:
+            raise ValueError(f"Mirror lacks measured required fields: {sorted(missing)}")
     # Select columns
-    valid_cols = [c for c in cols if c in df4.columns]
-    df_combined = pd.concat([df4[valid_cols], df1[valid_cols]], ignore_index=True)
+    valid_cols = [c for c in cols if c in df4.columns or c in df1.columns]
+    df_combined = pd.concat([df4.reindex(columns=valid_cols), df1.reindex(columns=valid_cols)], ignore_index=True)
     total_avail = len(df_combined)
     print(f"Successfully loaded {total_avail:,} authentic BoT-IoT flows from mirrors!")
     print("Class breakdown in available pool:")
@@ -83,7 +84,7 @@ def download_real_bot(train_samples: int, test_samples: int, seed: int = 42) -> 
     if req_total <= total_avail:
         shuffled = df_combined.sample(n=req_total, random_state=seed).reset_index(drop=True)
     else:
-        shuffled = df_combined.sample(n=req_total, replace=True, random_state=seed).reset_index(drop=True)
+        raise ValueError("Requested more rows than available; sampling with replacement would contaminate train/test")
 
     train_df = shuffled.iloc[:train_samples].copy().reset_index(drop=True)
     test_df = shuffled.iloc[train_samples:].copy().reset_index(drop=True)
@@ -91,7 +92,7 @@ def download_real_bot(train_samples: int, test_samples: int, seed: int = 42) -> 
     return train_df, test_df
 
 def generate_bot_records(n_samples: int, seed: int) -> pd.DataFrame:
-    """Fallback generator for offline emulation."""
+    """Explicit demo generator, never an online fallback."""
     np.random.seed(seed)
     n0 = int(n_samples * 0.40)
     n1 = int(n_samples * 0.35)
@@ -212,9 +213,7 @@ def main():
                 print(f"Executing ONLINE download for BoT-IoT (Train: {args.train_samples:,}, Test: {args.test_samples:,})...")
                 train_df, test_df = download_real_bot(args.train_samples, args.test_samples)
             except Exception as e:
-                print(f"Online download failed ({e}). Falling back to offline emulation generator...")
-                train_df = generate_bot_records(args.train_samples, seed=2026)
-                test_df = generate_bot_records(args.test_samples, seed=9992)
+                raise RuntimeError("Online preparation failed; no emulation fallback. Use --source emulate explicitly for demo data.") from e
         else:
             print(f"Executing OFFLINE emulation generator for BoT-IoT...")
             train_df = generate_bot_records(args.train_samples, seed=2026)
@@ -224,6 +223,15 @@ def main():
         test_df.to_csv(test_dest, index=False)
         print(f"Saved: {train_dest} ({len(train_df):,} rows)")
         print(f"Saved: {test_dest} ({len(test_df):,} rows)")
+        provenance = {
+            "dataset": 'BoT-IoT', "mode": args.source,
+            "created_at_utc": datetime.now(timezone.utc).isoformat(),
+            "upstream_urls": [MIRROR_PART1, MIRROR_PART4],
+            "split_policy": "seeded sampled split, not an official predefined train/test release",
+            "train_samples": args.train_samples, "test_samples": args.test_samples,
+            "files": [{"file": p.name, "bytes": p.stat().st_size, "sha256": sha256_file(p)} for p in sorted([train_dest, test_dest])]
+        }
+        (RAW_DIR / "source_provenance.json").write_text(json.dumps(provenance, indent=2), encoding="utf8")
     else:
         print(f"Files already exist in {RAW_DIR}. Use --force to re-download.")
 

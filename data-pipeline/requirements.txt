@@ -3,3 +3,7 @@ numpy>=1.26
 scikit-learn>=1.4
 jupyter>=1.0
 imbalanced-learn>=0.14
+
+requests>=2.31
+pyarrow>=18
+joblib>=1.3

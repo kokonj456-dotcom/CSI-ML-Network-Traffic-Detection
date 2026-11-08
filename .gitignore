@@ -75,3 +75,6 @@ desktop.ini
 
 #Agent skills
 .agents/
+# Isolated pipeline runs and reversible output archives
+.pipeline-runs/
+.pipeline-archives/

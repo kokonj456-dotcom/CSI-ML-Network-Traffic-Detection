@@ -1,11 +1,12 @@
-"""Prepare and verify the official CIC-IDS2017 benchmark CSV files.
-Supports automated online downloading of real CIC-IDS2017 traffic from verified mirrors
-with customizable sample sizes (train_samples, test_samples) or offline emulation.
+"""Prepare source-traced mirror samples or explicitly requested demo records.
+Mirror provenance is recorded; online failures never generate demo replacements.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
+from datetime import datetime, timezone
 import csv
 import hashlib
 from pathlib import Path
@@ -40,7 +41,7 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 def download_real_cic(train_samples: int, test_samples: int, seed: int = 42) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Download authentic CIC-IDS2017 flows from public mirror and downsample."""
+    """Download CIC-IDS2017 flows from a public mirror and downsample."""
     print(f"Connecting to real CIC-IDS2017 online mirror: {ONLINE_MIRROR} ...")
     cols_to_load = [
         "Flow Duration",
@@ -51,7 +52,10 @@ def download_real_cic(train_samples: int, test_samples: int, seed: int = 42) -> 
         "Total Backward Packets",
         "Label"
     ]
-    df_raw = pd.read_parquet(ONLINE_MIRROR, columns=cols_to_load)
+    df_raw = pd.read_parquet(ONLINE_MIRROR)
+    missing = set(cols_to_load + ["Protocol"]).difference(df_raw.columns)
+    if missing:
+        raise ValueError(f"Mirror lacks measured fields: {sorted(missing)}; choose a source retaining Protocol")
     total_available = len(df_raw)
     print(f"Successfully loaded {total_available:,} authentic CIC-IDS2017 flows from online mirror!")
 
@@ -60,16 +64,18 @@ def download_real_cic(train_samples: int, test_samples: int, seed: int = 42) -> 
     clean_labels = clean_labels.str.replace(r"[^\x00-\x7F]+", " ", regex=True)
 
     # Standardize to raw schema
-    dur_sec = np.maximum(df_raw["Flow Duration"].astype(float) / 1e6, 0.0) # convert microseconds to seconds
-    fwd_bytes = np.maximum(df_raw["Total Length of Fwd Packets"].fillna(0).astype(int), 0)
-    bwd_bytes = np.maximum(df_raw["Total Length of Bwd Packets"].fillna(0).astype(int), 0)
-    fwd_pkts = np.maximum(df_raw["Total Fwd Packets"].fillna(0).astype(int), 0)
-    bwd_pkts = np.maximum(df_raw["Total Backward Packets"].fillna(0).astype(int), 0)
-    dport = df_raw["Destination Port"].fillna(0).astype(int)
+    dur_sec = df_raw["Flow Duration"].astype(float) / 1e6 # convert microseconds to seconds
+    fwd_bytes = df_raw["Total Length of Fwd Packets"].astype(float)
+    bwd_bytes = df_raw["Total Length of Bwd Packets"].astype(float)
+    fwd_pkts = df_raw["Total Fwd Packets"].astype(float)
+    bwd_pkts = df_raw["Total Backward Packets"].astype(float)
+    dport = pd.to_numeric(df_raw["Destination Port"], errors="raise")
 
-    # Infer protocol & flow_state
-    proto = np.where(dport.isin([53, 67, 68, 123, 161]), "udp", "tcp")
-    flow_state = np.where(bwd_bytes > 0, "established", "no-reply")
+    # Keep measured protocol. CIC flow tables do not guarantee a connection-state field.
+    if df_raw["Protocol"].isna().any():
+        raise ValueError("Missing measured protocol values")
+    proto = df_raw["Protocol"].map({6: "tcp", 17: "udp", 1: "icmp"}).fillna("other")
+    flow_state = pd.Series(pd.NA, index=df_raw.index, dtype="string")
 
     df_formatted = pd.DataFrame({
         "id": [f"CIC_REAL_{i:07d}" for i in range(total_available)],
@@ -90,7 +96,7 @@ def download_real_cic(train_samples: int, test_samples: int, seed: int = 42) -> 
     if req_total <= total_available:
         shuffled = df_formatted.sample(n=req_total, random_state=seed).reset_index(drop=True)
     else:
-        shuffled = df_formatted.sample(n=req_total, replace=True, random_state=seed).reset_index(drop=True)
+        raise ValueError("Requested more rows than available; sampling with replacement is disabled")
 
     train_df = shuffled.iloc[:train_samples].copy().reset_index(drop=True)
     test_df = shuffled.iloc[train_samples:].copy().reset_index(drop=True)
@@ -98,7 +104,7 @@ def download_real_cic(train_samples: int, test_samples: int, seed: int = 42) -> 
     return train_df, test_df
 
 def generate_cic_records(n_samples: int, seed: int) -> pd.DataFrame:
-    """Fallback generator for offline emulation."""
+    """Explicit demo generator, never an online fallback."""
     np.random.seed(seed)
     n0 = int(n_samples * 0.45)
     n1 = int(n_samples * 0.25)
@@ -219,9 +225,7 @@ def main():
                 print(f"Executing ONLINE download for CIC-IDS2017 (Train: {args.train_samples:,}, Test: {args.test_samples:,})...")
                 train_df, test_df = download_real_cic(args.train_samples, args.test_samples)
             except Exception as e:
-                print(f"Online download failed ({e}). Falling back to offline emulation generator...")
-                train_df = generate_cic_records(args.train_samples, seed=2026)
-                test_df = generate_cic_records(args.test_samples, seed=9991)
+                raise RuntimeError("Online preparation failed; no emulation fallback. Use --source emulate explicitly for demo data.") from e
         else:
             print(f"Executing OFFLINE emulation generator for CIC-IDS2017...")
             train_df = generate_cic_records(args.train_samples, seed=2026)
@@ -231,6 +235,15 @@ def main():
         test_df.to_csv(test_dest, index=False)
         print(f"Saved: {train_dest} ({len(train_df):,} rows)")
         print(f"Saved: {test_dest} ({len(test_df):,} rows)")
+        provenance = {
+            "dataset": 'CIC-IDS2017', "mode": args.source,
+            "created_at_utc": datetime.now(timezone.utc).isoformat(),
+            "upstream_urls": [ONLINE_MIRROR],
+            "split_policy": "seeded sampled split, not an official predefined train/test release",
+            "train_samples": args.train_samples, "test_samples": args.test_samples,
+            "files": [{"file": p.name, "bytes": p.stat().st_size, "sha256": sha256_file(p)} for p in sorted([train_dest, test_dest])]
+        }
+        (RAW_DIR / "source_provenance.json").write_text(json.dumps(provenance, indent=2), encoding="utf8")
     else:
         print(f"Files already exist in {RAW_DIR}. Use --force to re-download.")
 

@@ -1,25 +1,129 @@
 {
-  "contract_version": 4,
+  "contract_version": 5,
   "record_key": "record_id",
-  "supported_datasets": ["NSL-KDD", "UNSW-NB15", "CIC-IDS2017", "BoT-IoT"],
+  "supported_datasets": [
+    "NSL-KDD",
+    "UNSW-NB15",
+    "CIC-IDS2017",
+    "BoT-IoT"
+  ],
   "table_separation": {
     "features": "model inputs only plus record_id; drop record_id before fit/predict",
-    "labels": ["record_id", "label_raw", "label_source_category", "attack_category", "attack_category_id", "label_binary", "mitre_tactic"],
-    "metadata": ["record_id", "source_dataset", "orig_row_id", "source_split", "capture_time", "split_group", "sample_weight", "dedup_flag", "has_duration", "invalid_duration", "has_protocol", "has_directional_bytes", "invalid_bytes_forward", "invalid_bytes_backward", "has_capture_time", "has_service", "has_connection_state", "has_packet_stats", "has_tcp_details", "has_nsl_content", "has_nsl_window", "is_kddtest21_view", "data_split"]
+    "labels": [
+      "record_id",
+      "label_raw",
+      "label_source_category",
+      "attack_category",
+      "attack_category_id",
+      "label_binary",
+      "mitre_tactic"
+    ],
+    "metadata": [
+      "record_id",
+      "source_dataset",
+      "orig_row_id",
+      "source_split",
+      "capture_time",
+      "split_group",
+      "sample_weight",
+      "dedup_flag",
+      "has_duration",
+      "invalid_duration",
+      "has_protocol",
+      "has_directional_bytes",
+      "invalid_bytes_forward",
+      "invalid_bytes_backward",
+      "has_capture_time",
+      "has_service",
+      "has_connection_state",
+      "has_packet_stats",
+      "has_tcp_details",
+      "has_nsl_content",
+      "has_nsl_window",
+      "is_kddtest21_view",
+      "data_split"
+    ]
   },
   "candidate_features": {
-    "duration": {"type": "numeric", "unit": "seconds", "transform": "log1p", "sources": {"NSL-KDD": "duration", "UNSW-NB15": "dur", "CIC-IDS2017": "flow_duration", "BoT-IoT": "dur"}},
-    "protocol": {"type": "categorical", "categories": ["tcp", "udp", "icmp", "other"], "transform": "OneHotEncoder(handle_unknown=ignore), fit on train only", "sources": {"NSL-KDD": "protocol_type", "UNSW-NB15": "proto", "CIC-IDS2017": "protocol", "BoT-IoT": "proto"}},
-    "bytes_forward": {"type": "numeric", "unit": "bytes", "transform": "log1p", "sources": {"NSL-KDD": "src_bytes", "UNSW-NB15": "sbytes", "CIC-IDS2017": "total_fwd_bytes", "BoT-IoT": "sbytes"}},
-    "bytes_backward": {"type": "numeric", "unit": "bytes", "transform": "log1p", "sources": {"NSL-KDD": "dst_bytes", "UNSW-NB15": "dbytes", "CIC-IDS2017": "total_bwd_bytes", "BoT-IoT": "dbytes"}}
+    "duration": {
+      "type": "numeric",
+      "unit": "seconds",
+      "transform": "log1p",
+      "sources": {
+        "NSL-KDD": "duration",
+        "UNSW-NB15": "dur",
+        "CIC-IDS2017": "flow_duration",
+        "BoT-IoT": "dur"
+      }
+    },
+    "protocol": {
+      "type": "categorical",
+      "categories": [
+        "tcp",
+        "udp",
+        "icmp",
+        "other"
+      ],
+      "transform": "OneHotEncoder(handle_unknown=ignore), fit on train only",
+      "sources": {
+        "NSL-KDD": "protocol_type",
+        "UNSW-NB15": "proto",
+        "CIC-IDS2017": "protocol",
+        "BoT-IoT": "proto"
+      }
+    },
+    "bytes_forward": {
+      "type": "numeric",
+      "unit": "bytes",
+      "transform": "log1p",
+      "sources": {
+        "NSL-KDD": "src_bytes",
+        "UNSW-NB15": "sbytes",
+        "CIC-IDS2017": "total_fwd_bytes",
+        "BoT-IoT": "sbytes"
+      }
+    },
+    "bytes_backward": {
+      "type": "numeric",
+      "unit": "bytes",
+      "transform": "log1p",
+      "sources": {
+        "NSL-KDD": "dst_bytes",
+        "UNSW-NB15": "dbytes",
+        "CIC-IDS2017": "total_bwd_bytes",
+        "BoT-IoT": "dbytes"
+      }
+    }
   },
   "joint_model_profile": {
-    "name": "joint_v1",
-    "numeric_inputs": ["duration", "bytes_forward", "bytes_backward"],
+    "name": "joint_v2",
+    "numeric_inputs": [
+      "duration",
+      "bytes_forward",
+      "bytes_backward"
+    ],
     "categorical_inputs": {
-      "protocol": ["tcp", "udp", "icmp", "other"],
-      "service_group": ["dns", "ftp", "http", "https_ssl", "smtp", "ssh", "other"],
-      "conn_state_group": ["established", "no-reply", "reset", "other"]
+      "protocol": [
+        "tcp",
+        "udp",
+        "icmp",
+        "other"
+      ],
+      "service_group": [
+        "dns",
+        "ftp",
+        "http",
+        "https_ssl",
+        "smtp",
+        "ssh",
+        "other"
+      ],
+      "conn_state_group": [
+        "established",
+        "no-reply",
+        "reset",
+        "other"
+      ]
     },
     "categorical_output_prefixes": {
       "protocol": "proto",
@@ -36,18 +140,72 @@
     "numeric_scaling": "StandardScaler fit on train only",
     "expected_model_feature_count": 19,
     "unknown_categories": "Map to other before one-hot encoding",
-    "missing_required_values": "Stop with an error; do not silently impute or drop rows"
+    "missing_required_values": "Reject missing numerics/protocol. Unavailable service/state represented as other with false availability masks is diagnostic-only."
   },
   "mitre_6class_taxonomy": {
-    "0": {"name": "Benign / Normal", "tactic": "Baseline Operations"},
-    "1": {"name": "Denial of Service (DoS)", "tactic": "TA0040: Impact (T1498/T1499)"},
-    "2": {"name": "Reconnaissance & Probing", "tactic": "TA0043: Recon / TA0007: Discovery (T1595/T1046)"},
-    "3": {"name": "Exploits & PrivEsc", "tactic": "TA0001: Initial Access / TA0004: PrivEsc (T1190/T1068)"},
-    "4": {"name": "Credential Abuse (R2L)", "tactic": "TA0006: Credential Access (T1110/T1078)"},
-    "5": {"name": "Malware, C2 & Botnet", "tactic": "TA0011: C2 / TA0008: Lateral Movement (T1071/T1210)"}
+    "0": {
+      "name": "Benign / Normal",
+      "tactic": "Baseline Operations"
+    },
+    "1": {
+      "name": "Denial of Service (DoS)",
+      "tactic": "TA0040: Impact (T1498/T1499)"
+    },
+    "2": {
+      "name": "Reconnaissance & Probing",
+      "tactic": "TA0043: Recon / TA0007: Discovery (T1595/T1046)"
+    },
+    "3": {
+      "name": "Exploits & PrivEsc",
+      "tactic": "TA0001: Initial Access / TA0004: PrivEsc (T1190/T1068)"
+    },
+    "4": {
+      "name": "Credential Abuse (R2L)",
+      "tactic": "TA0006: Credential Access (T1110/T1078)"
+    },
+    "5": {
+      "name": "Malware, C2 & Botnet",
+      "tactic": "TA0011: C2 / TA0008: Lateral Movement (T1071/T1210)"
+    }
   },
-  "never_model_features": ["source_dataset", "orig_row_id", "capture_time", "split_group", "sample_weight", "dedup_flag", "label_raw", "attack_category", "label_binary", "difficulty_level", "raw IP addresses", "Flow ID", "raw timestamp", "availability masks"],
-  "availability_masks": ["has_duration", "has_protocol", "has_directional_bytes", "has_capture_time", "has_service", "has_connection_state", "has_packet_stats", "has_tcp_details", "has_nsl_content", "has_nsl_window"],
-  "quality_flags": ["invalid_duration", "invalid_bytes_forward", "invalid_bytes_backward"],
-  "policy": "The joint_v1 profile is verified across all four configured datasets: NSL-KDD, UNSW-NB15, CIC-IDS2017, and BoT-IoT. Labels, identifiers, source markers, availability masks and quality flags stay strictly outside model inputs."
+  "never_model_features": [
+    "source_dataset",
+    "orig_row_id",
+    "capture_time",
+    "split_group",
+    "sample_weight",
+    "dedup_flag",
+    "label_raw",
+    "attack_category",
+    "label_binary",
+    "difficulty_level",
+    "raw IP addresses",
+    "Flow ID",
+    "raw timestamp",
+    "availability masks"
+  ],
+  "availability_masks": [
+    "has_duration",
+    "has_protocol",
+    "has_directional_bytes",
+    "has_capture_time",
+    "has_service",
+    "has_connection_state",
+    "has_packet_stats",
+    "has_tcp_details",
+    "has_nsl_content",
+    "has_nsl_window"
+  ],
+  "quality_flags": [
+    "invalid_duration",
+    "invalid_bytes_forward",
+    "invalid_bytes_backward"
+  ],
+  "policy": "Shared representation implemented in pipeline_runtime.py. Source availability and provenance are audited; unavailable measured fields require explicit diagnostic mode. MITRE fields annotate project groups, not individual flow attribution.",
+  "resampling": {
+    "method": "SMOTENC",
+    "distance_inputs": "three standardized log numeric fields and three categorical fields; numeric scaler fit on train",
+    "encoded_outputs": "same saved preprocessor as unresampled splits",
+    "sample_weight": "uniform mean-one after resampling"
+  }
 }

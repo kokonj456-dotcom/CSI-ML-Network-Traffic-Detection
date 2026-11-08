@@ -1,3 +1,5 @@
+> Historical analysis snapshot. The active pipeline contract and commands are in [data-pipeline/README.md](../../README.md). Fixed counts and common/ paths below are not current validation evidence.
+
 # คู่มือ Dataset กลาง (/CENTRAL): รวม 4 ชุดข้อมูล (NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT)
 
 เอกสารนี้อธิบายโครงสร้างของ **Dataset กลาง (/CENTRAL)** ซึ่งนำตาราง harmonized จากชุดข้อมูลต้นทางมารวม แยก features/labels/metadata และเตรียม training splits; สามารถใช้ **Borderline-SMOTE** สร้างตัวอย่างสังเคราะห์ของ class ที่กำหนดได้

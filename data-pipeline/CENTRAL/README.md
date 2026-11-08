@@ -1,18 +1,13 @@
-# CENTRAL Dataset Pipeline
+# CENTRAL notebooks
 
-โฟลเดอร์นี้เก็บขั้นตอนที่ทำกับข้อมูลรวม โดยโค้ดของแต่ละงานอยู่ใน notebook โดยตรงตามรูปแบบของ NSL-KDD และ UNSW-NB15
+Use `python data-pipeline/build_quad_dataset.py` from the project root for the full validated rebuild. Existing legacy/demo inputs require explicit `--allow-unverified-data`; optional resampling is `--resampling smotenc`.
 
-## Notebook ที่ master runner ใช้
+The notebooks call shared implementation in `../pipeline_runtime.py` to prevent schema/scaling/mapping drift:
 
-- <code>build_dataset.ipynb</code> อ่าน features/labels/metadata ที่ harmonized จากทั้ง 4 ชุด รวมป้ายกำกับกลาง แบ่ง train/validation/test และเขียนผลลง <code>CENTRAL/output/</code>
-- <code>borderline_smote.ipynb</code> ทำ oversampling กับ train และ train_full แยกกัน โดย runner กำหนด split ให้
+1. `build_dataset.ipynb`: validate harmonized dependency stamps, map labels strictly, group validation inputs, preserve supplied tests, write splits and overlap reports.
+2. `feature_engineering.ipynb`: fit the single 19-column preprocessor on train and reuse it across all splits.
+3. `borderline_smote.ipynb`: legacy filename for categorical-aware SMOTENC; run after feature engineering and set the tagged `SMOTE_SPLIT` parameter to train or train_full.
 
-เรียกจาก project root ด้วย <code>python data-pipeline/build_quad_dataset.py</code>. ตัว runner ไม่บันทึกผลรันกลับเข้า notebook ต้นฉบับ
+Dataset harmonization notebooks can run separately after cleansing. Any code/config/raw change invalidates their dependency stamps and requires rebuilding. The master runner always rebuilds all stages.
 
-## Notebook วิเคราะห์ที่รันแยกได้
-
-- <code>eda.ipynb</code> สำรวจ harmonized NSL-KDD และ UNSW-NB15; ผลกราฟ/ตารางอยู่ใน <code>CENTRAL/output/eda/</code>
-- <code>analyze_dataset_relationships.ipynb</code> เปรียบเทียบการกระจายของฟีเจอร์จาก train_full; ผลอยู่ใน <code>CENTRAL/output/reports/dataset_relationships/</code>
-- <code>feature_engineering.ipynb</code> เป็นทางเลือกสำหรับ StandardScaler/One-Hot ที่ fit จาก train; master runner ไม่ได้เรียก notebook นี้ และ representation ต่างจากทาง SMOTE จึงเก็บผลไว้คนละโฟลเดอร์
-
-ไฟล์ <code>dataset_registry.json</code> และ <code>feature_contract.json</code> เป็นค่ากำกับข้อมูล ไม่ใช่ตัวรัน pipeline. CENTRAL ไม่มีไฟล์ Python ที่ซ้ำกับ implementation ใน notebook แล้ว; ตัวรันและ final audit อยู่ระดับ <code>data-pipeline/</code>.
+See `../README.md` for source verification, commands, output locations, weighting, schema compatibility and validation limits. Older analysis notebooks are exploratory snapshots and are not part of the validated production path; rerun/adapt them against the selected run before citing their statistics.

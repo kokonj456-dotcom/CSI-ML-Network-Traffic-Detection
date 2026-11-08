@@ -1,3 +1,5 @@
+> Historical analysis snapshot. The active pipeline contract and commands are in [data-pipeline/README.md](../../README.md). Fixed counts and common/ paths below are not current validation evidence.
+
 # ความสัมพันธ์และความต่างของข้อมูลกลาง NSL-KDD / UNSW-NB15
 
 วิเคราะห์จาก `output/splits/train_full` ก่อนสุ่มจำนวนต่อแหล่งให้เท่ากัน ใช้ NSL-KDD 100,778 แถว และ UNSW-NB15 140,273 แถว ไม่ใช้ validation/test การแยก Normal/Attack ใช้ label เพื่อบรรยายข้อมูลเท่านั้น ไม่มีการฝึกโมเดล

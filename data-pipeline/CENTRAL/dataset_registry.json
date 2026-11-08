@@ -1,56 +1,85 @@
 {
-  "registry_version": 3,
-  "updated_at": "2026-11-02",
+  "registry_version": 4,
+  "updated_at": "2026-11-08",
   "datasets": {
     "NSL-KDD": {
       "status": "local_available",
       "version": "NSL-KDD official benchmark files present in repository",
       "raw_directory": "data-pipeline/sub-dataset/NSL-KDD/raw",
-      "official_train_files": ["KDDTrain+.txt"],
-      "official_test_files": ["KDDTest+.txt"],
-      "evaluation_views": ["KDDTest-21.txt"],
-      "excluded_from_import": ["KDDTrain+_20Percent.txt: subset of KDDTrain+, not an independent split"],
+      "official_train_files": [
+        "KDDTrain+.txt"
+      ],
+      "official_test_files": [
+        "KDDTest+.txt"
+      ],
+      "evaluation_views": [
+        "KDDTest-21.txt"
+      ],
+      "excluded_from_import": [
+        "KDDTrain+_20Percent.txt: subset of KDDTrain+, not an independent split"
+      ],
       "source_url": "https://github.com/defcom17/NSL_KDD",
       "license_note": "Retain source attribution and verify upstream terms before redistribution.",
       "duration_unit": "seconds",
       "split_policy": "Keep official train/test; carve 20% validation from official train using a seeded row split without labels.",
-      "features_verified": ["duration", "protocol_type", "src_bytes", "dst_bytes"]
+      "features_verified": [
+        "duration",
+        "protocol_type",
+        "src_bytes",
+        "dst_bytes"
+      ]
     },
     "UNSW-NB15": {
       "status": "local_available",
       "version": "UNSW-NB15 official train/test CSV release",
       "raw_directory": "data-pipeline/sub-dataset/UNSW-NB15/raw",
-      "expected_files": ["UNSW_NB15_training-set.csv", "UNSW_NB15_testing-set.csv"],
+      "expected_files": [
+        "UNSW_NB15_training-set.csv",
+        "UNSW_NB15_testing-set.csv"
+      ],
       "source_url": "https://research.unsw.edu.au/projects/unsw-nb15-dataset",
       "download_note": "Official university benchmark release.",
       "license_note": "Review the dataset page citation and usage terms before redistribution.",
       "duration_unit": "seconds",
       "split_policy": "Keep official train/test; derive validation from official train with a seeded split.",
-      "features_verified": ["dur", "proto", "sbytes", "dbytes", "service", "state"]
+      "features_verified": [
+        "dur",
+        "proto",
+        "sbytes",
+        "dbytes",
+        "service",
+        "state"
+      ]
     },
     "CIC-IDS2017": {
-      "status": "local_available",
+      "status": "requires_source_provenance",
       "version": "CIC-IDS2017 Canadian Institute for Cybersecurity benchmark",
       "raw_directory": "data-pipeline/sub-dataset/CIC-IDS2017/raw",
-      "expected_files": ["CIC_IDS2017_training-set.csv", "CIC_IDS2017_testing-set.csv"],
+      "expected_files": [
+        "CIC_IDS2017_training-set.csv",
+        "CIC_IDS2017_testing-set.csv"
+      ],
       "source_url": "https://www.unb.ca/cic/datasets/ids-2017.html",
-      "download_note": "Harmonized network flow capture across 5 days of enterprise campus traffic.",
+      "download_note": "Online mode fails on errors. Explicit emulate mode is diagnostic only; raw/source_provenance.json records mode, URLs, hashes and sampling policy.",
       "license_note": "Review University of New Brunswick citation terms.",
       "duration_unit": "seconds",
-      "split_policy": "Preserve official train/test; carve 20% validation from train using seeded split.",
-      "features_verified": ["flow_duration", "protocol", "dest_port", "total_fwd_bytes", "total_bwd_bytes", "flow_state"]
+      "split_policy": "Locally sampled train/test when using downloader; not an official predefined split. Preserve supplied test; group training inputs for validation.",
+      "features_verified": []
     },
     "BoT-IoT": {
-      "status": "local_available",
+      "status": "requires_source_provenance",
       "version": "BoT-IoT Smart Home & IoT Sensor Network benchmark",
       "raw_directory": "data-pipeline/sub-dataset/BoT-IoT/raw",
-      "expected_files": ["BoT_IoT_training-set.csv", "BoT_IoT_testing-set.csv"],
+      "expected_files": [
+        "BoT_IoT_training-set.csv",
+        "BoT_IoT_testing-set.csv"
+      ],
       "source_url": "https://research.unsw.edu.au/projects/bot-iot-dataset",
-      "download_note": "UNSW Canberra Cyber Range IoT attack environment.",
+      "download_note": "Online mode fails on errors. Explicit emulate mode is diagnostic only; raw/source_provenance.json records mode, URLs, hashes and sampling policy.",
       "license_note": "Review UNSW Canberra citation terms.",
       "duration_unit": "seconds",
-      "split_policy": "Preserve official train/test; carve 20% validation from train using seeded split.",
-      "features_verified": ["dur", "proto", "dport", "sbytes", "dbytes", "state"]
+      "split_policy": "Locally sampled train/test when using downloader; not an official predefined split. Preserve supplied test; group training inputs for validation.",
+      "features_verified": []
     }
   }
 }
