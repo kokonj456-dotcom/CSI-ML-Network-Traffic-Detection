@@ -92,3 +92,11 @@ run-specific results.
 The default threshold is only a starting operating point. Choose it for the number of alerts the reviewer can handle, and report the resulting false-positive rate and recall. Do not tune it against KDDTest and then report that same Test result as an untouched final evaluation.
 
 This is a benchmark prototype, not proof that every flagged record is malicious. An unusual but benign connection can also be flagged. Cluster IDs are arbitrary group numbers and should be interpreted from their feature profiles, not as attack-family names.
+
+## CENTRAL binary anomaly detection experiment
+
+Run `python model/isolation-forest/train_central_tuned.py` from the project root after building the CENTRAL feature-engineering output. The script searches 24 configurations using seed 42, comparing a sample of normal-only training records with a sample of all training records. It uses labels to identify normal training rows and to select hyperparameters and the anomaly-score threshold by binary F1 on validation; it evaluates the selected model once on the test split. This is a semi-supervised evaluation protocol, not a wholly label-free workflow. Search results, the selected model bundle, and the report are saved in a new timestamped `backup/central_tuning_*` directory.
+
+The bundle contains the forest, threshold, feature names and fitted CENTRAL preprocessor. The forest expects the 19 engineered and scaled columns in the stored order. Its anomaly score is `-model.score_samples(X)`; scores greater than or equal to the stored threshold are flagged. Isolation Forest does not predict attack categories. Report category recall describes which known attack categories it flagged.
+
+The current CENTRAL build is diagnostic: its provenance and exclusions are recorded in `data-pipeline/CENTRAL/output/reports/audit.json`. Existing test feature vectors overlap with train or validation; report this along with per-source metrics and do not present the scores as proof of production readiness. The validation threshold is chosen for F1, not a guaranteed false-positive rate in another environment.
