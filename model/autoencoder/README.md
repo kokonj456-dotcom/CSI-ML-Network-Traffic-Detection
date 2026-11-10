@@ -1,126 +1,123 @@
 # Autoencoder Anomaly Detection
 
-ระบบตรวจจับความผิดปกติของ Network Traffic (NIDS) ด้วย Autoencoder โดยใช้ชุดข้อมูล **NSL-KDD** จากขั้นตอน `feature_engineered`
+ระบบตรวจจับความผิดปกติของ Network Traffic (NIDS) ด้วย Autoencoder แบบ Unsupervised Anomaly Detection โดยใช้ชุดข้อมูลรวมศูนย์ **CENTRAL Quad-Dataset** (`NSL-KDD`, `UNSW-NB15`, `CIC-IDS2017`, `BoT-IoT`) รวม 747,504 โฟลว์ บนพื้นที่ฟีเจอร์ร่วม 19 มิติ (19 Core Features)
 
 ---
 
-## 1. การทำงานและโครงสร้างฟีเจอร์
+## 1. โครงสร้างโฟลเดอร์ (Folder Structure)
 
-1. **แหล่งข้อมูล**: อ่านข้อมูลจาก `data-pipeline/output/NSL-KDD/feature_engineered/`
-   - `KDDTrain_features.csv` และ `KDDTrain_targets.csv` (157 คอลัมน์)
-   - `KDDTest_features.csv` และ `KDDTest_targets.csv`
-   - `KDDTest-21_features.csv` และ `KDDTest-21_targets.csv`
-2. **การคัดกรองฟีเจอร์**:
-   - กรองเฉพาะทราฟฟิกปกติ (`is_attack == 0`) สำหรับฝึกโมเดลแบบ Unsupervised
-   - ตัดคอลัมน์คงที่ (Constant Columns ที่มีค่าเดียวบน Normal Training) จำนวน 47 คอลัมน์ออก
-   - เหลือฟีเจอร์ใช้งานจริง **110 ฟีเจอร์** (บันทึกไว้ใน `feature_columns.txt`)
-3. **การสเกลข้อมูล**: ใช้ `StandardScaler` โดย `fit` เฉพาะบน Normal Training Data แล้วบันทึกไว้ใน `scaler.pkl`
-4. **สถาปัตยกรรมโมเดล Autoencoder**:
-   - **Encoder**: `Input (110) → Linear(64) → ReLU → Linear(32) → ReLU → Linear(16) → ReLU → Linear(8)`
-   - **Decoder**: `Linear(8) → ReLU → Linear(16) → ReLU → Linear(32) → ReLU → Linear(64) → ReLU → Linear(110)`
+```text
+model/autoencoder/
+├── backup/                 # ประวัติการทดลองและโมเดลที่บันทึกแยกตาม Run ID
+├── autoencoder_model.py    # สถาปัตยกรรมโครงข่ายประสาทเทียม Autoencoder (PyTorch)
+├── train.py                # สคริปต์หลักสำหรับการฝึกและประเมินผลโมเดล
+├── train_common.py         # สคริปต์ฝึกโมเดลบนชุดข้อมูลกลาง Harmonized Multi-Dataset
+├── evaluate.py             # สคริปต์ประเมินผลบนชุดทดสอบ Global Benchmark และแยกตาม Dataset/Taxonomy
+├── compare_training_methods.py # สคริปต์เปรียบเทียบ 4 วิธีฝึก (SMOTE vs Weight R2L Ablation)
+├── feature_columns.txt     # รายชื่อ 19 ฟีเจอร์ที่โมเดลใช้งานจริง
+├── scaler.pkl              # ตัวสเกลเลอร์ StandardScaler ที่ fit บน Normal Data
+├── autoencoder.pth         # น้ำหนักโมเดล Autoencoder ล่าสุด
+├── requirements.txt        # ไลบรารีที่จำเป็น (PyTorch, scikit-learn, pandas)
+└── README.md               # เอกสารอธิบายการใช้งาน
+```
+
+---
+
+## 2. การทำงานและโครงสร้างฟีเจอร์
+
+1. **แหล่งข้อมูล (CENTRAL Quad-Dataset)**:
+   - อ่านข้อมูลจาก `data-pipeline/CENTRAL/output/splits/`
+   - `train`: 482,104 โฟลว์ (มีข้อมูล Normal สำหรับฝึก 195,614 โฟลว์)
+   - `validation`: 120,524 โฟลว์ (มีข้อมูล Normal 48,940 โฟลว์ สำหรับตรวจสอบและหา Alert Threshold)
+   - `test`: 144,876 โฟลว์ สำหรับ Global Multi-Domain Benchmark
+2. **ฟีเจอร์ 19 มิติ (19 Core Joint Features)**:
+   - **4 Numeric Features**: `log_duration`, `log_bytes_forward`, `log_bytes_backward`, `signed_log_bytes_ratio`
+   - **4 Protocol One-Hot**: `proto_tcp`, `proto_udp`, `proto_icmp`, `proto_other`
+   - **7 Service One-Hot**: `service_dns`, `service_ftp`, `service_http`, `service_https_ssl`, `service_smtp`, `service_ssh`, `service_other`
+   - **4 State One-Hot**: `state_established`, `state_no-reply`, `state_reset`, `state_other`
+3. **การสเกลข้อมูล**: ใช้ `StandardScaler` โดย `fit` เฉพาะบน Normal Training Data
+4. **สถาปัตยกรรมโมเดล Autoencoder (Symmetric Bottleneck)**:
+   - **Encoder**: `Input (19) → Linear(14) → ReLU → Linear(8) → ReLU → Linear(4)`
+   - **Decoder**: `Linear(4) → ReLU → Linear(8) → ReLU → Linear(14) → ReLU → Linear(19)`
    - Loss Function: `MSELoss` (วัด Reconstruction Error)
    - Optimizer: `Adam`
+   - การตัดเกณฑ์ (Threshold): คำนวณจากเปอร์เซ็นไทล์ของ Reconstruction Error บนชุดข้อมูลปกติของ Validation
 
 ---
 
-## 2. วิธีการติดตั้ง (Setup Environment)
-
-เปิด PowerShell ที่โฟลเดอร์หลักของโปรเจกต์ (`CSI_ML_Final`):
+## 3. วิธีการติดตั้ง (Setup Environment)
 
 ```powershell
-# สร้างและเปิดใช้งาน Virtual Environment
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-
-# ติดตั้ง Dependencies
 python -m pip install -r model/autoencoder/requirements.txt
-python -m pip install -r model/autoencoder/webapp/requirements-webapp.txt
 ```
 
 ---
 
-## 3. การฝึกโมเดลใหม่ (Training)
+## 4. การฝึกโมเดล (Training)
 
-รันสคริปต์ `train.py` เพื่อฝึกโมเดล Autoencoder จากข้อมูลในโฟลเดอร์ `feature_engineered`:
-
+### วิธีที่ 1: รันผ่าน `train_common.py` (รูปแบบเดียวกับ XGBoost / Isolation Forest)
 ```powershell
-python model/autoencoder/train.py --epochs 25 --batch-size 256 --lr 0.001 --threshold-percentile 95.0
+python model/autoencoder/train_common.py --epochs 20 --batch-size 512
 ```
 
-### พารามิเตอร์ที่สามารถปรับแต่งได้:
+### วิธีที่ 2: รันผ่าน `train.py` พร้อมปรับแต่งพารามิเตอร์
+```powershell
+python model/autoencoder/train.py --epochs 20 --batch-size 512 --lr 0.001 --threshold-percentile 95.0
+```
+
+#### พารามิเตอร์ที่สามารถปรับแต่งได้:
 | Parameter | Default | คำอธิบาย |
 |---|:---:|---|
-| `--epochs` | `25` | จำนวนรอบการฝึก |
-| `--batch-size` | `256` | ขนาดมินิแบตช์ |
+| `--epochs` | `20` | จำนวนรอบการฝึก |
+| `--batch-size` | `512` | ขนาดมินิแบตช์ |
 | `--lr` | `0.001` | อัตราการเรียนรู้ (Learning Rate) |
-| `--seed` | `42` | Random Seed เพื่อ Reproducibility |
-| `--val-size` | `0.20` | สัดส่วนแบ่งชุด Validation สำหรับหา Threshold |
-| `--threshold-percentile` | `95.0` | เปอร์เซ็นไทล์ของ Validation Reconstruction Error สำหรับใช้เป็น Threshold |
-| `--skip-eval` | - | ใส่แฟล็กนี้หากไม่ต้องการประเมินบน Test Set ทันทีหลังเทรนเสร็จ |
+| `--seed` | `42` | Random Seed เพื่อความเสถียรของผลลัพธ์ |
+| `--train-split` | `train` | ชุดข้อมูลฝึก (`train` หรือ `train_smote`) |
+| `--threshold-percentile` | `95.0` | เปอร์เซ็นไทล์ของ Validation Reconstruction Error สำหรับ Alert Threshold |
+| `--skip-eval` | - | ข้ามการประเมินผลบน Test Set ทันทีหลังเทรนเสร็จ |
 | `--device` | `auto` | เลือก `auto`, `cuda` หรือ `cpu` |
 
-### ไฟล์ผลลัพธ์ที่จะถูกบันทึกอัตโนมัติ:
-- `autoencoder.pth`: น้ำหนักโมเดลที่ดีที่สุด (บันทึกจาก Epoch ที่ให้ Validation Loss ต่ำสุด)
-- `scaler.pkl`: ตัวสเกลเลอร์ที่ fit ไว้
-- `feature_columns.txt`: รายชื่อ 110 ฟีเจอร์ที่โมเดลใช้งานจริง
-- `training_history.csv`: บันทึก Train Loss และ Validation Loss ในแต่ละ Epoch
+ผลลัพธ์ของแต่ละ Run จะถูกจัดเก็บอัตโนมัติในโฟลเดอร์ `model/autoencoder/backup/<run_id>/`
 
 ---
 
-## 4. การประเมินผลโมเดล (Evaluation)
+## 5. การประเมินผลโมเดล (Evaluation)
 
-### 4.1 ประเมินผลภาพรวม (Accuracy, Precision, Recall, F1, Confusion Matrix)
+### ประเมินผลบน Global Test Set ทั้งหมด (144,876 โฟลว์):
 ```powershell
-# ประเมินบนชุด KDDTest มาตรฐาน
-python model/autoencoder/evaluate.py --dataset KDDTest --percentile 95.0
-
-# ประเมินบนชุด KDDTest-21 ระดับยาก
-python model/autoencoder/evaluate.py --dataset KDDTest-21 --percentile 95.0
+python model/autoencoder/evaluate.py --split test --dataset all
 ```
 
-### 4.2 ประเมินการตรวจจับ Known vs Unseen (Zero-day) Attacks
+### ประเมินผลเจาะจงเฉพาะชุดข้อมูลย่อย:
 ```powershell
-# ประเมินแยกตามประเภทการโจมตี Known/Unseen บน KDDTest
-python model/autoencoder/evaluate_unseen.py --dataset KDDTest
-
-# ประเมินบน KDDTest-21
-python model/autoencoder/evaluate_unseen.py --dataset KDDTest-21
+python model/autoencoder/evaluate.py --split test --dataset NSL-KDD
+python model/autoencoder/evaluate.py --split test --dataset UNSW-NB15
+python model/autoencoder/evaluate.py --split test --dataset CIC-IDS2017
+python model/autoencoder/evaluate.py --split test --dataset BoT-IoT
 ```
 
-รายงานจะถูกบันทึกเป็นไฟล์ CSV:
-- `unseen_attack_results_<dataset>.csv`: สรุป Detection Rate แยกตามประเภทการโจมตี
-- `unseen_attack_details_<dataset>.csv`: ผลการทำนายและ Reconstruction Error รายแถว
+### ประเมินผลการตรวจจับข้ามโดเมนและ Novel Attacks:
+```powershell
+python model/autoencoder/evaluate.py --split test --unseen
+```
 
 ---
 
-## 5. การเปิดใช้งาน Web Application Dashboard
+## 6. การทดลองเปรียบเทียบ 4 วิธีฝึก (SMOTENC & R2L Weight Ablation Study)
 
-รันเซิร์ฟเวอร์ FastAPI:
+สคริปต์ `compare_training_methods.py` ใช้สำหรับการทดลองและเปรียบเทียบกลยุทธ์การรับมือปัญหาความไม่สมดุลของข้อมูล (Class Imbalance) ทั้ง 4 วิธี เพื่อประเมินผลกระทบต่อค่า Accuracy, Precision, Recall และ F1-score:
 
 ```powershell
-python -m uvicorn model.autoencoder.webapp.main:app --host 127.0.0.1 --port 8000
+python model/autoencoder/compare_training_methods.py --epochs 8 --r2l-weight 5.0
 ```
 
-เปิดเบราว์เซอร์ไปที่:
-[http://127.0.0.1:8000](http://127.0.0.1:8000)
+### ตารางสรุป 4 วิธีฝึก:
+1. **ไม่ทำ SMOTE ไม่เพิ่ม weight**: Baseline train split โดยไม่มีการถ่วงน้ำหนัก
+2. **ไม่ทำ SMOTE + weight R2L**: Baseline train split ร่วมกับการเพิ่ม weight/penalty ให้กับการตรวจจับ R2L (Class 4)
+3. **ทำ SMOTENC**: ฝึกด้วยชุดข้อมูล `train_smote` (สังเคราะห์ R2L เพิ่ม 40,000 โฟลว์) โดยไม่เพิ่ม weight
+4. **ทำ SMOTENC + weight R2L**: ฝึกด้วยชุดข้อมูล `train_smote` ร่วมกับการเพิ่ม weight ให้ R2L
 
-สามารถเลือกทดลองโมเดลเดิม หรือกดสั่งเทรนโมเดลใหม่ผ่านหน้าเว็บได้โดยตรง พร้อมทั้งดูกราฟ Confusion Matrix, Error Distribution และ Detection Rate
+ผลลัพธ์จะแสดงเป็นตารางสรุปในหน้าต่าง Terminal พร้อมบันทึกไฟล์:
+- `model/autoencoder/COMPARISON_TABLE.md` (รายงาน Markdown)
+- `model/autoencoder/comparison_results.json` (ข้อมูล JSON แบบละเอียด)
 
----
-
-## 6. สคริปต์วิเคราะห์และการทดลอง (Analysis & Experiment Scripts)
-
-สคริปต์ในโฟลเดอร์ `scripts/` แบ่งออกเป็น 4 กลุ่ม:
-- `scripts/data_checks/`: ตรวจสอบตัวอย่างข้อมูลและการกระจายตัวของค่า Error
-- `scripts/analysis/`: วิเคราะห์ Reconstruction Error รายฟีเจอร์, Missed Attacks และ Unseen Attacks
-- `scripts/experiments/`: ทดลอง Scoring Methods เช่น MSE vs Top-K Features, Threshold Percentile และ Hybrid Scoring
-- `scripts/visualization/`: สร้างกราฟ Confusion Matrix, Error Distribution และ Detection Rate
-
-### วิธีรันสคริปต์ทั้งหมดอัตโนมัติ:
-```powershell
-python model/autoencoder/scripts/run_all_scripts.py
-```
-
-ผลลัพธ์ทั้งหมดจะถูกส่งออกไปยัง:
-- **`model/autoencoder/results/csv/`**: ไฟล์ข้อมูลสรุปและตารางรายงานทั้งหมด (28 ไฟล์)
-- **`model/autoencoder/results/png/`**: กราฟและแผนภาพสรุปผลทั้งหมด (6 ไฟล์)
