@@ -29,6 +29,7 @@ webapp/.narration_build/
 # Downloaded NSL-KDD source files and generated pipeline outputs
 data-pipeline/**/raw/
 data-pipeline/**/output/
+experiments/**/data/
 # Keep source data and generated output from the old layout ignored as well.
 dataset/rawdata/
 data-pipeline/output/

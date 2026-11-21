@@ -1,0 +1,29 @@
+{
+  "classes": {
+    "0": {
+      "name": "Benign / Normal",
+      "tactic": "Baseline Operations"
+    },
+    "1": {
+      "name": "Denial of Service (DoS)",
+      "tactic": "TA0040: Impact"
+    },
+    "2": {
+      "name": "Reconnaissance & Probing",
+      "tactic": "TA0043/TA0007: Recon & Discovery"
+    },
+    "3": {
+      "name": "Exploits & PrivEsc",
+      "tactic": "TA0001/TA0004: Initial Access & PrivEsc"
+    },
+    "4": {
+      "name": "Credential Abuse (R2L)",
+      "tactic": "TA0006: Credential Access"
+    },
+    "5": {
+      "name": "Malware, C2 & Botnet",
+      "tactic": "TA0011/TA0008: C2 & Lateral Movement"
+    }
+  },
+  "total_classes": 6
+}

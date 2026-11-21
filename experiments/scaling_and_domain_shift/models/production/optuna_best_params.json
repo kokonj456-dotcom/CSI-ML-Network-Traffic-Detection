@@ -1,0 +1,24 @@
+{
+  "binary_best": {
+    "max_depth": 10,
+    "learning_rate": 0.11381302382284085,
+    "subsample": 0.7551457477400791,
+    "colsample_bytree": 0.7863368278189358,
+    "min_child_weight": 2,
+    "gamma": 0.3811369691472948,
+    "reg_alpha": 0.36501923658178836,
+    "reg_lambda": 2.359314067441275
+  },
+  "binary_best_score": 0.9881,
+  "multiclass_best": {
+    "max_depth": 10,
+    "learning_rate": 0.11800447538943845,
+    "subsample": 0.8351506943886505,
+    "colsample_bytree": 0.8165462527224079,
+    "min_child_weight": 2,
+    "gamma": 0.41036650461271407,
+    "reg_alpha": 0.012596178203399441,
+    "reg_lambda": 3.016850140644795
+  },
+  "multiclass_best_macro_f1": 90.2
+}

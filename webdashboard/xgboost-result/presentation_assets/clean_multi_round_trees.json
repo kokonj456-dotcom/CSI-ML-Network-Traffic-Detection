@@ -1,0 +1,2225 @@
+{
+  "0": {
+    "0": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "state_established",
+      "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 ESTABLISHED",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_bytes_forward",
+          "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+          "condition": -0.3615,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": -0.3274,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0036,
+                  "depth": 3,
+                  "leaf_count": 24
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0083,
+                  "depth": 3,
+                  "leaf_count": 16
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "service_https_ssl",
+              "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 HTTPS (Port 443)",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0001,
+                  "depth": 3,
+                  "leaf_count": 45
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0404,
+                  "depth": 3,
+                  "leaf_count": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "service_ftp",
+          "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 FTP (Port 21)",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": -0.5856,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0097,
+                  "depth": 3,
+                  "leaf_count": 41
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0112,
+                  "depth": 3,
+                  "leaf_count": 48
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.8829,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.0053,
+                  "depth": 3,
+                  "leaf_count": 48
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0027,
+                  "depth": 3,
+                  "leaf_count": 20
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "1": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "state_established",
+      "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 ESTABLISHED",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_duration",
+          "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+          "condition": 0.881,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -1.7345,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.009,
+                  "depth": 3,
+                  "leaf_count": 26
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": -0.0031,
+                  "depth": 3,
+                  "leaf_count": 62
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 1.7084,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": -0.0014,
+                  "depth": 3,
+                  "leaf_count": 30
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": -0.002,
+                  "depth": 3,
+                  "leaf_count": 26
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -1.5008,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_bytes_backward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32 (Bwd Bytes)",
+              "condition": 1.7656,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": -0.0037,
+                  "depth": 3,
+                  "leaf_count": 7
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": -0.0093,
+                  "depth": 3,
+                  "leaf_count": 20
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": 1.2716,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": -0.0039,
+                  "depth": 3,
+                  "leaf_count": 43
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0097,
+                  "depth": 3,
+                  "leaf_count": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "state_reset",
+      "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 RESET",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "proto_icmp",
+          "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25 ICMP",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "service_other",
+              "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23\u0e2d\u0e37\u0e48\u0e19\u0e46",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0102,
+                  "depth": 3,
+                  "leaf_count": 55
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0353,
+                  "depth": 3,
+                  "leaf_count": 56
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": 0.963,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.1224,
+                  "depth": 3,
+                  "leaf_count": 3
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0187,
+                  "depth": 3,
+                  "leaf_count": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -0.2689,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": -0.698,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0094,
+                  "depth": 3,
+                  "leaf_count": 8
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0487,
+                  "depth": 3,
+                  "leaf_count": 11
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_backward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32 (Bwd Bytes)",
+              "condition": -0.3364,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.1834,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": -0.0013,
+                  "depth": 3,
+                  "leaf_count": 4
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "log_bytes_forward",
+      "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+      "condition": 0.6596,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_bytes_forward",
+          "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+          "condition": 0.0079,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -0.3615,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": -0.0158,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.024,
+                  "depth": 3,
+                  "leaf_count": 28
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.1254,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.035,
+                  "depth": 3,
+                  "leaf_count": 19
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0312,
+                  "depth": 3,
+                  "leaf_count": 54
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "service_http",
+          "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 HTTP (Port 80)",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "service_smtp",
+              "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 SMTP (Port 25)",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0508,
+                  "depth": 3,
+                  "leaf_count": 66
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0528,
+                  "depth": 3,
+                  "leaf_count": 18
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.946,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.0691,
+                  "depth": 3,
+                  "leaf_count": 38
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0334,
+                  "depth": 3,
+                  "leaf_count": 35
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "service_ftp",
+      "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 FTP (Port 21)",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "service_ssh",
+          "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 SSH (Port 22)",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 2.4524,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.027,
+                  "depth": 3,
+                  "leaf_count": 28
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0221,
+                  "depth": 3,
+                  "leaf_count": 11
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 0.7519,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": -0.0159,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0613,
+                  "depth": 3,
+                  "leaf_count": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -0.7923,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": -2.1198,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0656,
+                  "depth": 3,
+                  "leaf_count": 5
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0394,
+                  "depth": 3,
+                  "leaf_count": 16
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": -0.6808,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.0865,
+                  "depth": 3,
+                  "leaf_count": 2
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0514,
+                  "depth": 3,
+                  "leaf_count": 22
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "5": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "service_dns",
+      "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 DNS (Port 53)",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -0.5273,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": -0.5663,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": -0.0154,
+                  "depth": 3,
+                  "leaf_count": 2
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0061,
+                  "depth": 3,
+                  "leaf_count": 54
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 0.3618,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0294,
+                  "depth": 3,
+                  "leaf_count": 91
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0192,
+                  "depth": 3,
+                  "leaf_count": 44
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": 0.8494,
+          "depth": 1,
+          "children": [
+            {
+              "type": "leaf",
+              "nodeid": 5,
+              "leaf": -0.0161,
+              "depth": 2,
+              "leaf_count": 1
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": 0.9238,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.2152,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0501,
+                  "depth": 3,
+                  "leaf_count": 4
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "1": {
+    "0": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "state_established",
+      "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 ESTABLISHED",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": 0.8396,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": 0.206,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0053,
+                  "depth": 3,
+                  "leaf_count": 41
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0081,
+                  "depth": 3,
+                  "leaf_count": 28
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": 1.4972,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0023,
+                  "depth": 3,
+                  "leaf_count": 27
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": -0.0047,
+                  "depth": 3,
+                  "leaf_count": 20
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "service_ftp",
+          "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 FTP (Port 21)",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": -0.5856,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0074,
+                  "depth": 3,
+                  "leaf_count": 53
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0115,
+                  "depth": 3,
+                  "leaf_count": 66
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_backward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32 (Bwd Bytes)",
+              "condition": 1.3224,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.0014,
+                  "depth": 3,
+                  "leaf_count": 32
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0037,
+                  "depth": 3,
+                  "leaf_count": 16
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "1": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "state_established",
+      "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 ESTABLISHED",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_duration",
+          "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+          "condition": 0.881,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -1.7345,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0115,
+                  "depth": 3,
+                  "leaf_count": 26
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": -0.0015,
+                  "depth": 3,
+                  "leaf_count": 49
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 1.7084,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0009,
+                  "depth": 3,
+                  "leaf_count": 30
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0001,
+                  "depth": 3,
+                  "leaf_count": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -1.5008,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_bytes_backward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32 (Bwd Bytes)",
+              "condition": 1.7656,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": -0.0012,
+                  "depth": 3,
+                  "leaf_count": 9
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": -0.0072,
+                  "depth": 3,
+                  "leaf_count": 26
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "proto_icmp",
+              "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25 ICMP",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": -0.0026,
+                  "depth": 3,
+                  "leaf_count": 47
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.009,
+                  "depth": 3,
+                  "leaf_count": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "log_bytes_forward",
+      "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+      "condition": -0.2679,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "service_other",
+          "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23\u0e2d\u0e37\u0e48\u0e19\u0e46",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -1.0496,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0353,
+                  "depth": 3,
+                  "leaf_count": 14
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": -0.0132,
+                  "depth": 3,
+                  "leaf_count": 2
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "state_no-reply",
+              "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 NO-REPLY",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0375,
+                  "depth": 3,
+                  "leaf_count": 28
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0358,
+                  "depth": 3,
+                  "leaf_count": 6
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": 1.075,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "signed_log_bytes_ratio",
+              "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+              "condition": 0.963,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0184,
+                  "depth": 3,
+                  "leaf_count": 67
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0258,
+                  "depth": 3,
+                  "leaf_count": 10
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "proto_other",
+              "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25\u0e2d\u0e37\u0e48\u0e19\u0e46",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.0397,
+                  "depth": 3,
+                  "leaf_count": 2
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0021,
+                  "depth": 3,
+                  "leaf_count": 18
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "log_bytes_forward",
+      "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+      "condition": 0.0754,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": 0.6622,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.0079,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0081,
+                  "depth": 3,
+                  "leaf_count": 25
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0318,
+                  "depth": 3,
+                  "leaf_count": 3
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "proto_udp",
+              "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25 UDP",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0184,
+                  "depth": 3,
+                  "leaf_count": 4
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0328,
+                  "depth": 3,
+                  "leaf_count": 21
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "log_bytes_forward",
+          "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+          "condition": 0.1254,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "state_no-reply",
+              "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 NO-REPLY",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0051,
+                  "depth": 3,
+                  "leaf_count": 5
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0474,
+                  "depth": 3,
+                  "leaf_count": 4
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 0.881,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.0466,
+                  "depth": 3,
+                  "leaf_count": 64
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.03,
+                  "depth": 3,
+                  "leaf_count": 29
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "service_ftp",
+      "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 FTP (Port 21)",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "service_ssh",
+          "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 SSH (Port 22)",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 2.4524,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0229,
+                  "depth": 3,
+                  "leaf_count": 38
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0166,
+                  "depth": 3,
+                  "leaf_count": 12
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 0.7519,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": -0.0159,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.046,
+                  "depth": 3,
+                  "leaf_count": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -0.7923,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.0478,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0533,
+                  "depth": 3,
+                  "leaf_count": 6
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0661,
+                  "depth": 3,
+                  "leaf_count": 5
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -0.925,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": -0.0162,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0511,
+                  "depth": 3,
+                  "leaf_count": 29
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "5": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "service_dns",
+      "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 DNS (Port 53)",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -0.5273,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 2.4582,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0138,
+                  "depth": 3,
+                  "leaf_count": 37
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0455,
+                  "depth": 3,
+                  "leaf_count": 2
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 0.3618,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0186,
+                  "depth": 3,
+                  "leaf_count": 88
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0231,
+                  "depth": 3,
+                  "leaf_count": 47
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": 0.8494,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.468,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": -0.0161,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": -0.0043,
+                  "depth": 3,
+                  "leaf_count": 2
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -0.0864,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.1737,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.031,
+                  "depth": 3,
+                  "leaf_count": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "2": {
+    "0": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "signed_log_bytes_ratio",
+      "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+      "condition": -0.5509,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_duration",
+          "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+          "condition": -0.5856,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -1.3664,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0041,
+                  "depth": 3,
+                  "leaf_count": 18
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0099,
+                  "depth": 3,
+                  "leaf_count": 31
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "service_https_ssl",
+              "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 HTTPS (Port 443)",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0073,
+                  "depth": 3,
+                  "leaf_count": 51
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0379,
+                  "depth": 3,
+                  "leaf_count": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": 0.8494,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -1.5716,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0025,
+                  "depth": 3,
+                  "leaf_count": 25
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0098,
+                  "depth": 3,
+                  "leaf_count": 68
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.7828,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": 0.0074,
+                  "depth": 3,
+                  "leaf_count": 34
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": -0.0018,
+                  "depth": 3,
+                  "leaf_count": 37
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "1": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "state_established",
+      "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 ESTABLISHED",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_duration",
+          "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+          "condition": 0.881,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -1.7345,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.009,
+                  "depth": 3,
+                  "leaf_count": 28
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": -0.0018,
+                  "depth": 3,
+                  "leaf_count": 63
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 1.7084,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0003,
+                  "depth": 3,
+                  "leaf_count": 30
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": -0.0008,
+                  "depth": 3,
+                  "leaf_count": 22
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -1.5008,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_bytes_backward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32 (Bwd Bytes)",
+              "condition": 1.7656,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": -0.0037,
+                  "depth": 3,
+                  "leaf_count": 8
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": -0.0088,
+                  "depth": 3,
+                  "leaf_count": 22
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "proto_icmp",
+              "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25 ICMP",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": -0.0048,
+                  "depth": 3,
+                  "leaf_count": 54
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0084,
+                  "depth": 3,
+                  "leaf_count": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "state_reset",
+      "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 RESET",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "proto_icmp",
+          "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25 ICMP",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -1.3664,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.041,
+                  "depth": 3,
+                  "leaf_count": 17
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0162,
+                  "depth": 3,
+                  "leaf_count": 59
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.0079,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0845,
+                  "depth": 3,
+                  "leaf_count": 3
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0253,
+                  "depth": 3,
+                  "leaf_count": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "log_bytes_forward",
+          "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+          "condition": 0.1389,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": -0.698,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0262,
+                  "depth": 3,
+                  "leaf_count": 8
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0412,
+                  "depth": 3,
+                  "leaf_count": 4
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_backward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32 (Bwd Bytes)",
+              "condition": 0.5829,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": -0.0024,
+                  "depth": 3,
+                  "leaf_count": 5
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.0297,
+                  "depth": 3,
+                  "leaf_count": 8
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "proto_other",
+      "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25\u0e2d\u0e37\u0e48\u0e19\u0e46",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_bytes_forward",
+          "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+          "condition": 0.6596,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_bytes_backward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e23\u0e31\u0e1a\u0e40\u0e02\u0e49\u0e32 (Bwd Bytes)",
+              "condition": 0.688,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0168,
+                  "depth": 3,
+                  "leaf_count": 27
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0201,
+                  "depth": 3,
+                  "leaf_count": 56
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 0.881,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0358,
+                  "depth": 3,
+                  "leaf_count": 57
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0329,
+                  "depth": 3,
+                  "leaf_count": 15
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "log_bytes_forward",
+          "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+          "condition": -0.3749,
+          "depth": 1,
+          "children": [
+            {
+              "type": "leaf",
+              "nodeid": 5,
+              "leaf": -0.0158,
+              "depth": 2,
+              "leaf_count": 1
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.4145,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0359,
+                  "depth": 3,
+                  "leaf_count": 3
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0763,
+                  "depth": 3,
+                  "leaf_count": 3
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "service_ftp",
+      "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 FTP (Port 21)",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_bytes_forward",
+          "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+          "condition": 1.0247,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": 2.4524,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0183,
+                  "depth": 3,
+                  "leaf_count": 38
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0136,
+                  "depth": 3,
+                  "leaf_count": 11
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 1.0514,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0199,
+                  "depth": 3,
+                  "leaf_count": 7
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.014,
+                  "depth": 3,
+                  "leaf_count": 17
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "signed_log_bytes_ratio",
+          "feature_th": "\u0e2d\u0e31\u0e15\u0e23\u0e32\u0e2a\u0e48\u0e27\u0e19\u0e44\u0e1a\u0e15\u0e4c (Byte Ratio)",
+          "condition": -0.7923,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 5,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": 0.0478,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": 0.0572,
+                  "depth": 3,
+                  "leaf_count": 7
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.0733,
+                  "depth": 3,
+                  "leaf_count": 3
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_bytes_forward",
+              "feature_th": "\u0e44\u0e1a\u0e15\u0e4c\u0e2a\u0e48\u0e07\u0e2d\u0e2d\u0e01 (Fwd Bytes)",
+              "condition": -0.925,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 13,
+                  "leaf": -0.0162,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 14,
+                  "leaf": 0.047,
+                  "depth": 3,
+                  "leaf_count": 28
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "5": {
+      "type": "split",
+      "nodeid": 0,
+      "feature": "service_dns",
+      "feature_th": "\u0e1a\u0e23\u0e34\u0e01\u0e32\u0e23 DNS (Port 53)",
+      "condition": 1,
+      "depth": 0,
+      "children": [
+        {
+          "type": "split",
+          "nodeid": 1,
+          "feature": "log_duration",
+          "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+          "condition": 0.3618,
+          "depth": 1,
+          "children": [
+            {
+              "type": "split",
+              "nodeid": 3,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": -0.5276,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 7,
+                  "leaf": 0.0146,
+                  "depth": 3,
+                  "leaf_count": 45
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 8,
+                  "leaf": 0.0099,
+                  "depth": 3,
+                  "leaf_count": 81
+                }
+              ]
+            },
+            {
+              "type": "split",
+              "nodeid": 4,
+              "feature": "proto_other",
+              "feature_th": "\u0e42\u0e1b\u0e23\u0e42\u0e15\u0e04\u0e2d\u0e25\u0e2d\u0e37\u0e48\u0e19\u0e46",
+              "condition": 1,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 9,
+                  "leaf": 0.0087,
+                  "depth": 3,
+                  "leaf_count": 37
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 10,
+                  "leaf": 0.0045,
+                  "depth": 3,
+                  "leaf_count": 13
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "split",
+          "nodeid": 2,
+          "feature": "state_no-reply",
+          "feature_th": "\u0e2a\u0e16\u0e32\u0e19\u0e30 NO-REPLY",
+          "condition": 1,
+          "depth": 1,
+          "children": [
+            {
+              "type": "leaf",
+              "nodeid": 5,
+              "leaf": -0.0161,
+              "depth": 2,
+              "leaf_count": 1
+            },
+            {
+              "type": "split",
+              "nodeid": 6,
+              "feature": "log_duration",
+              "feature_th": "\u0e23\u0e30\u0e22\u0e30\u0e40\u0e27\u0e25\u0e32\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d (Duration)",
+              "condition": -0.698,
+              "depth": 2,
+              "children": [
+                {
+                  "type": "leaf",
+                  "nodeid": 11,
+                  "leaf": -0.0157,
+                  "depth": 3,
+                  "leaf_count": 1
+                },
+                {
+                  "type": "leaf",
+                  "nodeid": 12,
+                  "leaf": 0.1447,
+                  "depth": 3,
+                  "leaf_count": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

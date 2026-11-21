@@ -1,0 +1,198 @@
+/* Wireshark-Themed Styles for Live Traffic Monitor */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #112f8d;
+  --primary-hover: #173db3;
+  --secondary: #097c5c;
+  --secondary-hover: #0d9972;
+  --canvas: #0a1128;
+  --surface: #0f1a38;
+  --surface-hover: #15244d;
+  --border: #1c2b58;
+  --text-main: #f1f5fa;
+  --text-muted: #8c9ec2;
+  --attack-bg: rgba(159, 18, 57, 0.35);
+  --attack-border: rgba(225, 29, 72, 0.5);
+  --attack-text: #fda4af;
+  --normal-bg: rgba(9, 124, 92, 0.2);
+  --normal-border: rgba(9, 124, 92, 0.4);
+  --normal-text: #6ee7b7;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--canvas);
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+code, pre, .font-mono, th, td.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #090e1f;
+}
+::-webkit-scrollbar-thumb {
+  background: #253b75;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b5cb8;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(9, 14, 31, 0.6);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #253b75;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3b5cb8;
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #253b75 rgba(9, 14, 31, 0.6);
+}
+
+/* Wireshark Table Styling */
+.ws-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 11px;
+}
+
+.ws-table th {
+  background-color: #0c152e;
+  color: #a4b3d6;
+  font-weight: 600;
+  text-align: left;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  user-select: none;
+}
+
+.ws-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(28, 43, 88, 0.5);
+  white-space: nowrap;
+}
+
+.ws-table tr {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.ws-table tr:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+.ws-table tr.selected {
+  outline: 1px solid #38bdf8 !important;
+  background-color: rgba(14, 165, 233, 0.2) !important;
+}
+
+.ws-row-normal {
+  background-color: transparent;
+  color: #e2e8f0;
+}
+
+.ws-row-attack {
+  background-color: var(--attack-bg);
+  color: var(--attack-text);
+  border-left: 3px solid #f43f5e;
+}
+
+.ws-row-recon {
+  background-color: rgba(180, 83, 9, 0.25);
+  color: #fde68a;
+  border-left: 3px solid #f59e0b;
+}
+
+/* Wireshark Tree Inspector */
+.ws-tree-item {
+  border-bottom: 1px solid rgba(28, 43, 88, 0.4);
+  font-size: 11px;
+}
+
+.ws-tree-header {
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+  transition: background-color 0.12s ease;
+}
+
+.ws-tree-header:hover {
+  background-color: rgba(23, 61, 179, 0.2);
+}
+
+.ws-tree-content {
+  padding: 4px 12px 6px 24px;
+  background-color: rgba(11, 17, 40, 0.6);
+  font-size: 10.5px;
+}
+
+/* Pulsing Badge for Active Threat */
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+
+.pulse-threat {
+  animation: pulse-red 1.5s infinite ease-in-out;
+}
+
+/* Button Accents */
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: 1px solid #1f42b3;
+  transition: all 0.15s ease;
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 0 10px rgba(17, 47, 141, 0.5);
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  color: #ffffff;
+  border: 1px solid #0ea87d;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background-color: var(--secondary-hover);
+  box-shadow: 0 0 10px rgba(9, 124, 92, 0.5);
+}
+
+.btn-attack {
+  background-color: rgba(159, 18, 57, 0.4);
+  color: #fda4af;
+  border: 1px solid rgba(225, 29, 72, 0.5);
+  transition: all 0.15s ease;
+}
+.btn-attack:hover {
+  background-color: rgba(225, 29, 72, 0.6);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+}

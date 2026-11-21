@@ -1,0 +1,1075 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-20 18:29:59 UTC",
+    "total_models": 8,
+    "test_sets": [
+      "NSL-KDD",
+      "UNSW-NB15",
+      "CIC-IDS2017",
+      "BoT-IoT",
+      "CENTRAL Full"
+    ]
+  },
+  "models": {
+    "M1_NSL_Specialist": {
+      "id": "M1_NSL_Specialist",
+      "name": "XGBoost (NSL Specialist)",
+      "group": "Specialist",
+      "features_count": 40,
+      "train_rows": 112715,
+      "train_time_seconds": 1.4200000000000002,
+      "in_domain_name": "NSL-KDD",
+      "in_domain_f1_binary": 77.74,
+      "avg_cross_domain_f1_binary": 67.31,
+      "generalization_gap": 10.43,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 78.81,
+          "f1_macro": 78.76,
+          "f1_binary": 77.74,
+          "precision": 96.67,
+          "recall": 65.0,
+          "fpr": 2.96,
+          "latency_ms_per_1k": 0.406
+        },
+        "UNSW-NB15": {
+          "accuracy": 54.94,
+          "f1_macro": 35.73,
+          "f1_binary": 70.86,
+          "precision": 55.02,
+          "recall": 99.53,
+          "fpr": 99.7,
+          "latency_ms_per_1k": 0.413
+        },
+        "CIC-IDS2017": {
+          "accuracy": 27.81,
+          "f1_macro": 26.47,
+          "f1_binary": 36.39,
+          "precision": 22.31,
+          "recall": 98.77,
+          "fpr": 90.96,
+          "latency_ms_per_1k": 0.406
+        },
+        "BoT-IoT": {
+          "accuracy": 89.88,
+          "f1_macro": 47.38,
+          "f1_binary": 94.67,
+          "precision": 99.93,
+          "recall": 89.93,
+          "fpr": 92.86,
+          "latency_ms_per_1k": 0.339
+        },
+        "CENTRAL Full": {
+          "accuracy": 60.13,
+          "f1_macro": 50.02,
+          "f1_binary": 72.5,
+          "precision": 59.92,
+          "recall": 91.75,
+          "fpr": 82.27,
+          "latency_ms_per_1k": 0.333
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 76.68,
+          "f1_macro": 51.49,
+          "f1_binary": 51.49,
+          "precision": 82.06,
+          "recall": 76.68,
+          "fpr": 3.02
+        },
+        "UNSW-NB15": {
+          "accuracy": 2.07,
+          "f1_macro": 2.4,
+          "f1_binary": 2.4,
+          "precision": 23.76,
+          "recall": 2.07,
+          "fpr": 95.94
+        },
+        "CIC-IDS2017": {
+          "accuracy": 11.05,
+          "f1_macro": 6.6,
+          "f1_binary": 6.6,
+          "precision": 52.61,
+          "recall": 11.05,
+          "fpr": 87.45
+        },
+        "BoT-IoT": {
+          "accuracy": 47.73,
+          "f1_macro": 13.92,
+          "f1_binary": 13.92,
+          "precision": 89.41,
+          "recall": 47.73,
+          "fpr": 92.86
+        },
+        "CENTRAL Full": {
+          "accuracy": 21.35,
+          "f1_macro": 19.81,
+          "f1_binary": 19.81,
+          "precision": 49.86,
+          "recall": 21.35,
+          "fpr": 79.18
+        }
+      }
+    },
+    "M2_UNSW_Specialist": {
+      "id": "M2_UNSW_Specialist",
+      "name": "XGBoost (UNSW Specialist)",
+      "group": "Specialist",
+      "features_count": 44,
+      "train_rows": 125902,
+      "train_time_seconds": 2.19,
+      "in_domain_name": "UNSW-NB15",
+      "in_domain_f1_binary": 89.43,
+      "avg_cross_domain_f1_binary": 56.73,
+      "generalization_gap": 32.7,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 27.91,
+          "f1_macro": 22.29,
+          "f1_binary": 43.19,
+          "precision": 39.16,
+          "recall": 48.14,
+          "fpr": 98.83,
+          "latency_ms_per_1k": 0.337
+        },
+        "UNSW-NB15": {
+          "accuracy": 87.15,
+          "f1_macro": 86.52,
+          "f1_binary": 89.43,
+          "precision": 81.74,
+          "recall": 98.72,
+          "fpr": 27.02,
+          "latency_ms_per_1k": 0.288
+        },
+        "CIC-IDS2017": {
+          "accuracy": 17.84,
+          "f1_macro": 15.83,
+          "f1_binary": 28.82,
+          "precision": 17.6,
+          "recall": 79.55,
+          "fpr": 98.48,
+          "latency_ms_per_1k": 0.364
+        },
+        "BoT-IoT": {
+          "accuracy": 96.43,
+          "f1_macro": 49.37,
+          "f1_binary": 98.18,
+          "precision": 99.94,
+          "recall": 96.49,
+          "fpr": 85.71,
+          "latency_ms_per_1k": 0.317
+        },
+        "CENTRAL Full": {
+          "accuracy": 70.29,
+          "f1_macro": 66.88,
+          "f1_binary": 77.51,
+          "precision": 68.43,
+          "recall": 89.37,
+          "fpr": 55.29,
+          "latency_ms_per_1k": 0.288
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 39.12,
+          "f1_macro": 9.4,
+          "f1_binary": 9.4,
+          "precision": 17.62,
+          "recall": 39.12,
+          "fpr": 9.19
+        },
+        "UNSW-NB15": {
+          "accuracy": 77.89,
+          "f1_macro": 64.2,
+          "f1_binary": 64.2,
+          "precision": 80.42,
+          "recall": 77.89,
+          "fpr": 24.03
+        },
+        "CIC-IDS2017": {
+          "accuracy": 30.81,
+          "f1_macro": 12.26,
+          "f1_binary": 12.26,
+          "precision": 50.6,
+          "recall": 30.81,
+          "fpr": 63.6
+        },
+        "BoT-IoT": {
+          "accuracy": 0.65,
+          "f1_macro": 0.37,
+          "f1_binary": 0.37,
+          "precision": 15.61,
+          "recall": 0.65,
+          "fpr": 28.57
+        },
+        "CENTRAL Full": {
+          "accuracy": 54.99,
+          "f1_macro": 41.08,
+          "f1_binary": 41.08,
+          "precision": 47.4,
+          "recall": 54.99,
+          "fpr": 31.0
+        }
+      }
+    },
+    "M3_CIC_Specialist": {
+      "id": "M3_CIC_Specialist",
+      "name": "XGBoost (CIC Specialist)",
+      "group": "Specialist",
+      "features_count": 11,
+      "train_rows": 108498,
+      "train_time_seconds": 0.8300000000000001,
+      "in_domain_name": "CIC-IDS2017",
+      "in_domain_f1_binary": 99.21,
+      "avg_cross_domain_f1_binary": 0.09,
+      "generalization_gap": 99.12,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 42.4,
+          "f1_macro": 29.88,
+          "f1_binary": 0.26,
+          "precision": 9.09,
+          "recall": 0.13,
+          "fpr": 1.75,
+          "latency_ms_per_1k": 0.41
+        },
+        "UNSW-NB15": {
+          "accuracy": 44.94,
+          "f1_macro": 31.01,
+          "f1_binary": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "fpr": 0.0,
+          "latency_ms_per_1k": 0.274
+        },
+        "CIC-IDS2017": {
+          "accuracy": 99.67,
+          "f1_macro": 99.5,
+          "f1_binary": 99.21,
+          "precision": 99.34,
+          "recall": 99.08,
+          "fpr": 0.17,
+          "latency_ms_per_1k": 0.31
+        },
+        "BoT-IoT": {
+          "accuracy": 0.07,
+          "f1_macro": 0.07,
+          "f1_binary": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "fpr": 0.0,
+          "latency_ms_per_1k": 0.296
+        },
+        "CENTRAL Full": {
+          "accuracy": 45.24,
+          "f1_macro": 34.84,
+          "f1_binary": 8.82,
+          "precision": 95.11,
+          "recall": 4.63,
+          "fpr": 0.32,
+          "latency_ms_per_1k": 0.297
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 46.04,
+          "f1_macro": 20.51,
+          "f1_binary": 20.51,
+          "precision": 30.38,
+          "recall": 46.04,
+          "fpr": 0.59
+        },
+        "UNSW-NB15": {
+          "accuracy": 44.65,
+          "f1_macro": 10.32,
+          "f1_binary": 10.32,
+          "precision": 20.2,
+          "recall": 44.65,
+          "fpr": 0.64
+        },
+        "CIC-IDS2017": {
+          "accuracy": 99.71,
+          "f1_macro": 95.0,
+          "f1_binary": 95.0,
+          "precision": 99.71,
+          "recall": 99.71,
+          "fpr": 0.17
+        },
+        "BoT-IoT": {
+          "accuracy": 0.07,
+          "f1_macro": 0.03,
+          "f1_binary": 0.03,
+          "precision": 0.0,
+          "recall": 0.07,
+          "fpr": 0.0
+        },
+        "CENTRAL Full": {
+          "accuracy": 45.65,
+          "f1_macro": 22.38,
+          "f1_binary": 22.38,
+          "precision": 66.22,
+          "recall": 45.65,
+          "fpr": 0.52
+        }
+      }
+    },
+    "M4_BoT_Specialist": {
+      "id": "M4_BoT_Specialist",
+      "name": "XGBoost (BoT Specialist)",
+      "group": "Specialist",
+      "features_count": 10,
+      "train_rows": 120745,
+      "train_time_seconds": 0.48,
+      "in_domain_name": "BoT-IoT",
+      "in_domain_f1_binary": 100.0,
+      "avg_cross_domain_f1_binary": 59.39,
+      "generalization_gap": 40.61,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 56.92,
+          "f1_macro": 36.27,
+          "f1_binary": 72.55,
+          "precision": 56.92,
+          "recall": 100.0,
+          "fpr": 100.0,
+          "latency_ms_per_1k": 0.188
+        },
+        "UNSW-NB15": {
+          "accuracy": 55.06,
+          "f1_macro": 35.51,
+          "f1_binary": 71.02,
+          "precision": 55.06,
+          "recall": 100.0,
+          "fpr": 100.0,
+          "latency_ms_per_1k": 0.135
+        },
+        "CIC-IDS2017": {
+          "accuracy": 20.91,
+          "f1_macro": 17.3,
+          "f1_binary": 34.59,
+          "precision": 20.91,
+          "recall": 100.0,
+          "fpr": 100.0,
+          "latency_ms_per_1k": 0.171
+        },
+        "BoT-IoT": {
+          "accuracy": 100.0,
+          "f1_macro": 98.27,
+          "f1_binary": 100.0,
+          "precision": 100.0,
+          "recall": 99.99,
+          "fpr": 0.0,
+          "latency_ms_per_1k": 0.158
+        },
+        "CENTRAL Full": {
+          "accuracy": 57.29,
+          "f1_macro": 36.44,
+          "f1_binary": 72.84,
+          "precision": 57.28,
+          "recall": 100.0,
+          "fpr": 99.98,
+          "latency_ms_per_1k": 0.135
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 10.73,
+          "f1_macro": 5.83,
+          "f1_binary": 5.83,
+          "precision": 2.27,
+          "recall": 10.73,
+          "fpr": 100.0
+        },
+        "UNSW-NB15": {
+          "accuracy": 30.92,
+          "f1_macro": 9.79,
+          "f1_binary": 9.79,
+          "precision": 9.99,
+          "recall": 30.92,
+          "fpr": 100.0
+        },
+        "CIC-IDS2017": {
+          "accuracy": 6.4,
+          "f1_macro": 4.26,
+          "f1_binary": 4.26,
+          "precision": 0.75,
+          "recall": 6.4,
+          "fpr": 100.0
+        },
+        "BoT-IoT": {
+          "accuracy": 100.0,
+          "f1_macro": 100.0,
+          "f1_binary": 100.0,
+          "precision": 100.0,
+          "recall": 100.0,
+          "fpr": 0.0
+        },
+        "CENTRAL Full": {
+          "accuracy": 34.27,
+          "f1_macro": 24.01,
+          "f1_binary": 24.01,
+          "precision": 71.18,
+          "recall": 34.27,
+          "fpr": 99.98
+        }
+      }
+    },
+    "M5_CENTRAL_19": {
+      "id": "M5_CENTRAL_19",
+      "name": "XGBoost (CENTRAL 19)",
+      "group": "Harmonized",
+      "features_count": 19,
+      "train_rows": 467860,
+      "train_time_seconds": 4.12,
+      "in_domain_name": "CENTRAL Full",
+      "in_domain_f1_binary": 88.86,
+      "avg_cross_domain_f1_binary": 91.02,
+      "generalization_gap": -2.16,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 82.11,
+          "f1_macro": 82.1,
+          "f1_binary": 81.84,
+          "precision": 96.9,
+          "recall": 70.83,
+          "fpr": 3.0,
+          "latency_ms_per_1k": 0.243
+        },
+        "UNSW-NB15": {
+          "accuracy": 81.72,
+          "f1_macro": 80.36,
+          "f1_binary": 85.52,
+          "precision": 75.82,
+          "recall": 98.07,
+          "fpr": 38.32,
+          "latency_ms_per_1k": 0.174
+        },
+        "CIC-IDS2017": {
+          "accuracy": 98.66,
+          "f1_macro": 97.99,
+          "f1_binary": 96.83,
+          "precision": 95.84,
+          "recall": 97.85,
+          "fpr": 1.12,
+          "latency_ms_per_1k": 0.206
+        },
+        "BoT-IoT": {
+          "accuracy": 99.8,
+          "f1_macro": 64.5,
+          "f1_binary": 99.9,
+          "precision": 99.97,
+          "recall": 99.83,
+          "fpr": 42.86,
+          "latency_ms_per_1k": 0.198
+        },
+        "CENTRAL Full": {
+          "accuracy": 86.46,
+          "f1_macro": 85.81,
+          "f1_binary": 88.86,
+          "precision": 84.07,
+          "recall": 94.23,
+          "fpr": 23.94,
+          "latency_ms_per_1k": 0.178
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 72.55,
+          "f1_macro": 36.54,
+          "f1_binary": 36.54,
+          "precision": 74.94,
+          "recall": 72.55,
+          "fpr": 3.72
+        },
+        "UNSW-NB15": {
+          "accuracy": 74.79,
+          "f1_macro": 50.52,
+          "f1_binary": 50.52,
+          "precision": 75.61,
+          "recall": 74.79,
+          "fpr": 25.32
+        },
+        "CIC-IDS2017": {
+          "accuracy": 99.14,
+          "f1_macro": 66.19,
+          "f1_binary": 66.19,
+          "precision": 99.27,
+          "recall": 99.14,
+          "fpr": 0.61
+        },
+        "BoT-IoT": {
+          "accuracy": 99.76,
+          "f1_macro": 47.76,
+          "f1_binary": 47.76,
+          "precision": 99.91,
+          "recall": 99.76,
+          "fpr": 7.14
+        },
+        "CENTRAL Full": {
+          "accuracy": 81.03,
+          "f1_macro": 68.42,
+          "f1_binary": 68.42,
+          "precision": 83.34,
+          "recall": 81.03,
+          "fpr": 16.06
+        }
+      }
+    },
+    "M6_CENTRAL_UNCUT_Native": {
+      "id": "M6_CENTRAL_UNCUT_Native",
+      "name": "XGBoost (UNCUT Native NaN)",
+      "group": "Harmonized",
+      "features_count": 80,
+      "train_rows": 467860,
+      "train_time_seconds": 7.58,
+      "in_domain_name": "CENTRAL Full",
+      "in_domain_f1_binary": 90.92,
+      "avg_cross_domain_f1_binary": 91.94,
+      "generalization_gap": -1.02,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 80.97,
+          "f1_macro": 80.96,
+          "f1_binary": 80.44,
+          "precision": 97.0,
+          "recall": 68.71,
+          "fpr": 2.81,
+          "latency_ms_per_1k": 0.501
+        },
+        "UNSW-NB15": {
+          "accuracy": 86.6,
+          "f1_macro": 85.9,
+          "f1_binary": 89.04,
+          "precision": 80.98,
+          "recall": 98.89,
+          "fpr": 28.45,
+          "latency_ms_per_1k": 0.372
+        },
+        "CIC-IDS2017": {
+          "accuracy": 99.28,
+          "f1_macro": 98.91,
+          "f1_binary": 98.27,
+          "precision": 97.94,
+          "recall": 98.61,
+          "fpr": 0.55,
+          "latency_ms_per_1k": 0.496
+        },
+        "BoT-IoT": {
+          "accuracy": 100.0,
+          "f1_macro": 100.0,
+          "f1_binary": 100.0,
+          "precision": 100.0,
+          "recall": 100.0,
+          "fpr": 0.0,
+          "latency_ms_per_1k": 0.378
+        },
+        "CENTRAL Full": {
+          "accuracy": 89.2,
+          "f1_macro": 88.8,
+          "f1_binary": 90.92,
+          "precision": 87.67,
+          "recall": 94.42,
+          "fpr": 17.8,
+          "latency_ms_per_1k": 0.419
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 79.42,
+          "f1_macro": 56.15,
+          "f1_binary": 56.15,
+          "precision": 83.92,
+          "recall": 79.42,
+          "fpr": 2.99
+        },
+        "UNSW-NB15": {
+          "accuracy": 78.0,
+          "f1_macro": 64.34,
+          "f1_binary": 64.34,
+          "precision": 80.0,
+          "recall": 78.0,
+          "fpr": 23.17
+        },
+        "CIC-IDS2017": {
+          "accuracy": 99.56,
+          "f1_macro": 94.58,
+          "f1_binary": 94.58,
+          "precision": 99.56,
+          "recall": 99.56,
+          "fpr": 0.29
+        },
+        "BoT-IoT": {
+          "accuracy": 100.0,
+          "f1_macro": 100.0,
+          "f1_binary": 100.0,
+          "precision": 100.0,
+          "recall": 100.0,
+          "fpr": 0.0
+        },
+        "CENTRAL Full": {
+          "accuracy": 84.04,
+          "f1_macro": 73.46,
+          "f1_binary": 73.46,
+          "precision": 86.48,
+          "recall": 84.04,
+          "fpr": 14.57
+        }
+      }
+    },
+    "M7_CENTRAL_UNCUT_Imputed": {
+      "id": "M7_CENTRAL_UNCUT_Imputed",
+      "name": "XGBoost (UNCUT Imputed -1)",
+      "group": "Harmonized",
+      "features_count": 80,
+      "train_rows": 467860,
+      "train_time_seconds": 9.27,
+      "in_domain_name": "CENTRAL Full",
+      "in_domain_f1_binary": 90.45,
+      "avg_cross_domain_f1_binary": 91.73,
+      "generalization_gap": -1.28,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 80.77,
+          "f1_macro": 80.75,
+          "f1_binary": 80.18,
+          "precision": 97.01,
+          "recall": 68.32,
+          "fpr": 2.78,
+          "latency_ms_per_1k": 0.434
+        },
+        "UNSW-NB15": {
+          "accuracy": 85.58,
+          "f1_macro": 84.75,
+          "f1_binary": 88.3,
+          "precision": 79.77,
+          "recall": 98.88,
+          "fpr": 30.72,
+          "latency_ms_per_1k": 0.351
+        },
+        "CIC-IDS2017": {
+          "accuracy": 99.35,
+          "f1_macro": 99.02,
+          "f1_binary": 98.45,
+          "precision": 98.81,
+          "recall": 98.08,
+          "fpr": 0.31,
+          "latency_ms_per_1k": 0.432
+        },
+        "BoT-IoT": {
+          "accuracy": 99.99,
+          "f1_macro": 96.43,
+          "f1_binary": 99.99,
+          "precision": 99.99,
+          "recall": 99.99,
+          "fpr": 7.14,
+          "latency_ms_per_1k": 0.38
+        },
+        "CENTRAL Full": {
+          "accuracy": 88.59,
+          "f1_macro": 88.14,
+          "f1_binary": 90.45,
+          "precision": 86.87,
+          "recall": 94.33,
+          "fpr": 19.11,
+          "latency_ms_per_1k": 0.355
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 77.24,
+          "f1_macro": 54.71,
+          "f1_binary": 54.71,
+          "precision": 82.71,
+          "recall": 77.24,
+          "fpr": 2.97
+        },
+        "UNSW-NB15": {
+          "accuracy": 77.01,
+          "f1_macro": 63.18,
+          "f1_binary": 63.18,
+          "precision": 79.27,
+          "recall": 77.01,
+          "fpr": 25.24
+        },
+        "CIC-IDS2017": {
+          "accuracy": 99.48,
+          "f1_macro": 94.48,
+          "f1_binary": 94.48,
+          "precision": 99.48,
+          "recall": 99.48,
+          "fpr": 0.31
+        },
+        "BoT-IoT": {
+          "accuracy": 100.0,
+          "f1_macro": 99.14,
+          "f1_binary": 99.14,
+          "precision": 100.0,
+          "recall": 100.0,
+          "fpr": 0.0
+        },
+        "CENTRAL Full": {
+          "accuracy": 83.12,
+          "f1_macro": 72.7,
+          "f1_binary": 72.7,
+          "precision": 85.83,
+          "recall": 83.12,
+          "fpr": 15.82
+        }
+      }
+    },
+    "M8_CENTRAL_MAX_Scale": {
+      "id": "M8_CENTRAL_MAX_Scale",
+      "name": "XGBoost (CENTRAL-MAX Big Data)",
+      "group": "Data Scaling",
+      "features_count": 19,
+      "train_rows": 1890288,
+      "train_time_seconds": 18.12,
+      "in_domain_name": "CENTRAL Full",
+      "in_domain_f1_binary": 91.68,
+      "avg_cross_domain_f1_binary": 93.48,
+      "generalization_gap": -1.8,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 94.15,
+          "f1_macro": 94.09,
+          "f1_binary": 94.72,
+          "precision": 97.55,
+          "recall": 92.04,
+          "fpr": 3.06,
+          "latency_ms_per_1k": 0.364
+        },
+        "UNSW-NB15": {
+          "accuracy": 85.12,
+          "f1_macro": 84.51,
+          "f1_binary": 87.57,
+          "precision": 81.04,
+          "recall": 95.25,
+          "fpr": 27.3,
+          "latency_ms_per_1k": 0.193
+        },
+        "CIC-IDS2017": {
+          "accuracy": 96.68,
+          "f1_macro": 94.84,
+          "f1_binary": 91.75,
+          "precision": 95.46,
+          "recall": 88.32,
+          "fpr": 1.11,
+          "latency_ms_per_1k": 0.237
+        },
+        "BoT-IoT": {
+          "accuracy": 99.8,
+          "f1_macro": 64.5,
+          "f1_binary": 99.9,
+          "precision": 99.97,
+          "recall": 99.83,
+          "fpr": 42.86,
+          "latency_ms_per_1k": 0.212
+        },
+        "CENTRAL Full": {
+          "accuracy": 90.06,
+          "f1_macro": 89.68,
+          "f1_binary": 91.68,
+          "precision": 88.11,
+          "recall": 95.54,
+          "fpr": 17.28,
+          "latency_ms_per_1k": 0.211
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 89.17,
+          "f1_macro": 68.05,
+          "f1_binary": 68.05,
+          "precision": 89.56,
+          "recall": 89.17,
+          "fpr": 2.5
+        },
+        "UNSW-NB15": {
+          "accuracy": 79.54,
+          "f1_macro": 52.25,
+          "f1_binary": 52.25,
+          "precision": 78.63,
+          "recall": 79.54,
+          "fpr": 11.57
+        },
+        "CIC-IDS2017": {
+          "accuracy": 98.89,
+          "f1_macro": 70.6,
+          "f1_binary": 70.6,
+          "precision": 98.99,
+          "recall": 98.89,
+          "fpr": 0.93
+        },
+        "BoT-IoT": {
+          "accuracy": 99.78,
+          "f1_macro": 47.8,
+          "f1_binary": 47.8,
+          "precision": 99.91,
+          "recall": 99.78,
+          "fpr": 7.14
+        },
+        "CENTRAL Full": {
+          "accuracy": 86.35,
+          "f1_macro": 83.2,
+          "f1_binary": 83.2,
+          "precision": 87.52,
+          "recall": 86.35,
+          "fpr": 7.62
+        }
+      }
+    },
+    "M9_CENTRAL_FINAL_5M": {
+      "id": "M9_CENTRAL_FINAL_5M",
+      "name": "XGBoost (CENTRAL-FINAL 5.0M Big Data)",
+      "group": "Production Scaled",
+      "features_count": 19,
+      "train_rows": 5036579,
+      "train_time_seconds": 212.10000000000002,
+      "in_domain_name": "Multi-Domain Harmonized",
+      "in_domain_f1_binary": 94.5,
+      "avg_cross_domain_f1_binary": 95.79,
+      "generalization_gap": 1.29,
+      "overall_binary_f1": 94.5,
+      "overall_binary_fpr": 10.54,
+      "overall_multiclass_f1": 84.91,
+      "eval_binary": {
+        "NSL-KDD": {
+          "accuracy": 96.21,
+          "f1_macro": 96.15,
+          "f1_binary": 96.63,
+          "precision": 97.96,
+          "recall": 95.33,
+          "fpr": 2.63,
+          "latency_ms_per_1k": 1.177,
+          "optimal_threshold": 0.45
+        },
+        "UNSW-NB15": {
+          "accuracy": 90.31,
+          "f1_macro": 90.09,
+          "f1_binary": 91.57,
+          "precision": 87.88,
+          "recall": 95.58,
+          "fpr": 16.14,
+          "latency_ms_per_1k": 0.995,
+          "optimal_threshold": 0.45
+        },
+        "CIC-IDS2017": {
+          "accuracy": 97.89,
+          "f1_macro": 96.83,
+          "f1_binary": 94.99,
+          "precision": 94.42,
+          "recall": 95.56,
+          "fpr": 1.49,
+          "latency_ms_per_1k": 1.162,
+          "optimal_threshold": 0.45
+        },
+        "BoT-IoT": {
+          "accuracy": 99.97,
+          "f1_macro": 90.62,
+          "f1_binary": 99.98,
+          "precision": 99.99,
+          "recall": 99.97,
+          "fpr": 7.14,
+          "latency_ms_per_1k": 1.201,
+          "optimal_threshold": 0.45
+        },
+        "CENTRAL Full": {
+          "accuracy": 93.56,
+          "f1_macro": 93.36,
+          "f1_binary": 94.5,
+          "precision": 92.47,
+          "recall": 96.61,
+          "fpr": 10.54,
+          "latency_ms_per_1k": 1.155,
+          "optimal_threshold": 0.45
+        }
+      },
+      "eval_multiclass": {
+        "NSL-KDD": {
+          "accuracy": 89.56,
+          "f1_macro": 71.17
+        },
+        "UNSW-NB15": {
+          "accuracy": 82.55,
+          "f1_macro": 67.79
+        },
+        "CIC-IDS2017": {
+          "accuracy": 97.52,
+          "f1_macro": 76.16
+        },
+        "BoT-IoT": {
+          "accuracy": 99.95,
+          "f1_macro": 56.74
+        },
+        "CENTRAL Full": {
+          "accuracy": 87.99,
+          "f1_macro": 84.91
+        }
+      }
+    }
+  },
+  "matrices": {
+    "binary": {
+      "XGBoost (NSL Specialist)": {
+        "NSL-KDD": 77.74,
+        "UNSW-NB15": 70.86,
+        "CIC-IDS2017": 36.39,
+        "BoT-IoT": 94.67,
+        "CENTRAL Full": 72.5
+      },
+      "XGBoost (UNSW Specialist)": {
+        "NSL-KDD": 43.19,
+        "UNSW-NB15": 89.43,
+        "CIC-IDS2017": 28.82,
+        "BoT-IoT": 98.18,
+        "CENTRAL Full": 77.51
+      },
+      "XGBoost (CIC Specialist)": {
+        "NSL-KDD": 0.26,
+        "UNSW-NB15": 0.0,
+        "CIC-IDS2017": 99.21,
+        "BoT-IoT": 0.0,
+        "CENTRAL Full": 8.82
+      },
+      "XGBoost (BoT Specialist)": {
+        "NSL-KDD": 72.55,
+        "UNSW-NB15": 71.02,
+        "CIC-IDS2017": 34.59,
+        "BoT-IoT": 100.0,
+        "CENTRAL Full": 72.84
+      },
+      "XGBoost (CENTRAL 19)": {
+        "NSL-KDD": 81.84,
+        "UNSW-NB15": 85.52,
+        "CIC-IDS2017": 96.83,
+        "BoT-IoT": 99.9,
+        "CENTRAL Full": 88.86
+      },
+      "XGBoost (UNCUT Native NaN)": {
+        "NSL-KDD": 80.44,
+        "UNSW-NB15": 89.04,
+        "CIC-IDS2017": 98.27,
+        "BoT-IoT": 100.0,
+        "CENTRAL Full": 90.92
+      },
+      "XGBoost (UNCUT Imputed -1)": {
+        "NSL-KDD": 80.18,
+        "UNSW-NB15": 88.3,
+        "CIC-IDS2017": 98.45,
+        "BoT-IoT": 99.99,
+        "CENTRAL Full": 90.45
+      },
+      "XGBoost (CENTRAL-MAX Big Data)": {
+        "NSL-KDD": 94.72,
+        "UNSW-NB15": 87.57,
+        "CIC-IDS2017": 91.75,
+        "BoT-IoT": 99.9,
+        "CENTRAL Full": 91.68
+      },
+      "f1": {
+        "M9_CENTRAL_FINAL_5M": {
+          "NSL-KDD": 96.63,
+          "UNSW-NB15": 91.57,
+          "CIC-IDS2017": 94.99,
+          "BoT-IoT": 99.98,
+          "CENTRAL Full": 94.5
+        }
+      },
+      "fpr": {
+        "M9_CENTRAL_FINAL_5M": {
+          "NSL-KDD": 2.63,
+          "UNSW-NB15": 16.14,
+          "CIC-IDS2017": 1.49,
+          "BoT-IoT": 7.14,
+          "CENTRAL Full": 10.54
+        }
+      },
+      "accuracy": {
+        "M9_CENTRAL_FINAL_5M": {
+          "NSL-KDD": 96.21,
+          "UNSW-NB15": 90.31,
+          "CIC-IDS2017": 97.89,
+          "BoT-IoT": 99.97,
+          "CENTRAL Full": 93.56
+        }
+      }
+    },
+    "multiclass": {
+      "XGBoost (NSL Specialist)": {
+        "NSL-KDD": 51.49,
+        "UNSW-NB15": 2.4,
+        "CIC-IDS2017": 6.6,
+        "BoT-IoT": 13.92,
+        "CENTRAL Full": 19.81
+      },
+      "XGBoost (UNSW Specialist)": {
+        "NSL-KDD": 9.4,
+        "UNSW-NB15": 64.2,
+        "CIC-IDS2017": 12.26,
+        "BoT-IoT": 0.37,
+        "CENTRAL Full": 41.08
+      },
+      "XGBoost (CIC Specialist)": {
+        "NSL-KDD": 20.51,
+        "UNSW-NB15": 10.32,
+        "CIC-IDS2017": 95.0,
+        "BoT-IoT": 0.03,
+        "CENTRAL Full": 22.38
+      },
+      "XGBoost (BoT Specialist)": {
+        "NSL-KDD": 5.83,
+        "UNSW-NB15": 9.79,
+        "CIC-IDS2017": 4.26,
+        "BoT-IoT": 100.0,
+        "CENTRAL Full": 24.01
+      },
+      "XGBoost (CENTRAL 19)": {
+        "NSL-KDD": 36.54,
+        "UNSW-NB15": 50.52,
+        "CIC-IDS2017": 66.19,
+        "BoT-IoT": 47.76,
+        "CENTRAL Full": 68.42
+      },
+      "XGBoost (UNCUT Native NaN)": {
+        "NSL-KDD": 56.15,
+        "UNSW-NB15": 64.34,
+        "CIC-IDS2017": 94.58,
+        "BoT-IoT": 100.0,
+        "CENTRAL Full": 73.46
+      },
+      "XGBoost (UNCUT Imputed -1)": {
+        "NSL-KDD": 54.71,
+        "UNSW-NB15": 63.18,
+        "CIC-IDS2017": 94.48,
+        "BoT-IoT": 99.14,
+        "CENTRAL Full": 72.7
+      },
+      "XGBoost (CENTRAL-MAX Big Data)": {
+        "NSL-KDD": 68.05,
+        "UNSW-NB15": 52.25,
+        "CIC-IDS2017": 70.6,
+        "BoT-IoT": 47.8,
+        "CENTRAL Full": 83.2
+      },
+      "f1": {
+        "M9_CENTRAL_FINAL_5M": {
+          "NSL-KDD": 71.17,
+          "UNSW-NB15": 67.79,
+          "CIC-IDS2017": 76.16,
+          "BoT-IoT": 56.74,
+          "CENTRAL Full": 84.91
+        }
+      },
+      "accuracy": {
+        "M9_CENTRAL_FINAL_5M": {
+          "NSL-KDD": 89.56,
+          "UNSW-NB15": 82.55,
+          "CIC-IDS2017": 97.52,
+          "BoT-IoT": 99.95,
+          "CENTRAL Full": 87.99
+        }
+      }
+    }
+  }
+}

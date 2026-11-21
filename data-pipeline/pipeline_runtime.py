@@ -22,7 +22,7 @@ COMMON_MAPPING = {'normal':0,'benign':0,'dos':1,'dos/ddos':1,'ddos':1,'probe':2,
 SOURCE_MAPPING = {
     'NSL-KDD': {k:COMMON_MAPPING[k] for k in ['normal','dos','probe','r2l','u2r']},
     'UNSW-NB15': {k:COMMON_MAPPING[k] for k in ['normal','analysis','backdoor','backdoors','dos','exploits','fuzzers','generic','reconnaissance','shellcode','worms']},
-    'CIC-IDS2017': {**COMMON_MAPPING, 'dos hulk':1,'dos goldeneye':1,'dos slowloris':1,'dos slowhttptest':1,'heartbleed':3,'portscan':2,'ftp-patator':4,'ssh-patator':4,'web attack - brute force':4,'web attack - xss':3,'web attack - sql injection':3,'infiltration':3,'bot':5},
+    'CIC-IDS2017': {**COMMON_MAPPING, 'dos hulk':1,'dos goldeneye':1,'dos slowloris':1,'dos slowhttptest':1,'heartbleed':3,'portscan':2,'ftp-patator':4,'ssh-patator':4,'web attack - brute force':4,'web attack - xss':3,'web attack - sql injection':3,'web attack brute force':4,'web attack xss':3,'web attack sql injection':3,'infiltration':3,'bot':5},
     # Project-level category grouping, not per-record MITRE attribution.
     'BoT-IoT': {**COMMON_MAPPING,'theft':5,'data_theft':5,'bruteforce':4},
 }

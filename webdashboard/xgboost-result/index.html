@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CENTRAL Dataset - XGBoost 4-Model Factorial Benchmark</title>
+    <style>
+        :root {
+            --bg-base: #0b1120;
+            --bg-card: #151f32;
+            --bg-card-hover: #1e2c47;
+            --border: #24344d;
+            --border-light: #334766;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #38bdf8;
+            --accent-indigo: #818cf8;
+            --accent-green: #34d399;
+            --accent-rose: #fb7185;
+            --accent-amber: #fbbf24;
+            --accent-purple: #c084fc;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .badge-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-green {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--accent-green);
+            border-color: rgba(52, 211, 153, 0.3);
+        }
+
+        .badge-purple {
+            background: rgba(192, 132, 252, 0.12);
+            color: var(--accent-purple);
+            border-color: rgba(192, 132, 252, 0.3);
+        }
+
+        .badge-amber {
+            background: rgba(251, 191, 36, 0.12);
+            color: var(--accent-amber);
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        h1 {
+            font-size: 1.95rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 1100px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .kpi-card:hover {
+            border-color: var(--accent-blue);
+            background: var(--bg-card-hover);
+        }
+
+        .kpi-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .kpi-value-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        .kpi-value {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            font-feature-settings: 'tnum';
+        }
+
+        .kpi-delta {
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .delta-positive {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--accent-green);
+        }
+
+        .kpi-subtext {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .controls-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .btn-group {
+            display: flex;
+            background: var(--bg-base);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+
+        .btn-opt {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-opt:hover {
+            color: #ffffff;
+        }
+
+        .btn-opt.active {
+            background: var(--accent-blue);
+            color: #0f172a;
+        }
+
+        .table-section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .data-table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.86rem;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .data-table tr:hover td {
+            background: rgba(56, 189, 248, 0.03);
+        }
+
+        .num-col {
+            text-align: right;
+            font-feature-settings: 'tnum';
+        }
+
+        .tag-pill {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .tag-m1 { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .tag-m2 { background: rgba(52, 211, 153, 0.15); color: var(--accent-green); border: 1px solid rgba(52, 211, 153, 0.3); }
+        .tag-m3 { background: rgba(192, 132, 252, 0.15); color: var(--accent-purple); border: 1px solid rgba(192, 132, 252, 0.3); }
+        .tag-m4 { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); border: 1px solid rgba(251, 191, 36, 0.3); }
+
+        .matrix-comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-metrics {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .panel-metric-val {
+            color: var(--accent-blue);
+            font-weight: 700;
+        }
+
+        .cm-wrapper {
+            overflow-x: auto;
+        }
+
+        .cm-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+
+        .cm-table th, .cm-table td {
+            padding: 8px 6px;
+            border: 1px solid var(--border);
+        }
+
+        .cm-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .cm-table td.label-cell {
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.02);
+            padding-left: 10px;
+        }
+
+        .cm-cell {
+            font-feature-settings: 'tnum';
+            font-weight: 600;
+            transition: transform 0.15s;
+        }
+
+        .cm-cell:hover {
+            transform: scale(1.08);
+            z-index: 10;
+            outline: 2px solid var(--accent-blue);
+        }
+
+        .feat-imp-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .feat-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 90px;
+            gap: 14px;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .feat-name {
+            font-family: monospace;
+            color: var(--text-primary);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .feat-bar-bg {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .feat-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            transition: width 0.4s ease;
+        }
+
+        .feat-val {
+            text-align: right;
+            font-weight: 700;
+            font-feature-settings: 'tnum';
+            color: var(--accent-blue);
+        }
+
+        .insight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .insight-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight-body {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .insight-body strong {
+            color: #ffffff;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="badge-bar">
+                <span class="badge">2x2 Factorial Design</span>
+                <span class="badge badge-green">4 Trained Models</span>
+                <span class="badge badge-purple">Official Test Benchmark (143,095 Flows)</span>
+                <span class="badge badge-amber">Early Stopping (121k Validation Flows)</span>
+                <span class="badge">19 Model Features</span>
+                <a href="xgboost_interactive_tree.html" style="text-decoration: none;" class="badge badge-green">Interactive 6-Class Decision Tree Visualizer &rarr;</a>
+            </div>
+            <h1>CENTRAL Quad-Dataset: XGBoost 4-Model Factorial Benchmark</h1>
+            <p class="subtitle">
+                การทดลองเปรียบเทียบเชิงประจักษ์แบบ <strong>2x2 Factorial Design</strong> ระหว่างการใช้ <strong>ข้อมูลจริง (Real Traffic: 467,860 โฟลว์)</strong> เทียบกับ <strong>การเพิ่มตัวอย่าง (SMOTENC: 506,651 โฟลว์)</strong> ร่วมกับการถ่วงน้ำหนัก Loss Function <strong>(Natural Empirical Weight vs Balanced Class Weight)</strong> ประเมินผลบนชุดทดสอบมาตรฐาน 143,095 โฟลว์จริง ครอบคลุม 4 โดเมนเครือข่ายสากล (NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT)
+            </p>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">
+                    <span>Highest Overall Accuracy</span>
+                    <span class="tag-pill tag-m1" id="kpi-top-acc-tag">Model 1</span>
+                </div>
+                <div class="kpi-value-row">
+                    <div class="kpi-value" id="kpi-top-acc">-</div>
+                </div>
+                <div class="kpi-subtext" id="kpi-top-acc-subtext">ประเมินบนชุดทดสอบทางการ 143,095 โฟลว์</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-title">
+                    <span>Highest Balanced Accuracy</span>
+                    <span class="tag-pill tag-m4" id="kpi-top-bal-tag">Model 4</span>
+                </div>
+                <div class="kpi-value-row">
+                    <div class="kpi-value" id="kpi-top-bal" style="color: var(--accent-green);">-</div>
+                </div>
+                <div class="kpi-subtext">ความแม่นยำเฉลี่ยแบบถ่วงน้ำหนักเท่ากันทุกคลาส</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-title">
+                    <span>Highest Macro F1-Score</span>
+                    <span class="tag-pill tag-m3" id="kpi-top-f1-tag">Model 3</span>
+                </div>
+                <div class="kpi-value-row">
+                    <div class="kpi-value" id="kpi-top-f1" style="color: var(--accent-purple);">-</div>
+                </div>
+                <div class="kpi-subtext">ความสมดุลเฉลี่ยของทั้ง 6 หมวดหมู่ MITRE ATT&CK</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-title">
+                    <span>Best Class 4 (R2L) Recovery</span>
+                    <span class="tag-pill tag-m2" id="kpi-top-c4-tag">Model 2</span>
+                </div>
+                <div class="kpi-value-row">
+                    <div class="kpi-value" id="kpi-top-c4" style="color: var(--accent-amber);">-</div>
+                </div>
+                <div class="kpi-subtext" id="kpi-top-c4-subtext">กอบกู้คลาสส่วนน้อย (1,209 แถวใน Train)</div>
+            </div>
+        </div>
+
+        <!-- Master 2x2 Factorial Comparison Table -->
+        <div class="table-section">
+            <div class="section-header">
+                <div class="section-title">ตารางเปรียบเทียบสรุปผล 4 โมเดล (2x2 Factorial Benchmark Matrix)</div>
+                <div class="section-desc">ประเมินผลบนชุดทดสอบทางการ (Global Held-Out Test Set: 143,095 โฟลว์จริง)</div>
+            </div>
+            <div class="data-table-card">
+                <table class="data-table" id="master-table">
+                    <thead>
+                        <tr>
+                            <th>Model Configuration</th>
+                            <th>Data Treatment</th>
+                            <th>Loss Weighting</th>
+                            <th class="num-col">Train Flows</th>
+                            <th class="num-col">Best Iter</th>
+                            <th class="num-col">Accuracy</th>
+                            <th class="num-col">Balanced Acc</th>
+                            <th class="num-col">Macro F1</th>
+                            <th class="num-col" style="color: var(--accent-amber);">Class 4 F1</th>
+                            <th class="num-col" style="color: var(--accent-amber);">Class 4 Rec</th>
+                            <th class="num-col">Binary DR</th>
+                            <th class="num-col">Binary FAR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Interactive Controls -->
+        <div class="controls-card">
+            <div class="control-group">
+                <span class="control-label">เลือกชุดข้อมูลทดสอบ (Benchmark):</span>
+                <div class="btn-group" id="dataset-selector">
+                    <button class="btn-opt active" onclick="selectDataset('Global Benchmark')">Global Benchmark (143k)</button>
+                    <button class="btn-opt" onclick="selectDataset('UNSW-NB15')">UNSW-NB15 (82k)</button>
+                    <button class="btn-opt" onclick="selectDataset('NSL-KDD')">NSL-KDD (22k)</button>
+                    <button class="btn-opt" onclick="selectDataset('CIC-IDS2017')">CIC-IDS2017 (18k)</button>
+                    <button class="btn-opt" onclick="selectDataset('BoT-IoT')">BoT-IoT (20k)</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">หน่วยแสดงผล:</span>
+                <div class="btn-group" id="matrix-unit-selector">
+                    <button class="btn-opt active" onclick="selectMatrixUnit('norm')">Normalized (%)</button>
+                    <button class="btn-opt" onclick="selectMatrixUnit('raw')">Raw Counts</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dual Matrix Comparison Header & Model Selectors -->
+        <div class="controls-card" style="margin-top: -12px;">
+            <div class="control-group">
+                <span class="control-label">เปรียบเทียบ Matrix ด้านซ้าย:</span>
+                <div class="btn-group" id="model-left-selector">
+                    <button class="btn-opt active" onclick="selectModelLeft('model_1')">Model 1: Real Natural</button>
+                    <button class="btn-opt" onclick="selectModelLeft('model_2')">Model 2: Real Balanced</button>
+                    <button class="btn-opt" onclick="selectModelLeft('model_3')">Model 3: SMOTE Natural</button>
+                    <button class="btn-opt" onclick="selectModelLeft('model_4')">Model 4: SMOTE Balanced</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <span class="control-label">เปรียบเทียบ Matrix ด้านขวา:</span>
+                <div class="btn-group" id="model-right-selector">
+                    <button class="btn-opt" onclick="selectModelRight('model_1')">Model 1: Real Natural</button>
+                    <button class="btn-opt" onclick="selectModelRight('model_2')">Model 2: Real Balanced</button>
+                    <button class="btn-opt active" onclick="selectModelRight('model_3')">Model 3: SMOTE Natural</button>
+                    <button class="btn-opt" onclick="selectModelRight('model_4')">Model 4: SMOTE Balanced</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matrices Side-by-Side Comparison -->
+        <div class="matrix-comparison-grid">
+            <!-- Left Model -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title" id="panel-left-title">
+                        Model 1
+                    </div>
+                    <div class="panel-metrics">
+                        <span>Acc: <strong class="panel-metric-val" id="panel-left-acc">-</strong></span>
+                        <span>Macro F1: <strong class="panel-metric-val" id="panel-left-f1">-</strong></span>
+                    </div>
+                </div>
+                <div class="cm-wrapper">
+                    <table class="cm-table" id="cm-table-left">
+                        <!-- Rendered by JS -->
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Model -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title" id="panel-right-title">
+                        Model 3
+                    </div>
+                    <div class="panel-metrics">
+                        <span>Acc: <strong class="panel-metric-val" id="panel-right-acc">-</strong></span>
+                        <span>Macro F1: <strong class="panel-metric-val" id="panel-right-f1">-</strong></span>
+                    </div>
+                </div>
+                <div class="cm-wrapper">
+                    <table class="cm-table" id="cm-table-right">
+                        <!-- Rendered by JS -->
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Per-Class Metrics Detailed Table for all 4 models -->
+        <div class="table-section">
+            <div class="section-header">
+                <div class="section-title">ประสิทธิภาพรายคลาสทั้ง 4 โมเดล (Per-Class MITRE Comparison)</div>
+                <div class="section-desc">ชุดข้อมูลที่กำลังแสดงผล: <span id="active-dataset-title" style="color: var(--accent-blue); font-weight: 700;">Global Benchmark</span></div>
+            </div>
+            <div class="data-table-card">
+                <table class="data-table" id="per-class-table">
+                    <thead>
+                        <tr>
+                            <th>Class ID</th>
+                            <th>Canonical MITRE Category</th>
+                            <th class="num-col">Test Support</th>
+                            <th class="num-col" style="color: var(--accent-blue);">M1 F1 (%)</th>
+                            <th class="num-col" style="color: var(--accent-green);">M2 F1 (%)</th>
+                            <th class="num-col" style="color: var(--accent-purple);">M3 F1 (%)</th>
+                            <th class="num-col" style="color: var(--accent-amber);">M4 F1 (%)</th>
+                            <th class="num-col" style="color: var(--accent-blue);">M1 Rec (%)</th>
+                            <th class="num-col" style="color: var(--accent-green);">M2 Rec (%)</th>
+                            <th class="num-col" style="color: var(--accent-purple);">M3 Rec (%)</th>
+                            <th class="num-col" style="color: var(--accent-amber);">M4 Rec (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Cross-Domain Sub-Dataset Breakdown Table for 4 Models -->
+        <div class="table-section">
+            <div class="section-header">
+                <div class="section-title">สรุปประสิทธิภาพแยกตามแหล่งข้อมูลย่อย (Cross-Domain Benchmark Comparison)</div>
+                <div class="section-desc">เปรียบเทียบข้าม 4 สภาพแวดล้อมเครือข่ายจริง: UNSW-NB15, NSL-KDD, CIC-IDS2017, BoT-IoT</div>
+            </div>
+            <div class="data-table-card">
+                <table class="data-table" id="domain-table">
+                    <thead>
+                        <tr>
+                            <th>Benchmark Domain</th>
+                            <th class="num-col">Test Samples</th>
+                            <th class="num-col" style="color: var(--accent-blue);">M1 Acc</th>
+                            <th class="num-col" style="color: var(--accent-green);">M2 Acc</th>
+                            <th class="num-col" style="color: var(--accent-purple);">M3 Acc</th>
+                            <th class="num-col" style="color: var(--accent-amber);">M4 Acc</th>
+                            <th class="num-col" style="color: var(--accent-blue);">M1 Macro F1</th>
+                            <th class="num-col" style="color: var(--accent-green);">M2 Macro F1</th>
+                            <th class="num-col" style="color: var(--accent-purple);">M3 Macro F1</th>
+                            <th class="num-col" style="color: var(--accent-amber);">M4 Macro F1</th>
+                            <th class="num-col" style="color: var(--accent-amber);">M4 Class 4 F1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Feature Importance & Insights -->
+        <div class="matrix-comparison-grid">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">Top Feature Importance (Gain Score)</div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">19 Harmonized Features</span>
+                </div>
+                <div class="feat-imp-grid" id="feat-imp-container">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-title">
+                    สรุปผลการวิจัยเชิงประจักษ์ (Empirical Key Findings)
+                </div>
+                <div class="insight-body">
+                    <p style="margin-bottom: 12px;">
+                        1. <strong>ผลกระทบของการทำ SMOTENC (Model 3 vs Model 1):</strong>
+                        การเพิ่มตัวอย่างสังเคราะห์ด้วย SMOTENC ใน Class 4 ช่วยขยายขอบเขตการตัดสินใจของโมเดล ทำให้ตรวจจับการโจมตีแฝงได้กว้างขึ้น
+                    </p>
+                    <p style="margin-bottom: 12px;">
+                        2. <strong>ผลกระทบของ Balanced Class Weighting (Model 2 & 4):</strong>
+                        การถ่วงน้ำหนักคลาสแบบสมดุลมีอิทธิพลโดยตรงต่อการผลักดัน Recall ของคลาสหายาก และช่วยให้ Balanced Accuracy ทั่วทั้งระบบสูงขึ้น
+                    </p>
+                    <p style="margin-bottom: 12px;">
+                        3. <strong>การผสมผสานใน Model 4 (SMOTE + Balanced Weight):</strong>
+                        ช่วยผสานข้อดีของการขยาย Decision Boundary ของ SMOTE เข้ากับการบีบให้โมเดลให้ความสนใจคลาสส่วนน้อยในระดับ Loss Function
+                    </p>
+                    <p>
+                        4. <strong>การควบคุมความถูกต้องของการทดลอง:</strong>
+                        ทุกโมเดลถูกวัดผลบนชุดทดสอบจริง 100% (143,095 โฟลว์) โดยมี Early Stopping ควบคุมด้วยชุด Validation จริงเพื่อป้องกันปัญหา Overfitting อย่างเคร่งครัด
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            CENTRAL Quad-Dataset Cybersecurity Machine Learning Benchmark | CSI ML Project
+        </footer>
+    </div>
+
+    <!-- Inject JSON Data -->
+    <script>
+        const EXP_DATA = {"timestamp": "2026-11-09T04:55:58.861635+00:00", "total_runtime_seconds": 53.82, "dataset_info": {"train_real_flows": 467860, "train_smote_flows": 506651, "validation_flows": 121199, "test_flows": 143095, "feature_count": 19}, "hyperparameters": {"n_estimators": 800, "max_depth": 10, "learning_rate": 0.03, "subsample": 0.8, "colsample_bytree": 0.8, "tree_method": "hist", "objective": "multi:softprob", "num_class": 6, "random_state": 42, "n_jobs": -1, "eval_metric": "mlogloss", "early_stopping_rounds": 40}, "features": ["log_duration", "log_bytes_forward", "log_bytes_backward", "signed_log_bytes_ratio", "proto_tcp", "proto_udp", "proto_icmp", "proto_other", "service_dns", "service_ftp", "service_http", "service_https_ssl", "service_smtp", "service_ssh", "service_other", "state_established", "state_no-reply", "state_reset", "state_other"], "class_names": ["Benign / Normal", "Denial of Service (DoS)", "Reconnaissance & Probing", "Exploits & PrivEsc", "Credential Abuse (R2L)", "Malware, C2 & Botnet"], "mitre_tactics": ["Baseline Operations", "TA0040: Impact", "TA0043/TA0007: Recon & Discovery", "TA0001/TA0004: Initial Access & PrivEsc", "TA0006: Credential Access", "TA0011/TA0008: C2 & Lateral Movement"], "models": {"model_1": {"id": "model_1", "name": "Model 1: Real Data + Natural Weight", "short_name": "M1: Real (Natural)", "data_type": "Real", "weight_type": "Natural", "desc": "Baseline empirical distribution without weighting", "train_scale": 467860, "training_time_seconds": 13.63, "best_iteration": 206, "evaluations": {"Global Benchmark": {"subset_name": "Global Benchmark", "sample_count": 143095, "accuracy": 82.62, "balanced_accuracy": 70.05, "macro_precision": 83.73, "macro_recall": 70.05, "macro_f1": 69.93, "weighted_precision": 84.95, "weighted_recall": 82.62, "weighted_f1": 82.54, "log_loss": 0.4992, "binary_accuracy": 89.4, "binary_detection_rate": 92.33, "binary_false_alarm_rate": 14.54, "binary_precision": 89.49, "binary_f1": 90.89, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 89.26, "recall": 85.46, "f1_score": 87.32, "support": 61134}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 93.92, "recall": 84.44, "f1_score": 88.93, "support": 32006}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 91.66, "recall": 69.23, "f1_score": 78.88, "support": 9847}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.52, "recall": 85.61, "f1_score": 67.36, "support": 11710}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 99.31, "recall": 10.25, "f1_score": 18.59, "support": 2819}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.73, "recall": 85.31, "f1_score": 78.52, "support": 25579}], "confusion_matrix": [[52246, 276, 303, 916, 1, 7392], [1252, 27026, 57, 3515, 0, 156], [503, 1276, 6817, 1205, 0, 46], [735, 164, 201, 10025, 1, 584], [2496, 4, 27, 0, 289, 3], [1299, 30, 32, 2396, 0, 21822]], "confusion_matrix_norm": [[85.46, 0.45, 0.5, 1.5, 0.0, 12.09], [3.91, 84.44, 0.18, 10.98, 0.0, 0.49], [5.11, 12.96, 69.23, 12.24, 0.0, 0.47], [6.28, 1.4, 1.72, 85.61, 0.01, 4.99], [88.54, 0.14, 0.96, 0.0, 10.25, 0.11], [5.08, 0.12, 0.13, 9.37, 0.0, 85.31]]}, "UNSW-NB15": {"subset_name": "UNSW-NB15", "sample_count": 82332, "accuracy": 76.98, "balanced_accuracy": 64.31, "macro_precision": 71.71, "macro_recall": 64.31, "macro_f1": 63.19, "weighted_precision": 78.95, "weighted_recall": 76.98, "weighted_f1": 76.03, "log_loss": 0.506, "binary_accuracy": 87.01, "binary_detection_rate": 95.07, "binary_false_alarm_rate": 22.86, "binary_precision": 83.59, "binary_f1": 88.96, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 92.74, "recall": 77.14, "f1_score": 84.22, "support": 37000}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 48.24, "recall": 4.7, "f1_score": 8.56, "support": 4089}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 89.23, "recall": 67.34, "f1_score": 76.75, "support": 4173}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.6, "recall": 87.05, "f1_score": 67.86, "support": 11510}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.74, "recall": 85.34, "f1_score": 78.54, "support": 25560}], "confusion_matrix": [[28541, 116, 64, 889, 0, 7390], [181, 192, 45, 3515, 0, 156], [111, 5, 2810, 1202, 0, 45], [650, 55, 201, 10020, 0, 584], [0, 0, 0, 0, 0, 0], [1291, 30, 29, 2396, 0, 21814]], "confusion_matrix_norm": [[77.14, 0.31, 0.17, 2.4, 0.0, 19.97], [4.43, 4.7, 1.1, 85.96, 0.0, 3.82], [2.66, 0.12, 67.34, 28.8, 0.0, 1.08], [5.65, 0.48, 1.75, 87.05, 0.0, 5.07], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [5.05, 0.12, 0.11, 9.37, 0.0, 85.34]]}, "NSL-KDD": {"subset_name": "NSL-KDD", "sample_count": 22544, "accuracy": 74.43, "balanced_accuracy": 45.06, "macro_precision": 70.74, "macro_recall": 37.55, "macro_f1": 38.26, "weighted_precision": 77.97, "weighted_recall": 74.43, "weighted_f1": 69.28, "log_loss": 1.2949, "binary_accuracy": 80.76, "binary_detection_rate": 68.97, "binary_false_alarm_rate": 3.67, "binary_precision": 96.13, "binary_f1": 80.32, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 70.14, "recall": 96.33, "f1_score": 81.18, "support": 9711}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 80.99, "recall": 85.99, "f1_score": 83.42, "support": 7458}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 74.22, "recall": 32.34, "f1_score": 45.05, "support": 2421}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 100.0, "recall": 2.5, "f1_score": 4.88, "support": 200}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 99.12, "recall": 8.13, "f1_score": 15.03, "support": 2754}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}], "confusion_matrix": [[9355, 122, 233, 0, 1, 0], [1033, 6413, 12, 0, 0, 0], [368, 1270, 783, 0, 0, 0], [85, 109, 0, 5, 1, 0], [2496, 4, 27, 0, 224, 3], [0, 0, 0, 0, 0, 0]], "confusion_matrix_norm": [[96.33, 1.26, 2.4, 0.0, 0.01, 0.0], [13.85, 85.99, 0.16, 0.0, 0.0, 0.0], [15.2, 52.46, 32.34, 0.0, 0.0, 0.0], [42.5, 54.5, 0.0, 2.5, 0.5, 0.0], [90.63, 0.15, 0.98, 0.0, 8.13, 0.11], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]}, "CIC-IDS2017": {"subset_name": "CIC-IDS2017", "sample_count": 18219, "accuracy": 99.33, "balanced_accuracy": 89.53, "macro_precision": 79.62, "macro_recall": 74.6, "macro_f1": 76.54, "weighted_precision": 99.47, "weighted_recall": 99.33, "weighted_f1": 99.4, "log_loss": 0.0236, "binary_accuracy": 99.33, "binary_detection_rate": 98.69, "binary_false_alarm_rate": 0.5, "binary_precision": 98.12, "binary_f1": 98.4, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.65, "recall": 99.5, "f1_score": 99.58, "support": 14409}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.52, "recall": 98.56, "f1_score": 98.54, "support": 2573}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.57, "recall": 99.57, "f1_score": 99.57, "support": 1156}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 100.0, "recall": 100.0, "f1_score": 100.0, "support": 65}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 80.0, "recall": 50.0, "f1_score": 61.54, "support": 16}], "confusion_matrix": [[14337, 38, 5, 27, 0, 2], [37, 2536, 0, 0, 0, 0], [5, 0, 1151, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 65, 0], [8, 0, 0, 0, 0, 8]], "confusion_matrix_norm": [[99.5, 0.26, 0.03, 0.19, 0.0, 0.01], [1.44, 98.56, 0.0, 0.0, 0.0, 0.0], [0.43, 0.0, 99.57, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 100.0, 0.0], [50.0, 0.0, 0.0, 0.0, 0.0, 50.0]]}, "BoT-IoT": {"subset_name": "BoT-IoT", "sample_count": 20000, "accuracy": 99.86, "balanced_accuracy": 72.93, "macro_precision": 47.84, "macro_recall": 58.34, "macro_f1": 50.93, "weighted_precision": 99.92, "weighted_recall": 99.86, "weighted_f1": 99.88, "log_loss": 0.0073, "binary_accuracy": 99.89, "binary_detection_rate": 99.9, "binary_false_alarm_rate": 7.14, "binary_precision": 99.99, "binary_f1": 99.95, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 39.39, "recall": 92.86, "f1_score": 55.32, "support": 14}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 99.99, "recall": 99.99, "f1_score": 99.99, "support": 17886}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.81, "recall": 98.86, "f1_score": 99.33, "support": 2097}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 3}], "confusion_matrix": [[13, 0, 1, 0, 0, 0], [1, 17885, 0, 0, 0, 0], [19, 1, 2073, 3, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 3, 0, 0, 0]], "confusion_matrix_norm": [[92.86, 0.0, 7.14, 0.0, 0.0, 0.0], [0.01, 99.99, 0.0, 0.0, 0.0, 0.0], [0.91, 0.05, 98.86, 0.14, 0.0, 0.05], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 100.0, 0.0, 0.0, 0.0]]}}, "feature_importance": [{"feature": "state_established", "gain": 1407.364, "gain_pct": 48.51, "weight": 1974}, {"feature": "proto_icmp", "gain": 244.8859, "gain_pct": 8.44, "weight": 709}, {"feature": "state_no-reply", "gain": 218.2271, "gain_pct": 7.52, "weight": 1967}, {"feature": "service_dns", "gain": 169.7574, "gain_pct": 5.85, "weight": 2408}, {"feature": "state_reset", "gain": 150.2766, "gain_pct": 5.18, "weight": 1685}, {"feature": "service_https_ssl", "gain": 99.5152, "gain_pct": 3.43, "weight": 1921}, {"feature": "proto_other", "gain": 83.8761, "gain_pct": 2.89, "weight": 3230}, {"feature": "proto_udp", "gain": 70.423, "gain_pct": 2.43, "weight": 2761}, {"feature": "service_other", "gain": 63.8588, "gain_pct": 2.2, "weight": 5906}, {"feature": "signed_log_bytes_ratio", "gain": 55.0461, "gain_pct": 1.9, "weight": 36661}, {"feature": "log_bytes_forward", "gain": 49.9699, "gain_pct": 1.72, "weight": 58605}, {"feature": "service_http", "gain": 49.1495, "gain_pct": 1.69, "weight": 6103}, {"feature": "service_ftp", "gain": 45.2338, "gain_pct": 1.56, "weight": 2674}, {"feature": "log_duration", "gain": 42.7153, "gain_pct": 1.47, "weight": 65011}, {"feature": "log_bytes_backward", "gain": 36.0229, "gain_pct": 1.24, "weight": 35334}, {"feature": "proto_tcp", "gain": 34.0539, "gain_pct": 1.17, "weight": 3936}, {"feature": "state_other", "gain": 33.2734, "gain_pct": 1.15, "weight": 610}, {"feature": "service_smtp", "gain": 29.9484, "gain_pct": 1.03, "weight": 2046}, {"feature": "service_ssh", "gain": 17.46, "gain_pct": 0.6, "weight": 778}]}, "model_2": {"id": "model_2", "name": "Model 2: Real Data + Balanced Class Weight", "short_name": "M2: Real (Balanced)", "data_type": "Real", "weight_type": "Balanced", "desc": "Real data with inverse class frequency weights", "train_scale": 467860, "training_time_seconds": 8.48, "best_iteration": 129, "evaluations": {"Global Benchmark": {"subset_name": "Global Benchmark", "sample_count": 143095, "accuracy": 77.19, "balanced_accuracy": 72.85, "macro_precision": 76.84, "macro_recall": 72.85, "macro_f1": 70.17, "weighted_precision": 83.58, "weighted_recall": 77.19, "weighted_f1": 78.14, "log_loss": 0.6415, "binary_accuracy": 86.6, "binary_detection_rate": 96.82, "binary_false_alarm_rate": 27.1, "binary_precision": 82.73, "binary_f1": 89.22, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 94.47, "recall": 72.9, "f1_score": 82.29, "support": 61134}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.01, "recall": 74.6, "f1_score": 84.72, "support": 32006}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 62.36, "recall": 78.31, "f1_score": 69.43, "support": 9847}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 49.01, "recall": 89.99, "f1_score": 63.46, "support": 11710}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 94.93, "recall": 31.89, "f1_score": 47.74, "support": 2819}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 62.24, "recall": 89.41, "f1_score": 73.4, "support": 25579}], "confusion_matrix": [[44564, 225, 599, 2952, 21, 12773], [1002, 23878, 3169, 3723, 2, 232], [125, 242, 7711, 1662, 18, 89], [146, 6, 237, 10538, 7, 776], [1294, 3, 615, 5, 899, 3], [43, 10, 34, 2621, 0, 22871]], "confusion_matrix_norm": [[72.9, 0.37, 0.98, 4.83, 0.03, 20.89], [3.13, 74.6, 9.9, 11.63, 0.01, 0.72], [1.27, 2.46, 78.31, 16.88, 0.18, 0.9], [1.25, 0.05, 2.02, 89.99, 0.06, 6.63], [45.9, 0.11, 21.82, 0.18, 31.89, 0.11], [0.17, 0.04, 0.13, 10.25, 0.0, 89.41]]}, "UNSW-NB15": {"subset_name": "UNSW-NB15", "sample_count": 82332, "accuracy": 69.05, "balanced_accuracy": 59.41, "macro_precision": 53.94, "macro_recall": 49.51, "macro_f1": 46.7, "weighted_precision": 76.49, "weighted_recall": 69.05, "weighted_f1": 67.76, "log_loss": 0.8379, "binary_accuracy": 80.35, "binary_detection_rate": 99.62, "binary_false_alarm_rate": 43.27, "binary_precision": 73.83, "binary_f1": 84.81, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.19, "recall": 56.73, "f1_score": 72.18, "support": 37000}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 30.32, "recall": 1.15, "f1_score": 2.21, "support": 4089}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 82.59, "recall": 58.3, "f1_score": 68.35, "support": 4173}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 49.28, "recall": 91.46, "f1_score": 64.05, "support": 11510}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 62.27, "recall": 89.42, "f1_score": 73.42, "support": 25560}], "confusion_matrix": [[20990, 91, 319, 2843, 1, 12756], [49, 47, 39, 3722, 0, 232], [4, 1, 2433, 1649, 0, 86], [77, 6, 124, 10527, 0, 776], [0, 0, 0, 0, 0, 0], [41, 10, 31, 2621, 0, 22857]], "confusion_matrix_norm": [[56.73, 0.25, 0.86, 7.68, 0.0, 34.48], [1.2, 1.15, 0.95, 91.02, 0.0, 5.67], [0.1, 0.02, 58.3, 39.52, 0.0, 2.06], [0.67, 0.05, 1.08, 91.46, 0.0, 6.74], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.16, 0.04, 0.12, 10.25, 0.0, 89.42]]}, "NSL-KDD": {"subset_name": "NSL-KDD", "sample_count": 22544, "accuracy": 69.41, "balanced_accuracy": 52.52, "macro_precision": 57.43, "macro_recall": 43.77, "macro_f1": 41.94, "weighted_precision": 80.01, "weighted_recall": 69.41, "weighted_f1": 68.53, "log_loss": 0.9153, "binary_accuracy": 87.76, "binary_detection_rate": 81.49, "binary_false_alarm_rate": 3.95, "binary_precision": 96.46, "binary_f1": 88.34, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 79.7, "recall": 96.05, "f1_score": 87.11, "support": 9711}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 91.1, "recall": 45.86, "f1_score": 61.01, "support": 7458}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 33.27, "recall": 84.92, "f1_score": 47.81, "support": 2421}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 45.83, "recall": 5.5, "f1_score": 9.82, "support": 200}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 94.67, "recall": 30.28, "f1_score": 45.89, "support": 2754}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}], "confusion_matrix": [[9327, 91, 265, 8, 20, 0], [906, 3420, 3130, 0, 2, 0], [107, 240, 2056, 0, 18, 0], [69, 0, 113, 11, 7, 0], [1294, 3, 615, 5, 834, 3], [0, 0, 0, 0, 0, 0]], "confusion_matrix_norm": [[96.05, 0.94, 2.73, 0.08, 0.21, 0.0], [12.15, 45.86, 41.97, 0.0, 0.03, 0.0], [4.42, 9.91, 84.92, 0.0, 0.74, 0.0], [34.5, 0.0, 56.5, 5.5, 3.5, 0.0], [46.99, 0.11, 22.33, 0.18, 30.28, 0.11], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]}, "CIC-IDS2017": {"subset_name": "CIC-IDS2017", "sample_count": 18219, "accuracy": 98.79, "balanced_accuracy": 96.83, "macro_precision": 73.92, "macro_recall": 80.69, "macro_f1": 76.27, "weighted_precision": 99.36, "weighted_recall": 98.79, "weighted_f1": 99.07, "log_loss": 0.081, "binary_accuracy": 98.79, "binary_detection_rate": 98.66, "binary_false_alarm_rate": 1.17, "binary_precision": 95.7, "binary_f1": 97.16, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.64, "recall": 98.83, "f1_score": 99.23, "support": 14409}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.33, "recall": 98.25, "f1_score": 98.29, "support": 2573}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 98.88, "recall": 99.57, "f1_score": 99.22, "support": 1156}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 100.0, "recall": 100.0, "f1_score": 100.0, "support": 65}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 46.67, "recall": 87.5, "f1_score": 60.87, "support": 16}], "confusion_matrix": [[14240, 43, 13, 97, 0, 16], [44, 2528, 0, 1, 0, 0], [5, 0, 1151, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 65, 0], [2, 0, 0, 0, 0, 14]], "confusion_matrix_norm": [[98.83, 0.3, 0.09, 0.67, 0.0, 0.11], [1.71, 98.25, 0.0, 0.04, 0.0, 0.0], [0.43, 0.0, 99.57, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 100.0, 0.0], [12.5, 0.0, 0.0, 0.0, 0.0, 87.5]]}, "BoT-IoT": {"subset_name": "BoT-IoT", "sample_count": 20000, "accuracy": 99.8, "balanced_accuracy": 62.19, "macro_precision": 47.32, "macro_recall": 49.75, "macro_f1": 48.33, "weighted_precision": 99.91, "weighted_recall": 99.8, "weighted_f1": 99.86, "log_loss": 0.0348, "binary_accuracy": 99.91, "binary_detection_rate": 99.94, "binary_false_alarm_rate": 50.0, "binary_precision": 99.96, "binary_f1": 99.95, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 36.84, "recall": 50.0, "f1_score": 42.42, "support": 14}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 99.99, "recall": 99.98, "f1_score": 99.99, "support": 17886}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.76, "recall": 98.76, "f1_score": 99.26, "support": 2097}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 3}], "confusion_matrix": [[7, 0, 2, 4, 0, 1], [3, 17883, 0, 0, 0, 0], [9, 1, 2071, 13, 0, 3], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 3, 0, 0, 0]], "confusion_matrix_norm": [[50.0, 0.0, 14.29, 28.57, 0.0, 7.14], [0.02, 99.98, 0.0, 0.0, 0.0, 0.0], [0.43, 0.05, 98.76, 0.62, 0.0, 0.14], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 100.0, 0.0, 0.0, 0.0]]}}, "feature_importance": [{"feature": "service_ftp", "gain": 1119.0518, "gain_pct": 25.24, "weight": 2132}, {"feature": "service_dns", "gain": 751.6201, "gain_pct": 16.95, "weight": 1542}, {"feature": "service_ssh", "gain": 438.2933, "gain_pct": 9.88, "weight": 714}, {"feature": "state_no-reply", "gain": 337.2072, "gain_pct": 7.6, "weight": 1387}, {"feature": "service_other", "gain": 219.6775, "gain_pct": 4.95, "weight": 4145}, {"feature": "service_https_ssl", "gain": 206.7409, "gain_pct": 4.66, "weight": 1250}, {"feature": "proto_other", "gain": 177.5051, "gain_pct": 4.0, "weight": 2300}, {"feature": "proto_udp", "gain": 172.3539, "gain_pct": 3.89, "weight": 2138}, {"feature": "state_reset", "gain": 161.1671, "gain_pct": 3.63, "weight": 1406}, {"feature": "proto_icmp", "gain": 148.493, "gain_pct": 3.35, "weight": 593}, {"feature": "signed_log_bytes_ratio", "gain": 109.8436, "gain_pct": 2.48, "weight": 28563}, {"feature": "log_bytes_forward", "gain": 101.9133, "gain_pct": 2.3, "weight": 42600}, {"feature": "state_established", "gain": 101.565, "gain_pct": 2.29, "weight": 2479}, {"feature": "service_http", "gain": 88.7336, "gain_pct": 2.0, "weight": 3850}, {"feature": "log_bytes_backward", "gain": 69.942, "gain_pct": 1.58, "weight": 26637}, {"feature": "log_duration", "gain": 62.6973, "gain_pct": 1.41, "weight": 50013}, {"feature": "state_other", "gain": 61.5511, "gain_pct": 1.39, "weight": 569}, {"feature": "service_smtp", "gain": 58.8443, "gain_pct": 1.33, "weight": 1513}, {"feature": "proto_tcp", "gain": 47.0136, "gain_pct": 1.06, "weight": 2938}]}, "model_3": {"id": "model_3", "name": "Model 3: Borderline-SMOTE + Natural Weight", "short_name": "M3: SMOTE (Natural)", "data_type": "SMOTE", "weight_type": "Natural", "desc": "SMOTENC geometric augmentation with uniform weights", "train_scale": 506651, "training_time_seconds": 14.55, "best_iteration": 202, "evaluations": {"Global Benchmark": {"subset_name": "Global Benchmark", "sample_count": 143095, "accuracy": 83.12, "balanced_accuracy": 73.82, "macro_precision": 82.64, "macro_recall": 73.82, "macro_f1": 75.0, "weighted_precision": 85.26, "weighted_recall": 83.12, "weighted_f1": 83.4, "log_loss": 0.4663, "binary_accuracy": 89.9, "binary_detection_rate": 93.16, "binary_false_alarm_rate": 14.48, "binary_precision": 89.61, "binary_f1": 91.35, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 90.32, "recall": 85.52, "f1_score": 87.85, "support": 61134}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 93.92, "recall": 84.39, "f1_score": 88.9, "support": 32006}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 91.45, "recall": 70.85, "f1_score": 79.85, "support": 9847}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.61, "recall": 84.39, "f1_score": 67.04, "support": 11710}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 91.73, "recall": 32.25, "f1_score": 47.72, "support": 2819}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.79, "recall": 85.54, "f1_score": 78.65, "support": 25579}], "confusion_matrix": [[52282, 273, 308, 810, 44, 7417], [1272, 27009, 56, 3510, 0, 159], [358, 1275, 6977, 1187, 18, 32], [852, 159, 231, 9882, 18, 568], [1886, 6, 15, 0, 909, 3], [1238, 35, 42, 2382, 2, 21880]], "confusion_matrix_norm": [[85.52, 0.45, 0.5, 1.32, 0.07, 12.13], [3.97, 84.39, 0.17, 10.97, 0.0, 0.5], [3.64, 12.95, 70.85, 12.05, 0.18, 0.32], [7.28, 1.36, 1.97, 84.39, 0.15, 4.85], [66.9, 0.21, 0.53, 0.0, 32.25, 0.11], [4.84, 0.14, 0.16, 9.31, 0.01, 85.54]]}, "UNSW-NB15": {"subset_name": "UNSW-NB15", "sample_count": 82332, "accuracy": 76.96, "balanced_accuracy": 64.18, "macro_precision": 59.17, "macro_recall": 53.48, "macro_f1": 52.49, "weighted_precision": 78.69, "weighted_recall": 76.96, "weighted_f1": 75.99, "log_loss": 0.5183, "binary_accuracy": 86.98, "binary_detection_rate": 94.87, "binary_false_alarm_rate": 22.68, "binary_precision": 83.67, "binary_f1": 88.92, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 92.48, "recall": 77.32, "f1_score": 84.22, "support": 37000}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 46.21, "recall": 4.33, "f1_score": 7.92, "support": 4089}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 87.86, "recall": 67.84, "f1_score": 76.57, "support": 4173}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.69, "recall": 85.82, "f1_score": 67.54, "support": 11510}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.8, "recall": 85.57, "f1_score": 78.67, "support": 25560}], "confusion_matrix": [[28609, 117, 68, 784, 7, 7415], [190, 177, 53, 3510, 0, 159], [123, 4, 2831, 1185, 0, 30], [783, 50, 231, 9878, 0, 568], [0, 0, 0, 0, 0, 0], [1231, 35, 39, 2382, 2, 21871]], "confusion_matrix_norm": [[77.32, 0.32, 0.18, 2.12, 0.02, 20.04], [4.65, 4.33, 1.3, 85.84, 0.0, 3.89], [2.95, 0.1, 67.84, 28.4, 0.0, 0.72], [6.8, 0.43, 2.01, 85.82, 0.0, 4.93], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [4.82, 0.14, 0.15, 9.32, 0.01, 85.57]]}, "NSL-KDD": {"subset_name": "NSL-KDD", "sample_count": 22544, "accuracy": 77.66, "balanced_accuracy": 50.56, "macro_precision": 71.06, "macro_recall": 42.13, "macro_f1": 44.76, "weighted_precision": 79.45, "weighted_recall": 77.66, "weighted_f1": 74.88, "log_loss": 1.04, "binary_accuracy": 84.05, "binary_detection_rate": 75.02, "binary_false_alarm_rate": 4.01, "binary_precision": 96.12, "binary_f1": 84.27, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 74.41, "recall": 95.99, "f1_score": 83.83, "support": 9711}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 80.97, "recall": 85.99, "f1_score": 83.4, "support": 7458}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 78.64, "recall": 38.17, "f1_score": 51.39, "support": 2421}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 100.0, "recall": 2.0, "f1_score": 3.92, "support": 200}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 92.34, "recall": 30.65, "f1_score": 46.02, "support": 2754}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}], "confusion_matrix": [[9322, 122, 233, 0, 34, 0], [1042, 6413, 3, 0, 0, 0], [209, 1270, 924, 0, 18, 0], [69, 109, 0, 4, 18, 0], [1886, 6, 15, 0, 844, 3], [0, 0, 0, 0, 0, 0]], "confusion_matrix_norm": [[95.99, 1.26, 2.4, 0.0, 0.35, 0.0], [13.97, 85.99, 0.04, 0.0, 0.0, 0.0], [8.63, 52.46, 38.17, 0.0, 0.74, 0.0], [34.5, 54.5, 0.0, 2.0, 9.0, 0.0], [68.48, 0.22, 0.54, 0.0, 30.65, 0.11], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]}, "CIC-IDS2017": {"subset_name": "CIC-IDS2017", "sample_count": 18219, "accuracy": 99.34, "balanced_accuracy": 90.76, "macro_precision": 79.2, "macro_recall": 75.64, "macro_f1": 77.02, "weighted_precision": 99.47, "weighted_recall": 99.34, "weighted_f1": 99.4, "log_loss": 0.0253, "binary_accuracy": 99.34, "binary_detection_rate": 98.66, "binary_false_alarm_rate": 0.49, "binary_precision": 98.17, "binary_f1": 98.42, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.65, "recall": 99.51, "f1_score": 99.58, "support": 14409}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.68, "recall": 98.48, "f1_score": 98.58, "support": 2573}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.48, "recall": 99.57, "f1_score": 99.52, "support": 1156}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 95.59, "recall": 100.0, "f1_score": 97.74, "support": 65}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 81.82, "recall": 56.25, "f1_score": 66.67, "support": 16}], "confusion_matrix": [[14339, 34, 6, 25, 3, 2], [39, 2534, 0, 0, 0, 0], [5, 0, 1151, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 65, 0], [7, 0, 0, 0, 0, 9]], "confusion_matrix_norm": [[99.51, 0.24, 0.04, 0.17, 0.02, 0.01], [1.52, 98.48, 0.0, 0.0, 0.0, 0.0], [0.43, 0.0, 99.57, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 100.0, 0.0], [43.75, 0.0, 0.0, 0.0, 0.0, 56.25]]}, "BoT-IoT": {"subset_name": "BoT-IoT", "sample_count": 20000, "accuracy": 99.84, "balanced_accuracy": 71.12, "macro_precision": 47.02, "macro_recall": 56.89, "macro_f1": 49.86, "weighted_precision": 99.91, "weighted_recall": 99.84, "weighted_f1": 99.87, "log_loss": 0.0076, "binary_accuracy": 99.88, "binary_detection_rate": 99.89, "binary_false_alarm_rate": 14.29, "binary_precision": 99.99, "binary_f1": 99.94, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 35.29, "recall": 85.71, "f1_score": 50.0, "support": 14}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 99.99, "recall": 99.99, "f1_score": 99.99, "support": 17886}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.81, "recall": 98.76, "f1_score": 99.28, "support": 2097}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 3}], "confusion_matrix": [[12, 0, 1, 1, 0, 0], [1, 17885, 0, 0, 0, 0], [21, 1, 2071, 2, 0, 2], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 3, 0, 0, 0]], "confusion_matrix_norm": [[85.71, 0.0, 7.14, 7.14, 0.0, 0.0], [0.01, 99.99, 0.0, 0.0, 0.0, 0.0], [1.0, 0.05, 98.76, 0.1, 0.0, 0.1], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 100.0, 0.0, 0.0, 0.0]]}}, "feature_importance": [{"feature": "state_established", "gain": 1309.7817, "gain_pct": 33.7, "weight": 2265}, {"feature": "service_ftp", "gain": 764.3492, "gain_pct": 19.67, "weight": 2436}, {"feature": "state_no-reply", "gain": 262.6878, "gain_pct": 6.76, "weight": 1911}, {"feature": "proto_icmp", "gain": 219.2743, "gain_pct": 5.64, "weight": 685}, {"feature": "service_dns", "gain": 216.6679, "gain_pct": 5.57, "weight": 2225}, {"feature": "service_ssh", "gain": 195.4682, "gain_pct": 5.03, "weight": 988}, {"feature": "state_reset", "gain": 150.1882, "gain_pct": 3.86, "weight": 1724}, {"feature": "service_https_ssl", "gain": 122.7068, "gain_pct": 3.16, "weight": 1781}, {"feature": "service_other", "gain": 97.1683, "gain_pct": 2.5, "weight": 5588}, {"feature": "proto_other", "gain": 95.9875, "gain_pct": 2.47, "weight": 3069}, {"feature": "proto_udp", "gain": 75.9623, "gain_pct": 1.95, "weight": 2645}, {"feature": "service_http", "gain": 62.0919, "gain_pct": 1.6, "weight": 5540}, {"feature": "signed_log_bytes_ratio", "gain": 58.5887, "gain_pct": 1.51, "weight": 39063}, {"feature": "log_bytes_forward", "gain": 52.2961, "gain_pct": 1.35, "weight": 62371}, {"feature": "state_other", "gain": 44.1341, "gain_pct": 1.14, "weight": 685}, {"feature": "proto_tcp", "gain": 43.0336, "gain_pct": 1.11, "weight": 3873}, {"feature": "log_duration", "gain": 42.6838, "gain_pct": 1.1, "weight": 66197}, {"feature": "log_bytes_backward", "gain": 41.4184, "gain_pct": 1.07, "weight": 37706}, {"feature": "service_smtp", "gain": 32.1777, "gain_pct": 0.83, "weight": 1956}]}, "model_4": {"id": "model_4", "name": "Model 4: Borderline-SMOTE + Balanced Class Weight", "short_name": "M4: SMOTE (Balanced)", "data_type": "SMOTE", "weight_type": "Balanced", "desc": "SMOTENC augmentation combined with post-SMOTE balanced weights", "train_scale": 506651, "training_time_seconds": 11.21, "best_iteration": 156, "evaluations": {"Global Benchmark": {"subset_name": "Global Benchmark", "sample_count": 143095, "accuracy": 77.42, "balanced_accuracy": 73.52, "macro_precision": 76.44, "macro_recall": 73.52, "macro_f1": 70.67, "weighted_precision": 83.56, "weighted_recall": 77.42, "weighted_f1": 78.31, "log_loss": 0.6296, "binary_accuracy": 86.43, "binary_detection_rate": 96.56, "binary_false_alarm_rate": 27.15, "binary_precision": 82.66, "binary_f1": 89.07, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 94.05, "recall": 72.85, "f1_score": 82.1, "support": 61134}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.03, "recall": 74.58, "f1_score": 84.71, "support": 32006}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 64.54, "recall": 81.42, "f1_score": 72.0, "support": 9847}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 49.37, "recall": 90.62, "f1_score": 63.92, "support": 11710}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 90.04, "recall": 32.39, "f1_score": 47.64, "support": 2819}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 62.63, "recall": 89.28, "f1_score": 73.62, "support": 25579}], "confusion_matrix": [[44537, 220, 580, 3110, 48, 12639], [996, 23871, 3192, 3732, 2, 213], [119, 241, 8017, 1378, 18, 74], [132, 6, 235, 10612, 31, 694], [1532, 3, 364, 4, 913, 3], [40, 10, 33, 2658, 2, 22836]], "confusion_matrix_norm": [[72.85, 0.36, 0.95, 5.09, 0.08, 20.67], [3.11, 74.58, 9.97, 11.66, 0.01, 0.67], [1.21, 2.45, 81.42, 13.99, 0.18, 0.75], [1.13, 0.05, 2.01, 90.62, 0.26, 5.93], [54.35, 0.11, 12.91, 0.14, 32.39, 0.11], [0.16, 0.04, 0.13, 10.39, 0.01, 89.28]]}, "UNSW-NB15": {"subset_name": "UNSW-NB15", "sample_count": 82332, "accuracy": 69.44, "balanced_accuracy": 60.96, "macro_precision": 54.87, "macro_recall": 50.8, "macro_f1": 47.75, "weighted_precision": 76.9, "weighted_recall": 69.44, "weighted_f1": 68.15, "log_loss": 0.8242, "binary_accuracy": 80.31, "binary_detection_rate": 99.62, "binary_false_alarm_rate": 43.35, "binary_precision": 73.79, "binary_f1": 84.78, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.19, "recall": 56.65, "f1_score": 72.12, "support": 37000}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 33.33, "recall": 1.32, "f1_score": 2.54, "support": 4089}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 84.41, "recall": 65.4, "f1_score": 73.7, "support": 4173}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 49.63, "recall": 92.13, "f1_score": 64.51, "support": 11510}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 62.66, "recall": 89.29, "f1_score": 73.64, "support": 25560}], "confusion_matrix": [[20961, 91, 304, 3005, 17, 12622], [47, 54, 44, 3731, 0, 213], [6, 1, 2729, 1366, 0, 71], [80, 6, 126, 10604, 0, 694], [0, 0, 0, 0, 0, 0], [38, 10, 30, 2658, 2, 22822]], "confusion_matrix_norm": [[56.65, 0.25, 0.82, 8.12, 0.05, 34.11], [1.15, 1.32, 1.08, 91.24, 0.0, 5.21], [0.14, 0.02, 65.4, 32.73, 0.0, 1.7], [0.7, 0.05, 1.09, 92.13, 0.0, 6.03], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.15, 0.04, 0.12, 10.4, 0.01, 89.29]]}, "NSL-KDD": {"subset_name": "NSL-KDD", "sample_count": 22544, "accuracy": 69.38, "balanced_accuracy": 52.31, "macro_precision": 55.93, "macro_recall": 43.6, "macro_f1": 41.61, "weighted_precision": 79.1, "weighted_recall": 69.38, "weighted_f1": 68.24, "log_loss": 0.9211, "binary_accuracy": 86.78, "binary_detection_rate": 79.81, "binary_false_alarm_rate": 4.01, "binary_precision": 96.34, "binary_f1": 87.3, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 78.25, "recall": 95.99, "f1_score": 86.22, "support": 9711}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 91.06, "recall": 45.62, "f1_score": 60.78, "support": 7458}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 34.68, "recall": 85.17, "f1_score": 49.29, "support": 2421}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 40.0, "recall": 4.0, "f1_score": 7.27, "support": 200}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 91.58, "recall": 30.79, "f1_score": 46.09, "support": 2754}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}], "confusion_matrix": [[9322, 91, 263, 8, 27, 0], [906, 3402, 3148, 0, 2, 0], [101, 240, 2062, 0, 18, 0], [52, 0, 109, 8, 31, 0], [1532, 3, 364, 4, 848, 3], [0, 0, 0, 0, 0, 0]], "confusion_matrix_norm": [[95.99, 0.94, 2.71, 0.08, 0.28, 0.0], [12.15, 45.62, 42.21, 0.0, 0.03, 0.0], [4.17, 9.91, 85.17, 0.0, 0.74, 0.0], [26.0, 0.0, 54.5, 4.0, 15.5, 0.0], [55.63, 0.11, 13.22, 0.15, 30.79, 0.11], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]}, "CIC-IDS2017": {"subset_name": "CIC-IDS2017", "sample_count": 18219, "accuracy": 98.85, "balanced_accuracy": 96.87, "macro_precision": 73.02, "macro_recall": 80.72, "macro_f1": 75.82, "weighted_precision": 99.4, "weighted_recall": 98.85, "weighted_f1": 99.12, "log_loss": 0.0594, "binary_accuracy": 98.85, "binary_detection_rate": 98.77, "binary_false_alarm_rate": 1.12, "binary_precision": 95.87, "binary_f1": 97.3, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.67, "recall": 98.88, "f1_score": 99.27, "support": 14409}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.52, "recall": 98.41, "f1_score": 98.46, "support": 2573}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.05, "recall": 99.57, "f1_score": 99.31, "support": 1156}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 94.2, "recall": 100.0, "f1_score": 97.01, "support": 65}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 46.67, "recall": 87.5, "f1_score": 60.87, "support": 16}], "confusion_matrix": [[14247, 38, 11, 93, 4, 16], [40, 2532, 0, 1, 0, 0], [5, 0, 1151, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 65, 0], [2, 0, 0, 0, 0, 14]], "confusion_matrix_norm": [[98.88, 0.26, 0.08, 0.65, 0.03, 0.11], [1.55, 98.41, 0.0, 0.04, 0.0, 0.0], [0.43, 0.0, 99.57, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 100.0, 0.0], [12.5, 0.0, 0.0, 0.0, 0.0, 87.5]]}, "BoT-IoT": {"subset_name": "BoT-IoT", "sample_count": 20000, "accuracy": 99.83, "balanced_accuracy": 62.23, "macro_precision": 48.19, "macro_recall": 49.79, "macro_f1": 48.9, "weighted_precision": 99.92, "weighted_recall": 99.83, "weighted_f1": 99.87, "log_loss": 0.019, "binary_accuracy": 99.91, "binary_detection_rate": 99.95, "binary_false_alarm_rate": 50.0, "binary_precision": 99.96, "binary_f1": 99.96, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 41.18, "recall": 50.0, "f1_score": 45.16, "support": 14}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 100.0, "recall": 99.98, "f1_score": 99.99, "support": 17886}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.76, "recall": 98.95, "f1_score": 99.35, "support": 2097}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 3}], "confusion_matrix": [[7, 0, 2, 4, 0, 1], [3, 17883, 0, 0, 0, 0], [7, 0, 2075, 12, 0, 3], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 3, 0, 0, 0]], "confusion_matrix_norm": [[50.0, 0.0, 14.29, 28.57, 0.0, 7.14], [0.02, 99.98, 0.0, 0.0, 0.0, 0.0], [0.33, 0.0, 98.95, 0.57, 0.0, 0.14], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 100.0, 0.0, 0.0, 0.0]]}}, "feature_importance": [{"feature": "service_ftp", "gain": 1110.0089, "gain_pct": 26.42, "weight": 2347}, {"feature": "service_dns", "gain": 710.5798, "gain_pct": 16.92, "weight": 1766}, {"feature": "service_ssh", "gain": 391.9919, "gain_pct": 9.33, "weight": 864}, {"feature": "state_no-reply", "gain": 306.9922, "gain_pct": 7.31, "weight": 1692}, {"feature": "service_other", "gain": 201.2034, "gain_pct": 4.79, "weight": 4901}, {"feature": "service_https_ssl", "gain": 193.6501, "gain_pct": 4.61, "weight": 1435}, {"feature": "proto_other", "gain": 173.8871, "gain_pct": 4.14, "weight": 2580}, {"feature": "proto_udp", "gain": 171.4853, "gain_pct": 4.08, "weight": 2420}, {"feature": "state_reset", "gain": 146.0855, "gain_pct": 3.48, "weight": 1641}, {"feature": "proto_icmp", "gain": 144.7124, "gain_pct": 3.44, "weight": 635}, {"feature": "signed_log_bytes_ratio", "gain": 100.7701, "gain_pct": 2.4, "weight": 33565}, {"feature": "state_established", "gain": 92.5209, "gain_pct": 2.2, "weight": 3004}, {"feature": "log_bytes_forward", "gain": 89.9642, "gain_pct": 2.14, "weight": 51757}, {"feature": "service_http", "gain": 84.1653, "gain_pct": 2.0, "weight": 4520}, {"feature": "log_bytes_backward", "gain": 60.5548, "gain_pct": 1.44, "weight": 33343}, {"feature": "service_smtp", "gain": 60.0897, "gain_pct": 1.43, "weight": 1657}, {"feature": "log_duration", "gain": 58.3334, "gain_pct": 1.39, "weight": 59389}, {"feature": "state_other", "gain": 57.6627, "gain_pct": 1.37, "weight": 700}, {"feature": "proto_tcp", "gain": 46.2177, "gain_pct": 1.1, "weight": 3262}]}}, "model_a_baseline": {"id": "model_1", "name": "Model 1: Real Data + Natural Weight", "short_name": "M1: Real (Natural)", "data_type": "Real", "weight_type": "Natural", "desc": "Baseline empirical distribution without weighting", "train_scale": 467860, "training_time_seconds": 13.63, "best_iteration": 206, "evaluations": {"Global Benchmark": {"subset_name": "Global Benchmark", "sample_count": 143095, "accuracy": 82.62, "balanced_accuracy": 70.05, "macro_precision": 83.73, "macro_recall": 70.05, "macro_f1": 69.93, "weighted_precision": 84.95, "weighted_recall": 82.62, "weighted_f1": 82.54, "log_loss": 0.4992, "binary_accuracy": 89.4, "binary_detection_rate": 92.33, "binary_false_alarm_rate": 14.54, "binary_precision": 89.49, "binary_f1": 90.89, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 89.26, "recall": 85.46, "f1_score": 87.32, "support": 61134}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 93.92, "recall": 84.44, "f1_score": 88.93, "support": 32006}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 91.66, "recall": 69.23, "f1_score": 78.88, "support": 9847}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.52, "recall": 85.61, "f1_score": 67.36, "support": 11710}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 99.31, "recall": 10.25, "f1_score": 18.59, "support": 2819}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.73, "recall": 85.31, "f1_score": 78.52, "support": 25579}], "confusion_matrix": [[52246, 276, 303, 916, 1, 7392], [1252, 27026, 57, 3515, 0, 156], [503, 1276, 6817, 1205, 0, 46], [735, 164, 201, 10025, 1, 584], [2496, 4, 27, 0, 289, 3], [1299, 30, 32, 2396, 0, 21822]], "confusion_matrix_norm": [[85.46, 0.45, 0.5, 1.5, 0.0, 12.09], [3.91, 84.44, 0.18, 10.98, 0.0, 0.49], [5.11, 12.96, 69.23, 12.24, 0.0, 0.47], [6.28, 1.4, 1.72, 85.61, 0.01, 4.99], [88.54, 0.14, 0.96, 0.0, 10.25, 0.11], [5.08, 0.12, 0.13, 9.37, 0.0, 85.31]]}, "UNSW-NB15": {"subset_name": "UNSW-NB15", "sample_count": 82332, "accuracy": 76.98, "balanced_accuracy": 64.31, "macro_precision": 71.71, "macro_recall": 64.31, "macro_f1": 63.19, "weighted_precision": 78.95, "weighted_recall": 76.98, "weighted_f1": 76.03, "log_loss": 0.506, "binary_accuracy": 87.01, "binary_detection_rate": 95.07, "binary_false_alarm_rate": 22.86, "binary_precision": 83.59, "binary_f1": 88.96, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 92.74, "recall": 77.14, "f1_score": 84.22, "support": 37000}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 48.24, "recall": 4.7, "f1_score": 8.56, "support": 4089}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 89.23, "recall": 67.34, "f1_score": 76.75, "support": 4173}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.6, "recall": 87.05, "f1_score": 67.86, "support": 11510}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.74, "recall": 85.34, "f1_score": 78.54, "support": 25560}], "confusion_matrix": [[28541, 116, 64, 889, 0, 7390], [181, 192, 45, 3515, 0, 156], [111, 5, 2810, 1202, 0, 45], [650, 55, 201, 10020, 0, 584], [0, 0, 0, 0, 0, 0], [1291, 30, 29, 2396, 0, 21814]], "confusion_matrix_norm": [[77.14, 0.31, 0.17, 2.4, 0.0, 19.97], [4.43, 4.7, 1.1, 85.96, 0.0, 3.82], [2.66, 0.12, 67.34, 28.8, 0.0, 1.08], [5.65, 0.48, 1.75, 87.05, 0.0, 5.07], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [5.05, 0.12, 0.11, 9.37, 0.0, 85.34]]}, "NSL-KDD": {"subset_name": "NSL-KDD", "sample_count": 22544, "accuracy": 74.43, "balanced_accuracy": 45.06, "macro_precision": 70.74, "macro_recall": 37.55, "macro_f1": 38.26, "weighted_precision": 77.97, "weighted_recall": 74.43, "weighted_f1": 69.28, "log_loss": 1.2949, "binary_accuracy": 80.76, "binary_detection_rate": 68.97, "binary_false_alarm_rate": 3.67, "binary_precision": 96.13, "binary_f1": 80.32, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 70.14, "recall": 96.33, "f1_score": 81.18, "support": 9711}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 80.99, "recall": 85.99, "f1_score": 83.42, "support": 7458}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 74.22, "recall": 32.34, "f1_score": 45.05, "support": 2421}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 100.0, "recall": 2.5, "f1_score": 4.88, "support": 200}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 99.12, "recall": 8.13, "f1_score": 15.03, "support": 2754}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}], "confusion_matrix": [[9355, 122, 233, 0, 1, 0], [1033, 6413, 12, 0, 0, 0], [368, 1270, 783, 0, 0, 0], [85, 109, 0, 5, 1, 0], [2496, 4, 27, 0, 224, 3], [0, 0, 0, 0, 0, 0]], "confusion_matrix_norm": [[96.33, 1.26, 2.4, 0.0, 0.01, 0.0], [13.85, 85.99, 0.16, 0.0, 0.0, 0.0], [15.2, 52.46, 32.34, 0.0, 0.0, 0.0], [42.5, 54.5, 0.0, 2.5, 0.5, 0.0], [90.63, 0.15, 0.98, 0.0, 8.13, 0.11], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]}, "CIC-IDS2017": {"subset_name": "CIC-IDS2017", "sample_count": 18219, "accuracy": 99.33, "balanced_accuracy": 89.53, "macro_precision": 79.62, "macro_recall": 74.6, "macro_f1": 76.54, "weighted_precision": 99.47, "weighted_recall": 99.33, "weighted_f1": 99.4, "log_loss": 0.0236, "binary_accuracy": 99.33, "binary_detection_rate": 98.69, "binary_false_alarm_rate": 0.5, "binary_precision": 98.12, "binary_f1": 98.4, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.65, "recall": 99.5, "f1_score": 99.58, "support": 14409}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.52, "recall": 98.56, "f1_score": 98.54, "support": 2573}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.57, "recall": 99.57, "f1_score": 99.57, "support": 1156}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 100.0, "recall": 100.0, "f1_score": 100.0, "support": 65}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 80.0, "recall": 50.0, "f1_score": 61.54, "support": 16}], "confusion_matrix": [[14337, 38, 5, 27, 0, 2], [37, 2536, 0, 0, 0, 0], [5, 0, 1151, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 65, 0], [8, 0, 0, 0, 0, 8]], "confusion_matrix_norm": [[99.5, 0.26, 0.03, 0.19, 0.0, 0.01], [1.44, 98.56, 0.0, 0.0, 0.0, 0.0], [0.43, 0.0, 99.57, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 100.0, 0.0], [50.0, 0.0, 0.0, 0.0, 0.0, 50.0]]}, "BoT-IoT": {"subset_name": "BoT-IoT", "sample_count": 20000, "accuracy": 99.86, "balanced_accuracy": 72.93, "macro_precision": 47.84, "macro_recall": 58.34, "macro_f1": 50.93, "weighted_precision": 99.92, "weighted_recall": 99.86, "weighted_f1": 99.88, "log_loss": 0.0073, "binary_accuracy": 99.89, "binary_detection_rate": 99.9, "binary_false_alarm_rate": 7.14, "binary_precision": 99.99, "binary_f1": 99.95, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 39.39, "recall": 92.86, "f1_score": 55.32, "support": 14}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 99.99, "recall": 99.99, "f1_score": 99.99, "support": 17886}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.81, "recall": 98.86, "f1_score": 99.33, "support": 2097}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 3}], "confusion_matrix": [[13, 0, 1, 0, 0, 0], [1, 17885, 0, 0, 0, 0], [19, 1, 2073, 3, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 3, 0, 0, 0]], "confusion_matrix_norm": [[92.86, 0.0, 7.14, 0.0, 0.0, 0.0], [0.01, 99.99, 0.0, 0.0, 0.0, 0.0], [0.91, 0.05, 98.86, 0.14, 0.0, 0.05], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 100.0, 0.0, 0.0, 0.0]]}}, "feature_importance": [{"feature": "state_established", "gain": 1407.364, "gain_pct": 48.51, "weight": 1974}, {"feature": "proto_icmp", "gain": 244.8859, "gain_pct": 8.44, "weight": 709}, {"feature": "state_no-reply", "gain": 218.2271, "gain_pct": 7.52, "weight": 1967}, {"feature": "service_dns", "gain": 169.7574, "gain_pct": 5.85, "weight": 2408}, {"feature": "state_reset", "gain": 150.2766, "gain_pct": 5.18, "weight": 1685}, {"feature": "service_https_ssl", "gain": 99.5152, "gain_pct": 3.43, "weight": 1921}, {"feature": "proto_other", "gain": 83.8761, "gain_pct": 2.89, "weight": 3230}, {"feature": "proto_udp", "gain": 70.423, "gain_pct": 2.43, "weight": 2761}, {"feature": "service_other", "gain": 63.8588, "gain_pct": 2.2, "weight": 5906}, {"feature": "signed_log_bytes_ratio", "gain": 55.0461, "gain_pct": 1.9, "weight": 36661}, {"feature": "log_bytes_forward", "gain": 49.9699, "gain_pct": 1.72, "weight": 58605}, {"feature": "service_http", "gain": 49.1495, "gain_pct": 1.69, "weight": 6103}, {"feature": "service_ftp", "gain": 45.2338, "gain_pct": 1.56, "weight": 2674}, {"feature": "log_duration", "gain": 42.7153, "gain_pct": 1.47, "weight": 65011}, {"feature": "log_bytes_backward", "gain": 36.0229, "gain_pct": 1.24, "weight": 35334}, {"feature": "proto_tcp", "gain": 34.0539, "gain_pct": 1.17, "weight": 3936}, {"feature": "state_other", "gain": 33.2734, "gain_pct": 1.15, "weight": 610}, {"feature": "service_smtp", "gain": 29.9484, "gain_pct": 1.03, "weight": 2046}, {"feature": "service_ssh", "gain": 17.46, "gain_pct": 0.6, "weight": 778}]}, "model_b_smote": {"id": "model_3", "name": "Model 3: Borderline-SMOTE + Natural Weight", "short_name": "M3: SMOTE (Natural)", "data_type": "SMOTE", "weight_type": "Natural", "desc": "SMOTENC geometric augmentation with uniform weights", "train_scale": 506651, "training_time_seconds": 14.55, "best_iteration": 202, "evaluations": {"Global Benchmark": {"subset_name": "Global Benchmark", "sample_count": 143095, "accuracy": 83.12, "balanced_accuracy": 73.82, "macro_precision": 82.64, "macro_recall": 73.82, "macro_f1": 75.0, "weighted_precision": 85.26, "weighted_recall": 83.12, "weighted_f1": 83.4, "log_loss": 0.4663, "binary_accuracy": 89.9, "binary_detection_rate": 93.16, "binary_false_alarm_rate": 14.48, "binary_precision": 89.61, "binary_f1": 91.35, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 90.32, "recall": 85.52, "f1_score": 87.85, "support": 61134}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 93.92, "recall": 84.39, "f1_score": 88.9, "support": 32006}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 91.45, "recall": 70.85, "f1_score": 79.85, "support": 9847}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.61, "recall": 84.39, "f1_score": 67.04, "support": 11710}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 91.73, "recall": 32.25, "f1_score": 47.72, "support": 2819}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.79, "recall": 85.54, "f1_score": 78.65, "support": 25579}], "confusion_matrix": [[52282, 273, 308, 810, 44, 7417], [1272, 27009, 56, 3510, 0, 159], [358, 1275, 6977, 1187, 18, 32], [852, 159, 231, 9882, 18, 568], [1886, 6, 15, 0, 909, 3], [1238, 35, 42, 2382, 2, 21880]], "confusion_matrix_norm": [[85.52, 0.45, 0.5, 1.32, 0.07, 12.13], [3.97, 84.39, 0.17, 10.97, 0.0, 0.5], [3.64, 12.95, 70.85, 12.05, 0.18, 0.32], [7.28, 1.36, 1.97, 84.39, 0.15, 4.85], [66.9, 0.21, 0.53, 0.0, 32.25, 0.11], [4.84, 0.14, 0.16, 9.31, 0.01, 85.54]]}, "UNSW-NB15": {"subset_name": "UNSW-NB15", "sample_count": 82332, "accuracy": 76.96, "balanced_accuracy": 64.18, "macro_precision": 59.17, "macro_recall": 53.48, "macro_f1": 52.49, "weighted_precision": 78.69, "weighted_recall": 76.96, "weighted_f1": 75.99, "log_loss": 0.5183, "binary_accuracy": 86.98, "binary_detection_rate": 94.87, "binary_false_alarm_rate": 22.68, "binary_precision": 83.67, "binary_f1": 88.92, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 92.48, "recall": 77.32, "f1_score": 84.22, "support": 37000}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 46.21, "recall": 4.33, "f1_score": 7.92, "support": 4089}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 87.86, "recall": 67.84, "f1_score": 76.57, "support": 4173}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 55.69, "recall": 85.82, "f1_score": 67.54, "support": 11510}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 72.8, "recall": 85.57, "f1_score": 78.67, "support": 25560}], "confusion_matrix": [[28609, 117, 68, 784, 7, 7415], [190, 177, 53, 3510, 0, 159], [123, 4, 2831, 1185, 0, 30], [783, 50, 231, 9878, 0, 568], [0, 0, 0, 0, 0, 0], [1231, 35, 39, 2382, 2, 21871]], "confusion_matrix_norm": [[77.32, 0.32, 0.18, 2.12, 0.02, 20.04], [4.65, 4.33, 1.3, 85.84, 0.0, 3.89], [2.95, 0.1, 67.84, 28.4, 0.0, 0.72], [6.8, 0.43, 2.01, 85.82, 0.0, 4.93], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [4.82, 0.14, 0.15, 9.32, 0.01, 85.57]]}, "NSL-KDD": {"subset_name": "NSL-KDD", "sample_count": 22544, "accuracy": 77.66, "balanced_accuracy": 50.56, "macro_precision": 71.06, "macro_recall": 42.13, "macro_f1": 44.76, "weighted_precision": 79.45, "weighted_recall": 77.66, "weighted_f1": 74.88, "log_loss": 1.04, "binary_accuracy": 84.05, "binary_detection_rate": 75.02, "binary_false_alarm_rate": 4.01, "binary_precision": 96.12, "binary_f1": 84.27, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 74.41, "recall": 95.99, "f1_score": 83.83, "support": 9711}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 80.97, "recall": 85.99, "f1_score": 83.4, "support": 7458}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 78.64, "recall": 38.17, "f1_score": 51.39, "support": 2421}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 100.0, "recall": 2.0, "f1_score": 3.92, "support": 200}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 92.34, "recall": 30.65, "f1_score": 46.02, "support": 2754}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}], "confusion_matrix": [[9322, 122, 233, 0, 34, 0], [1042, 6413, 3, 0, 0, 0], [209, 1270, 924, 0, 18, 0], [69, 109, 0, 4, 18, 0], [1886, 6, 15, 0, 844, 3], [0, 0, 0, 0, 0, 0]], "confusion_matrix_norm": [[95.99, 1.26, 2.4, 0.0, 0.35, 0.0], [13.97, 85.99, 0.04, 0.0, 0.0, 0.0], [8.63, 52.46, 38.17, 0.0, 0.74, 0.0], [34.5, 54.5, 0.0, 2.0, 9.0, 0.0], [68.48, 0.22, 0.54, 0.0, 30.65, 0.11], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]}, "CIC-IDS2017": {"subset_name": "CIC-IDS2017", "sample_count": 18219, "accuracy": 99.34, "balanced_accuracy": 90.76, "macro_precision": 79.2, "macro_recall": 75.64, "macro_f1": 77.02, "weighted_precision": 99.47, "weighted_recall": 99.34, "weighted_f1": 99.4, "log_loss": 0.0253, "binary_accuracy": 99.34, "binary_detection_rate": 98.66, "binary_false_alarm_rate": 0.49, "binary_precision": 98.17, "binary_f1": 98.42, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 99.65, "recall": 99.51, "f1_score": 99.58, "support": 14409}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 98.68, "recall": 98.48, "f1_score": 98.58, "support": 2573}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.48, "recall": 99.57, "f1_score": 99.52, "support": 1156}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 95.59, "recall": 100.0, "f1_score": 97.74, "support": 65}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 81.82, "recall": 56.25, "f1_score": 66.67, "support": 16}], "confusion_matrix": [[14339, 34, 6, 25, 3, 2], [39, 2534, 0, 0, 0, 0], [5, 0, 1151, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 65, 0], [7, 0, 0, 0, 0, 9]], "confusion_matrix_norm": [[99.51, 0.24, 0.04, 0.17, 0.02, 0.01], [1.52, 98.48, 0.0, 0.0, 0.0, 0.0], [0.43, 0.0, 99.57, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 100.0, 0.0], [43.75, 0.0, 0.0, 0.0, 0.0, 56.25]]}, "BoT-IoT": {"subset_name": "BoT-IoT", "sample_count": 20000, "accuracy": 99.84, "balanced_accuracy": 71.12, "macro_precision": 47.02, "macro_recall": 56.89, "macro_f1": 49.86, "weighted_precision": 99.91, "weighted_recall": 99.84, "weighted_f1": 99.87, "log_loss": 0.0076, "binary_accuracy": 99.88, "binary_detection_rate": 99.89, "binary_false_alarm_rate": 14.29, "binary_precision": 99.99, "binary_f1": 99.94, "per_class": [{"class_id": 0, "class_name": "Benign / Normal", "mitre_tactic": "Baseline Operations", "precision": 35.29, "recall": 85.71, "f1_score": 50.0, "support": 14}, {"class_id": 1, "class_name": "Denial of Service (DoS)", "mitre_tactic": "TA0040: Impact", "precision": 99.99, "recall": 99.99, "f1_score": 99.99, "support": 17886}, {"class_id": 2, "class_name": "Reconnaissance & Probing", "mitre_tactic": "TA0043/TA0007: Recon & Discovery", "precision": 99.81, "recall": 98.76, "f1_score": 99.28, "support": 2097}, {"class_id": 3, "class_name": "Exploits & PrivEsc", "mitre_tactic": "TA0001/TA0004: Initial Access & PrivEsc", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 4, "class_name": "Credential Abuse (R2L)", "mitre_tactic": "TA0006: Credential Access", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 0}, {"class_id": 5, "class_name": "Malware, C2 & Botnet", "mitre_tactic": "TA0011/TA0008: C2 & Lateral Movement", "precision": 0.0, "recall": 0.0, "f1_score": 0.0, "support": 3}], "confusion_matrix": [[12, 0, 1, 1, 0, 0], [1, 17885, 0, 0, 0, 0], [21, 1, 2071, 2, 0, 2], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 3, 0, 0, 0]], "confusion_matrix_norm": [[85.71, 0.0, 7.14, 7.14, 0.0, 0.0], [0.01, 99.99, 0.0, 0.0, 0.0, 0.0], [1.0, 0.05, 98.76, 0.1, 0.0, 0.1], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 100.0, 0.0, 0.0, 0.0]]}}, "feature_importance": [{"feature": "state_established", "gain": 1309.7817, "gain_pct": 33.7, "weight": 2265}, {"feature": "service_ftp", "gain": 764.3492, "gain_pct": 19.67, "weight": 2436}, {"feature": "state_no-reply", "gain": 262.6878, "gain_pct": 6.76, "weight": 1911}, {"feature": "proto_icmp", "gain": 219.2743, "gain_pct": 5.64, "weight": 685}, {"feature": "service_dns", "gain": 216.6679, "gain_pct": 5.57, "weight": 2225}, {"feature": "service_ssh", "gain": 195.4682, "gain_pct": 5.03, "weight": 988}, {"feature": "state_reset", "gain": 150.1882, "gain_pct": 3.86, "weight": 1724}, {"feature": "service_https_ssl", "gain": 122.7068, "gain_pct": 3.16, "weight": 1781}, {"feature": "service_other", "gain": 97.1683, "gain_pct": 2.5, "weight": 5588}, {"feature": "proto_other", "gain": 95.9875, "gain_pct": 2.47, "weight": 3069}, {"feature": "proto_udp", "gain": 75.9623, "gain_pct": 1.95, "weight": 2645}, {"feature": "service_http", "gain": 62.0919, "gain_pct": 1.6, "weight": 5540}, {"feature": "signed_log_bytes_ratio", "gain": 58.5887, "gain_pct": 1.51, "weight": 39063}, {"feature": "log_bytes_forward", "gain": 52.2961, "gain_pct": 1.35, "weight": 62371}, {"feature": "state_other", "gain": 44.1341, "gain_pct": 1.14, "weight": 685}, {"feature": "proto_tcp", "gain": 43.0336, "gain_pct": 1.11, "weight": 3873}, {"feature": "log_duration", "gain": 42.6838, "gain_pct": 1.1, "weight": 66197}, {"feature": "log_bytes_backward", "gain": 41.4184, "gain_pct": 1.07, "weight": 37706}, {"feature": "service_smtp", "gain": 32.1777, "gain_pct": 0.83, "weight": 1956}]}};
+        const MODELS = EXP_DATA.models || {
+            model_1: EXP_DATA.model_a_baseline,
+            model_2: EXP_DATA.model_b_smote,
+            model_3: EXP_DATA.model_b_smote,
+            model_4: EXP_DATA.model_b_smote
+        };
+
+        let currentDataset = 'Global Benchmark';
+        let currentMatrixUnit = 'norm';
+        let modelLeft = 'model_1';
+        let modelRight = 'model_3';
+
+        function selectDataset(name) {
+            currentDataset = name;
+            document.querySelectorAll('#dataset-selector .btn-opt').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.includes(name.split(' ')[0]));
+            });
+            document.getElementById('active-dataset-title').textContent = name;
+            renderAll();
+        }
+
+        function selectMatrixUnit(unit) {
+            currentMatrixUnit = unit;
+            document.querySelectorAll('#matrix-unit-selector .btn-opt').forEach(btn => {
+                btn.classList.toggle('active', (unit === 'norm' && btn.textContent.includes('Normalized')) || (unit === 'raw' && btn.textContent.includes('Raw')));
+            });
+            renderMatrices();
+        }
+
+        function selectModelLeft(mId) {
+            modelLeft = mId;
+            document.querySelectorAll('#model-left-selector .btn-opt').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick').includes(mId));
+            });
+            renderMatrices();
+        }
+
+        function selectModelRight(mId) {
+            modelRight = mId;
+            document.querySelectorAll('#model-right-selector .btn-opt').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('onclick').includes(mId));
+            });
+            renderMatrices();
+        }
+
+        function renderKPIs() {
+            const mKeys = ['model_1', 'model_2', 'model_3', 'model_4'].filter(k => MODELS[k]);
+            let bestAcc = { val: -1, id: '' }, bestBal = { val: -1, id: '' }, bestF1 = { val: -1, id: '' }, bestC4 = { val: -1, id: '', rec: 0 };
+
+            mKeys.forEach(k => {
+                const ev = MODELS[k].evaluations['Global Benchmark'];
+                if (ev.accuracy > bestAcc.val) bestAcc = { val: ev.accuracy, id: k };
+                if (ev.balanced_accuracy > bestBal.val) bestBal = { val: ev.balanced_accuracy, id: k };
+                if (ev.macro_f1 > bestF1.val) bestF1 = { val: ev.macro_f1, id: k };
+                const c4f1 = ev.per_class[4].f1_score;
+                if (c4f1 > bestC4.val) bestC4 = { val: c4f1, id: k, rec: ev.per_class[4].recall };
+            });
+
+            document.getElementById('kpi-top-acc').textContent = bestAcc.val.toFixed(2) + '%';
+            document.getElementById('kpi-top-acc-tag').textContent = MODELS[bestAcc.id].short_name;
+
+            document.getElementById('kpi-top-bal').textContent = bestBal.val.toFixed(2) + '%';
+            document.getElementById('kpi-top-bal-tag').textContent = MODELS[bestBal.id].short_name;
+
+            document.getElementById('kpi-top-f1').textContent = bestF1.val.toFixed(2) + '%';
+            document.getElementById('kpi-top-f1-tag').textContent = MODELS[bestF1.id].short_name;
+
+            document.getElementById('kpi-top-c4').textContent = bestC4.val.toFixed(2) + '%';
+            document.getElementById('kpi-top-c4-tag').textContent = MODELS[bestC4.id].short_name;
+            document.getElementById('kpi-top-c4-subtext').textContent = `Recall: ${bestC4.rec.toFixed(2)}% บนคลาสหายาก`;
+        }
+
+        function renderMasterTable() {
+            const tbody = document.querySelector('#master-table tbody');
+            const mKeys = ['model_1', 'model_2', 'model_3', 'model_4'].filter(k => MODELS[k]);
+            let html = '';
+
+            mKeys.forEach(k => {
+                const m = MODELS[k];
+                const ev = m.evaluations['Global Benchmark'];
+                const tagClass = 'tag-' + k.replace('model_', 'm');
+                html += `<tr>
+                    <td><span class="tag-pill ${tagClass}" style="margin-right:6px;">${m.id.toUpperCase()}</span> <strong>${m.name}</strong></td>
+                    <td><span class="tag-pill">${m.data_type}</span></td>
+                    <td><span class="tag-pill">${m.weight_type}</span></td>
+                    <td class="num-col">${m.train_scale.toLocaleString()}</td>
+                    <td class="num-col">${m.best_iteration}</td>
+                    <td class="num-col" style="font-weight:700;">${ev.accuracy.toFixed(2)}%</td>
+                    <td class="num-col" style="font-weight:700; color:var(--accent-green);">${ev.balanced_accuracy.toFixed(2)}%</td>
+                    <td class="num-col" style="font-weight:700; color:var(--accent-purple);">${ev.macro_f1.toFixed(2)}%</td>
+                    <td class="num-col" style="font-weight:700; color:var(--accent-amber);">${ev.per_class[4].f1_score.toFixed(2)}%</td>
+                    <td class="num-col" style="color:var(--accent-amber);">${ev.per_class[4].recall.toFixed(2)}%</td>
+                    <td class="num-col">${ev.binary_detection_rate ? ev.binary_detection_rate.toFixed(2) + '%' : '-'}</td>
+                    <td class="num-col">${ev.binary_false_alarm_rate ? ev.binary_false_alarm_rate.toFixed(2) + '%' : '-'}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function getCellColor(valPct) {
+            if (valPct <= 0.05) return 'rgba(255, 255, 255, 0.02)';
+            if (valPct < 20) return `rgba(56, 189, 248, ${0.1 + (valPct/100)*0.3})`;
+            if (valPct < 60) return `rgba(56, 189, 248, ${0.3 + (valPct/100)*0.4})`;
+            if (valPct < 85) return `rgba(56, 189, 248, ${0.6 + (valPct/100)*0.3})`;
+            return 'rgba(56, 189, 248, 0.95)';
+        }
+
+        function getCellTextColor(valPct) {
+            return valPct > 65 ? '#0f172a' : '#ffffff';
+        }
+
+        function renderMatrices() {
+            const mL = MODELS[modelLeft];
+            const mR = MODELS[modelRight];
+            const evL = mL.evaluations[currentDataset];
+            const evR = mR.evaluations[currentDataset];
+
+            document.getElementById('panel-left-title').innerHTML = `<span class="tag-pill tag-${modelLeft.replace('model_', 'm')}">${modelLeft.toUpperCase()}</span> ${mL.name}`;
+            document.getElementById('panel-left-acc').textContent = evL.accuracy + '%';
+            document.getElementById('panel-left-f1').textContent = evL.macro_f1 + '%';
+
+            document.getElementById('panel-right-title').innerHTML = `<span class="tag-pill tag-${modelRight.replace('model_', 'm')}">${modelRight.toUpperCase()}</span> ${mR.name}`;
+            document.getElementById('panel-right-acc').textContent = evR.accuracy + '%';
+            document.getElementById('panel-right-f1').textContent = evR.macro_f1 + '%';
+
+            renderSingleMatrix('cm-table-left', evL);
+            renderSingleMatrix('cm-table-right', evR);
+        }
+
+        function renderSingleMatrix(tableId, evalObj) {
+            const table = document.getElementById(tableId);
+            const classes = EXP_DATA.class_names;
+            const matrix = currentMatrixUnit === 'norm' ? evalObj.confusion_matrix_norm : evalObj.confusion_matrix;
+            const normMatrix = evalObj.confusion_matrix_norm;
+
+            let html = '<thead><tr><th>True \ Pred</th>';
+            for (let c = 0; c < 6; c++) {
+                html += `<th title="${classes[c]}">C${c}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+
+            for (let i = 0; i < 6; i++) {
+                html += `<tr><td class="label-cell" title="${classes[i]}"><strong>C${i}</strong> <span style="font-size:0.75rem; color:var(--text-secondary);">${classes[i]}</span></td>`;
+                for (let j = 0; j < 6; j++) {
+                    const val = matrix[i][j];
+                    const normVal = normMatrix[i][j];
+                    const bg = getCellColor(normVal);
+                    const textColor = getCellTextColor(normVal);
+                    const displayVal = currentMatrixUnit === 'norm' ? normVal.toFixed(1) + '%' : val.toLocaleString();
+                    html += `<td class="cm-cell" style="background:${bg}; color:${textColor};">${displayVal}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        function renderPerClassTable() {
+            const tbody = document.querySelector('#per-class-table tbody');
+            let html = '';
+
+            for (let c = 0; c < 6; c++) {
+                const pc1 = MODELS.model_1 ? MODELS.model_1.evaluations[currentDataset].per_class[c] : null;
+                const pc2 = MODELS.model_2 ? MODELS.model_2.evaluations[currentDataset].per_class[c] : null;
+                const pc3 = MODELS.model_3 ? MODELS.model_3.evaluations[currentDataset].per_class[c] : null;
+                const pc4 = MODELS.model_4 ? MODELS.model_4.evaluations[currentDataset].per_class[c] : null;
+
+                html += `<tr>
+                    <td><span class="tag-pill">Class ${c}</span></td>
+                    <td style="font-weight: 600;">${pc1.class_name}</td>
+                    <td class="num-col">${pc1.support.toLocaleString()}</td>
+                    <td class="num-col" style="font-weight:700; color:var(--accent-blue);">${pc1.f1_score.toFixed(1)}%</td>
+                    <td class="num-col" style="font-weight:700; color:var(--accent-green);">${pc2 ? pc2.f1_score.toFixed(1) + '%' : '-'}</td>
+                    <td class="num-col" style="font-weight:700; color:var(--accent-purple);">${pc3 ? pc3.f1_score.toFixed(1) + '%' : '-'}</td>
+                    <td class="num-col" style="font-weight:700; color:var(--accent-amber);">${pc4 ? pc4.f1_score.toFixed(1) + '%' : '-'}</td>
+                    <td class="num-col">${pc1.recall.toFixed(1)}%</td>
+                    <td class="num-col">${pc2 ? pc2.recall.toFixed(1) + '%' : '-'}</td>
+                    <td class="num-col">${pc3 ? pc3.recall.toFixed(1) + '%' : '-'}</td>
+                    <td class="num-col">${pc4 ? pc4.recall.toFixed(1) + '%' : '-'}</td>
+                </tr>`;
+            }
+            tbody.innerHTML = html;
+        }
+
+        function renderDomainTable() {
+            const domains = ['Global Benchmark', 'UNSW-NB15', 'NSL-KDD', 'CIC-IDS2017', 'BoT-IoT'];
+            const tbody = document.querySelector('#domain-table tbody');
+            let html = '';
+
+            domains.forEach(ds => {
+                const ev1 = MODELS.model_1.evaluations[ds];
+                const ev2 = MODELS.model_2 ? MODELS.model_2.evaluations[ds] : ev1;
+                const ev3 = MODELS.model_3 ? MODELS.model_3.evaluations[ds] : ev1;
+                const ev4 = MODELS.model_4 ? MODELS.model_4.evaluations[ds] : ev1;
+
+                html += `<tr>
+                    <td style="font-weight: 700;">${ds}</td>
+                    <td class="num-col">${ev1.sample_count.toLocaleString()}</td>
+                    <td class="num-col" style="color:var(--accent-blue); font-weight:700;">${ev1.accuracy.toFixed(1)}%</td>
+                    <td class="num-col" style="color:var(--accent-green); font-weight:700;">${ev2.accuracy.toFixed(1)}%</td>
+                    <td class="num-col" style="color:var(--accent-purple); font-weight:700;">${ev3.accuracy.toFixed(1)}%</td>
+                    <td class="num-col" style="color:var(--accent-amber); font-weight:700;">${ev4.accuracy.toFixed(1)}%</td>
+                    <td class="num-col">${ev1.macro_f1.toFixed(1)}%</td>
+                    <td class="num-col">${ev2.macro_f1.toFixed(1)}%</td>
+                    <td class="num-col">${ev3.macro_f1.toFixed(1)}%</td>
+                    <td class="num-col" style="font-weight:700;">${ev4.macro_f1.toFixed(1)}%</td>
+                    <td class="num-col" style="color:var(--accent-amber); font-weight:700;">${ev4.per_class[4].f1_score.toFixed(1)}%</td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function renderFeatureImportance() {
+            const container = document.getElementById('feat-imp-container');
+            const feats = (MODELS.model_1.feature_importance || []).slice(0, 10);
+            if (!feats.length) return;
+            const maxGain = feats[0].gain;
+
+            let html = '';
+            feats.forEach(f => {
+                const widthPct = (f.gain / maxGain * 100).toFixed(1);
+                html += `<div class="feat-row">
+                    <div class="feat-name" title="${f.feature}">${f.feature}</div>
+                    <div class="feat-bar-bg">
+                        <div class="feat-bar-fill" style="width: ${widthPct}%;"></div>
+                    </div>
+                    <div class="feat-val">${f.gain_pct.toFixed(1)}%</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderAll() {
+            renderKPIs();
+            renderMasterTable();
+            renderMatrices();
+            renderPerClassTable();
+            renderDomainTable();
+            renderFeatureImportance();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
+    </script>
+</body>
+</html>
