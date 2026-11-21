@@ -725,9 +725,13 @@
           classMatchCell = `${correctNormal.toLocaleString()} Pass`;
           recallCell = gtCount > 0 ? `${(((correctNormal) / gtCount) * 100).toFixed(1)}%` : '100.0%';
           errorCell = `${fpRate}% FPR`;
-          verdictBadge = stats.fp === 0
-            ? `<span class="inline-block whitespace-nowrap bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 font-bold px-2 py-0.5 rounded text-[10px]">VERIFIED (0 FP)</span>`
-            : `<span class="inline-block whitespace-nowrap bg-blue-950/80 border border-blue-500/60 text-blue-300 font-bold px-2 py-0.5 rounded text-[10px]">FPR &lt; 2% TARGET</span>`;
+          if (stats.fp === 0) {
+            verdictBadge = `<span class="inline-block whitespace-nowrap bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 font-bold px-2 py-0.5 rounded text-[10px]">VERIFIED (0 FP)</span>`;
+          } else if (parseFloat(fpRate) <= 2.0) {
+            verdictBadge = `<span class="inline-block whitespace-nowrap bg-blue-950/80 border border-blue-500/60 text-blue-300 font-bold px-2 py-0.5 rounded text-[10px]">FPR &lt; 2.0% TARGET</span>`;
+          } else {
+            verdictBadge = `<span class="inline-block whitespace-nowrap bg-amber-950/80 border border-amber-500/60 text-amber-300 font-bold px-2 py-0.5 rounded text-[10px]">ELEVATED (${fpRate}% FPR)</span>`;
+          }
         } else {
           const rec = gtCount > 0 ? ((stats.detected / gtCount) * 100).toFixed(1) : '100.0%';
           const missRate = gtCount > 0 ? (((gtCount - stats.detected) / gtCount) * 100).toFixed(1) : '0.0%';
