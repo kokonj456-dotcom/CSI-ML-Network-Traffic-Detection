@@ -106,9 +106,13 @@ def harmonize_tables(dataset, features, labels, metadata, source):
     else:
         port='dest_port' if dataset=='CIC-IDS2017' else 'dport'
         values=source[port] if port in source else pd.Series(pd.NA,index=source.index,dtype='string')
+        m['source_service']=values.astype('string')
+        if dataset=='BoT-IoT':
+            # ARP has no transport port. The mirror represents it as -1.
+            missing_arp_port=text(source[protocol_col]).eq('arp') & text(values).isin(['-1','-1.0'])
+            values=values.mask(missing_arp_port.fillna(False))
         present=values.notna() & values.astype('string').str.strip().ne('')
         f['service_group']=values.map(port_to_service)
-        m['source_service']=values.astype('string')
         m['service_basis']=np.where(present,'destination_port_hint','unavailable')
         m['service_identified']=False  # Port 443 is a hint, not proof of TLS.
         m['has_service']=present

@@ -79,3 +79,6 @@ desktop.ini
 # Isolated pipeline runs and reversible output archives
 .pipeline-runs/
 .pipeline-archives/
+.playwright-mcp/
+/.flowwatch/
+/webapp/Dashboard/backend/captures/uploads/

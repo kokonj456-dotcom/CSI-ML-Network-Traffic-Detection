@@ -1,0 +1,43 @@
+{
+  "model_id": "flowwatch-central-v1-de4e3f887662",
+  "schema_version": 5,
+  "feature_names": [
+    "log_duration",
+    "log_bytes_forward",
+    "log_bytes_backward",
+    "signed_log_bytes_ratio",
+    "proto_tcp",
+    "proto_udp",
+    "proto_icmp",
+    "proto_other",
+    "service_dns",
+    "service_ftp",
+    "service_http",
+    "service_https_ssl",
+    "service_smtp",
+    "service_ssh",
+    "service_other",
+    "state_established",
+    "state_no-reply",
+    "state_reset",
+    "state_other"
+  ],
+  "class_names": [
+    "Benign / Normal",
+    "Denial of Service (DoS)",
+    "Reconnaissance & Probing",
+    "Exploits & PrivEsc",
+    "Credential Abuse (R2L)",
+    "Malware, C2 & Botnet"
+  ],
+  "threshold": 0.44,
+  "files": {
+    "binary.json": "de4e3f8876625b405f3bf90b3039461c6a59ce74fa1ad4bd1ca2b34dd5b8fd8e",
+    "multiclass.json": "3b6fef8f50482ab0a6310739ef4b518ab92659de6fb74ae048193c5f1ebc729e",
+    "preprocessor.joblib": "54448a7fec88809e085ae3e60e06ffa1d5725f1e871267dcb988fb8c3c6475a9"
+  },
+  "fit_record_ids_sha256": "b119af8a68a926a3c60be69ed90e5dc3082a4a2ad9c5f904f37a70a03542614f",
+  "dataset_audit_sha256": "f0b4e186da160fedc0efc18f95b59e94d39a71d7bd760f57cc0be741768a7904",
+  "candidate": "class_weighted",
+  "scope": "diagnostic"
+}

@@ -76,6 +76,17 @@ class HarmonizationTests(unittest.TestCase):
         rt.validate_tables(f,l,m,allow_quarantined=True)
         with self.assertRaisesRegex(ValueError,'quarantined'):rt.validate_tables(f,l,m)
 
+    def test_bot_arp_port_sentinel_is_preserved_but_unavailable(self):
+        f,l,m=tables(3);m['source_dataset']='BoT-IoT';l['label_source_category']='DoS'
+        source=pd.DataFrame({'proto':['arp','tcp','udp'],'dport':['-1','443',53],'state':['CON']*3})
+        f,l,m=harmonize_tables('BoT-IoT',f,l,m,source)
+        self.assertEqual(f.service_group.tolist(),['other','https_ssl','dns'])
+        self.assertEqual(m.has_service.tolist(),[False,True,True])
+        self.assertEqual(m.source_service.tolist(),['-1','443','53'])
+        source.loc[1,'dport']='-1'
+        with self.assertRaisesRegex(ValueError,'Invalid destination port'):
+            harmonize_tables('BoT-IoT',f,l,m,source)
+
     def test_partial_missing_protocol_marks_only_affected_row(self):
         f,l,m=tables(3);m['source_dataset']='BoT-IoT';l['label_source_category']='DoS'
         source=pd.DataFrame({'proto':['tcp',None,'udp'],'state':['FIN']*3})

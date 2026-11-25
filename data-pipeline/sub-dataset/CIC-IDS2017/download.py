@@ -12,10 +12,12 @@ import hashlib
 from pathlib import Path
 import numpy as np
 import pandas as pd
-import requests
 
 OFFICIAL_PAGE = "https://www.unb.ca/cic/datasets/ids-2017.html"
-ONLINE_MIRROR = "https://huggingface.co/datasets/lacg030175/CICIDS2017/resolve/main/random/test-00000-of-00001.parquet"
+ONLINE_MIRROR = (
+    "https://huggingface.co/datasets/veera33/CIC-IDS2017/resolve/"
+    "82332893b1a334568c8c2bc81ba8606882b79ac5/Network-Flows/CICIDS_Flow.parquet"
+)
 RAW_DIR = Path(__file__).resolve().parent / "raw"
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
@@ -45,22 +47,20 @@ def download_real_cic(train_samples: int, test_samples: int, seed: int = 42) -> 
     print(f"Connecting to real CIC-IDS2017 online mirror: {ONLINE_MIRROR} ...")
     cols_to_load = [
         "Flow Duration",
-        "Destination Port",
+        "destination_port",
         "Total Length of Fwd Packets",
         "Total Length of Bwd Packets",
         "Total Fwd Packets",
         "Total Backward Packets",
-        "Label"
+        "attack_label",
+        "protocol",
     ]
-    df_raw = pd.read_parquet(ONLINE_MIRROR)
-    missing = set(cols_to_load + ["Protocol"]).difference(df_raw.columns)
-    if missing:
-        raise ValueError(f"Mirror lacks measured fields: {sorted(missing)}; choose a source retaining Protocol")
+    df_raw = pd.read_parquet(ONLINE_MIRROR, columns=cols_to_load)
     total_available = len(df_raw)
     print(f"Successfully loaded {total_available:,} authentic CIC-IDS2017 flows from online mirror!")
 
     # Clean text in Label
-    clean_labels = df_raw["Label"].astype(str).str.strip()
+    clean_labels = df_raw["attack_label"].astype(str).str.strip()
     clean_labels = clean_labels.str.replace(r"[^\x00-\x7F]+", " ", regex=True)
 
     # Standardize to raw schema
@@ -69,12 +69,12 @@ def download_real_cic(train_samples: int, test_samples: int, seed: int = 42) -> 
     bwd_bytes = df_raw["Total Length of Bwd Packets"].astype(float)
     fwd_pkts = df_raw["Total Fwd Packets"].astype(float)
     bwd_pkts = df_raw["Total Backward Packets"].astype(float)
-    dport = pd.to_numeric(df_raw["Destination Port"], errors="raise")
+    dport = pd.to_numeric(df_raw["destination_port"], errors="raise")
 
     # Keep measured protocol. CIC flow tables do not guarantee a connection-state field.
-    if df_raw["Protocol"].isna().any():
-        raise ValueError("Missing measured protocol values")
-    proto = df_raw["Protocol"].map({6: "tcp", 17: "udp", 1: "icmp"}).fillna("other")
+    proto = df_raw["protocol"].astype("string").str.strip().str.lower()
+    if not proto.isin(["tcp", "udp", "icmp", "other"]).all():
+        raise ValueError("Mirror contains missing or unsupported protocol values")
     flow_state = pd.Series(pd.NA, index=df_raw.index, dtype="string")
 
     df_formatted = pd.DataFrame({
@@ -238,7 +238,7 @@ def main():
         provenance = {
             "dataset": 'CIC-IDS2017', "mode": args.source,
             "created_at_utc": datetime.now(timezone.utc).isoformat(),
-            "upstream_urls": [ONLINE_MIRROR],
+            "upstream_urls": [ONLINE_MIRROR] if args.source == "online" else [],
             "split_policy": "seeded sampled split, not an official predefined train/test release",
             "train_samples": args.train_samples, "test_samples": args.test_samples,
             "files": [{"file": p.name, "bytes": p.stat().st_size, "sha256": sha256_file(p)} for p in sorted([train_dest, test_dest])]

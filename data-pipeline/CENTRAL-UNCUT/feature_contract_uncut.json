@@ -1,6 +1,6 @@
 {
   "dataset_name": "CENTRAL-UNCUT",
-  "total_records": 732154,
+  "total_records": 747500,
   "feature_count": 80,
   "features": {
     "record_id": "string",
@@ -119,19 +119,19 @@
     "has_nsl_content": "bool",
     "has_nsl_window": "bool",
     "is_kddtest21_view": "bool",
-    "source_protocol": "object",
+    "source_protocol": "str",
     "source_connection_state": "object",
     "source_service": "object",
-    "service_basis": "object",
+    "service_basis": "str",
     "service_identified": "bool",
     "state_reclassified": "bool",
-    "connection_state_basis": "object",
+    "connection_state_basis": "str",
     "invalid_required_value": "bool",
     "bytes_packet_conflict": "bool",
     "state_counter_conflict": "bool",
     "quality_ok": "bool",
     "quality_issues": "object",
-    "duration_unit": "object",
+    "duration_unit": "str",
     "split_group": "string",
     "sample_weight": "float64",
     "data_split": "string",
@@ -142,10 +142,10 @@
     "is_synthetic": "bool"
   },
   "splits": {
-    "train": 467860,
-    "validation": 121199,
-    "test": 143095,
-    "train_full": 589059,
-    "train_smote": 506651
+    "train": 490295,
+    "validation": 112331,
+    "test": 144874,
+    "train_full": 602626,
+    "train_smote": 528790
   }
 }

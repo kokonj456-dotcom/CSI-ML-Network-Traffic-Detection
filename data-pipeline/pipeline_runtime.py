@@ -3,20 +3,21 @@ from pathlib import Path
 import hashlib
 import json
 import os
+import sys
 import numpy as np
 import pandas as pd
 import joblib
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import StandardScaler
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from webapp.Dashboard.backend.src.models.central_contract import (  # noqa: E402
+    CATEGORIES, CLASS_NAMES, CORE, NAMES, NUMERIC, PREFIXES, derived, fit_preprocessor, require, transform_features,
+)
 
 DATASETS = ('NSL-KDD', 'UNSW-NB15', 'CIC-IDS2017', 'BoT-IoT')
-NUMERIC = ['duration', 'bytes_forward', 'bytes_backward']
-CATEGORIES = {'protocol': ['tcp','udp','icmp','other'],
-              'service_group': ['dns','ftp','http','https_ssl','smtp','ssh','other'],
-              'conn_state_group': ['established','no-reply','reset','other']}
-CORE = NUMERIC + list(CATEGORIES)
-PREFIXES = ['proto', 'service', 'state']
-NAMES = ['log_duration','log_bytes_forward','log_bytes_backward','signed_log_bytes_ratio'] + [f'{prefix}_{value}' for prefix, values in zip(PREFIXES,CATEGORIES.values()) for value in values]
-CLASS_NAMES = ['Benign / Normal','Denial of Service (DoS)','Reconnaissance & Probing','Exploits & PrivEsc','Credential Abuse (R2L)','Malware, C2 & Botnet']
 TACTICS = ['Baseline Operations','TA0040: Impact','TA0043/TA0007: Recon & Discovery','TA0001/TA0004: Initial Access & PrivEsc','TA0006: Credential Access','TA0011/TA0008: C2 & Lateral Movement']
 COMMON_MAPPING = {'normal':0,'benign':0,'dos':1,'dos/ddos':1,'ddos':1,'probe':2,'probe/recon':2,'reconnaissance':2,'analysis':2,'exploits':3,'exploit/u2r':3,'shellcode':3,'u2r':3,'r2l':4,'brute-force/r2l':4,'generic':5,'generic/fuzzer':5,'fuzzers':5,'backdoor':5,'backdoors':5,'botnet/backdoor':5,'worms':5}
 SOURCE_MAPPING = {
@@ -26,10 +27,6 @@ SOURCE_MAPPING = {
     # Project-level category grouping, not per-record MITRE attribution.
     'BoT-IoT': {**COMMON_MAPPING,'theft':5,'data_theft':5,'bruteforce':4},
 }
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
 
 def digest(path):
     h=hashlib.sha256()
@@ -108,7 +105,10 @@ def map_labels(labels, metadata):
 def code_signature(pipeline_dir):
     p=Path(pipeline_dir)
     files=sorted([*p.glob('*.py'),*p.glob('CENTRAL/*.json'),*p.glob('CENTRAL/*.ipynb'),*p.glob('sub-dataset/*/*.ipynb'),*p.glob('sub-dataset/*/*.py')])
-    return {f.relative_to(p).as_posix():digest(f) for f in files}
+    signature = {f.relative_to(p).as_posix():digest(f) for f in files}
+    shared = PROJECT_ROOT / "webapp/Dashboard/backend/src/models/central_contract.py"
+    signature["../webapp/Dashboard/backend/src/models/central_contract.py"] = digest(shared)
+    return signature
 
 def stamp_dataset(dataset_dir):
     d=Path(dataset_dir);p=d.parent.parent
@@ -146,24 +146,6 @@ def normalize_weights(metadata):
     # Equal total contribution per source, with average row weight equal to 1.
     counts=result.groupby('source_dataset').record_id.transform('size')
     result['sample_weight']=len(result)/(result.source_dataset.nunique()*counts.astype(float))
-    return result
-
-def derived(f):
-    x=np.log1p(f[NUMERIC].to_numpy(float))
-    return np.column_stack([x,x[:,1]-x[:,2]])
-
-def fit_preprocessor(f):
-    enc=OneHotEncoder(categories=list(CATEGORIES.values()),sparse_output=False,handle_unknown='error')
-    enc.fit(f[list(CATEGORIES)])
-    return {'scaler':StandardScaler().fit(derived(f)),'encoder':enc,'model_feature_names':NAMES,'fit_record_ids_sha256':hashlib.sha256('\n'.join(f.record_id.astype(str)).encode()).hexdigest(),'fit_split':'train','schema_version':5}
-
-def transform_features(f,preprocessor):
-    # Validation is shared with resampling; no silent clipping or imputation.
-    for c in NUMERIC:require(np.isfinite(f[c]).all() and f[c].ge(0).all(),f'Invalid {c}')
-    for c,values in CATEGORIES.items():require(f[c].isin(values).all(),f'Invalid {c}')
-    x=np.column_stack([preprocessor['scaler'].transform(derived(f)),preprocessor['encoder'].transform(f[list(CATEGORIES)])])
-    require(np.isfinite(x).all(),'Encoded features are not finite')
-    result=pd.DataFrame(x,columns=NAMES);result.insert(0,'record_id',f.record_id.to_numpy())
     return result
 
 def engineer(central_dir):
