@@ -12,6 +12,10 @@ def mount_firewall(app, firewall, monitored_ip):
     def rules():
         return controller.rules()
 
+    @app.post("/api/firewall/open-log")
+    def open_log(request: Request, rule_id: str | None = None):
+        return controller.open_log(request, rule_id)
+
     @app.post("/api/firewall")
     def add(body: BlockRequest, request: Request):
         return controller.add(body, request)
