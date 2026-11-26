@@ -74,7 +74,11 @@ async function refreshTraffic(schedule=true) {
     const [statusResponse, flowsResponse, alertsResponse] = await fetchRecentTraffic();
     if (statusResponse.ok) liveStatus = await statusResponse.json();
     if (flowsResponse.ok) {
-      const payload=await flowsResponse.json();
+      let payload=await flowsResponse.json();
+      if (!flowsPageInitialized) {
+        payload=await fetchAllTrafficPages(payload);
+        flowsLoadedMore=true;
+      }
       const {flows}=payload;
       totalFlowCount=payload.total_flows ?? totalFlowCount;
       if (!flowsPageInitialized || !flowsLoadedMore) flowsNextBeforeId=payload.next_before_id;
@@ -83,7 +87,14 @@ async function refreshTraffic(schedule=true) {
         const captureAlerts=state.view==='alerts';
         const captureResponse=await fetchCaptureFlows(captureId,captureAlerts);
         if (captureResponse.ok && captureId===state.filters.captureFileId) {
-          const capturePayload=await captureResponse.json();
+          let capturePayload=await captureResponse.json();
+          if (captureAlerts && !captureAlertFlowLoadedMore[captureId]) {
+            capturePayload=await fetchAllTrafficPages(capturePayload,{captureId,alertsOnly:true});
+            captureAlertFlowLoadedMore[captureId]=true;
+          } else if (!captureAlerts && !captureFlowLoadedMore[captureId]) {
+            capturePayload=await fetchAllTrafficPages(capturePayload,{captureId});
+            captureFlowLoadedMore[captureId]=true;
+          }
           if (captureAlerts) {
             captureAlertFlowCounts[captureId]=capturePayload.total_flows ?? captureAlertFlowCounts[captureId] ?? null;
             if (!captureAlertFlowLoadedMore[captureId]) captureAlertFlowCursors[captureId]=capturePayload.next_before_id;
@@ -99,7 +110,11 @@ async function refreshTraffic(schedule=true) {
       capturedFlows = mergeDashboardFlows(capturedFlows,flows.map(dashboardFlow));
     }
     if (alertsResponse.ok) {
-      const payload=await alertsResponse.json();
+      let payload=await alertsResponse.json();
+      if (!alertsPageInitialized) {
+        payload=await fetchAllTrafficPages(payload,{alertsOnly:true});
+        alertsLoadedMore=true;
+      }
       totalAlertFlowCount=payload.total_flows ?? totalAlertFlowCount;
       if (!alertsPageInitialized || !alertsLoadedMore) alertsNextBeforeId=payload.next_before_id;
       alertsPageInitialized=true;
@@ -115,6 +130,22 @@ async function refreshTraffic(schedule=true) {
   } finally {
     if (schedule) setTimeout(refreshTraffic, 3000);
   }
+}
+
+async function fetchAllTrafficPages(firstPage,{captureId,alertsOnly=false}={}) {
+  const flows=[...firstPage.flows];
+  let beforeId=firstPage.next_before_id;
+  let total=firstPage.total_flows;
+  while (beforeId) {
+    const response=await fetchTrafficPage({beforeId,captureId,alertsOnly});
+    const page=await response.json();
+    if (!response.ok) throw Error(page.detail||'Could not load all traffic records.');
+    if (!page.flows?.length) break;
+    flows.push(...page.flows);
+    beforeId=page.next_before_id;
+    total=page.total_flows ?? total;
+  }
+  return {...firstPage,flows,next_before_id:null,total_flows:total};
 }
 
 function mergeDashboardFlows(existing,incoming) {

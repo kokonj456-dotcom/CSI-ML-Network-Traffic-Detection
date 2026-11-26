@@ -118,7 +118,7 @@ function flowInspector(flow) {
     const metrics=[['Packets',flow.dataset||flow.packets==null?'—':num(flow.packets)],['Bytes',num(flow.bytes)],['Duration',flow.duration+' s']];
     details='<dl class="flow-detail-metrics">'+metrics.map(([label,value])=>'<div><dt>'+uiSymbol({Packets:'▣',Bytes:'▥',Duration:'◷'}[label])+label+'</dt><dd>'+escape(value)+'</dd></div>').join('')+'</dl>'+
       detailSection('Connection overview',formatFields([['Observed at',localDay.format(flow.timestamp)+' '+time(flow.timestamp)+' ICT'],
-        ['Data source',flow.source],['Capture / interface',flow.file||flow.interface],['Run',runName(flow.run)],
+        ['Data source',flow.source],['Capture / interface',flow.file||flow.interface],
         ['Application / transport',flow.app+' / '+flow.protocol],['Domain',flow.domain],['Firewall decision',flow.firewall],
         ...(flow.dataset?[['Actual category',attackClasses[flow.dataset.attack_category_id]]]:[])]));
     if (flow.kind==='flag') details+=review[flow.id]==='Resolved'?

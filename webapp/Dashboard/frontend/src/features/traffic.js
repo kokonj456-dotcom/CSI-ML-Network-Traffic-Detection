@@ -213,6 +213,7 @@ function renderTable() {
       ? alerts?captureAlertFlowCursors[captureId]:captureFlowCursors[captureId]
       : alerts?alertsNextBeforeId:flowsNextBeforeId;
     loadMore.disabled=loadingMoreFlows||!cursor;
+    loadMore.hidden=!cursor&&!loadingMoreFlows;
     loadMore.textContent=loadingMoreFlows?'Loading…':'Load 250 more';
   }
   const total=state.filters.captureFileId
