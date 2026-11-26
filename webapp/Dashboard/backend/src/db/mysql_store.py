@@ -1,6 +1,17 @@
 """MySQL persistence for capture analysis and false-positive feedback."""
 from contextlib import contextmanager
-from hashlib import file_digest
+try:
+    from hashlib import file_digest
+except ImportError:
+    import hashlib
+    def file_digest(stream, algo="sha256"):
+        h = getattr(hashlib, algo)()
+        for chunk in iter(lambda: stream.read(65536), b""):
+            h.update(chunk)
+        class _DigestWrapper:
+            def hexdigest(self): return h.hexdigest()
+            def digest(self): return h.digest()
+        return _DigestWrapper()
 import json
 from os import environ
 

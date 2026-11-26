@@ -12,6 +12,15 @@ from ..config import capture_files
 from ..models.flow import CoreFlow
 
 
+def _digest(stream):
+    if hasattr(hashlib, "file_digest"):
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+    h = hashlib.sha256()
+    for chunk in iter(lambda: stream.read(65536), b""):
+        h.update(chunk)
+    return h.hexdigest()
+
+
 class Predictor:
     def __init__(self, directory):
         report = json.loads((directory/"evaluation.json").read_text(encoding="utf-8"))
@@ -26,7 +35,7 @@ class Predictor:
             raise ValueError("Threshold is outside [0, 1]")
         for filename in ("binary.json", "multiclass.json", "preprocessor.joblib"):
             with (directory/filename).open("rb") as stream:
-                actual = hashlib.file_digest(stream, "sha256").hexdigest()
+                actual = _digest(stream)
             if actual != self.manifest["files"][filename]:
                 raise ValueError(f"Fingerprint mismatch: {filename}")
         self.prep = joblib.load(directory/"preprocessor.joblib")

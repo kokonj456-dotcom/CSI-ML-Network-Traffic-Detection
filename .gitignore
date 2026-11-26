@@ -58,6 +58,7 @@ data-pipeline/sub-dataset/NSL-KDD/output/model_runs/mlp/plots/*
 # Autoencoder artifacts explicitly tracked for the team.
 !model/autoencoder/scaler.pkl
 !model/autoencoder/autoencoder.pth
+!webapp/Dashboard/backend/model_backup/**/preprocessor.joblib
 model/isolation-forest/backup/
 model/autoencoder/backup/
 model/mlp/Backup/
