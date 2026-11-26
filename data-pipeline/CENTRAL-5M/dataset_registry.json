@@ -1,0 +1,51 @@
+{
+  "registry_version": 5,
+  "pipeline_name": "CENTRAL-5M",
+  "updated_at": "2026-11-26",
+  "total_records": 5036579,
+  "storage_format": "Parquet-First",
+  "datasets": {
+    "CIC-IDS2017": {
+      "status": "available",
+      "rows": 2000000,
+      "role": "Modern enterprise campus network",
+      "source_url": "https://www.unb.ca/cic/datasets/ids-2017.html",
+      "attack_profile": "DoS (Hulk, GoldenEye, Slowloris), DDoS, PortScan, FTP/SSH-Patator, Web Attacks"
+    },
+    "BoT-IoT": {
+      "status": "available",
+      "rows": 1800000,
+      "role": "IoT & smart-device botnet traffic",
+      "source_url": "https://research.unsw.edu.au/projects/bot-iot-dataset",
+      "attack_profile": "High-volume DDoS (HTTP, TCP, UDP), Service DoS, OS & Service Probing, Data Exfiltration"
+    },
+    "CIC-IDS2018": {
+      "status": "available",
+      "rows": 619346,
+      "role": "AWS cloud infrastructure",
+      "source_url": "https://www.unb.ca/cic/datasets/ids-2018.html",
+      "attack_profile": "Cloud Infrastructure Attacks, SSH-BruteForce, FTP-BruteForce"
+    },
+    "UNSW-NB15": {
+      "status": "available",
+      "rows": 257673,
+      "role": "Hybrid contemporary enterprise & perimeter security",
+      "source_url": "https://research.unsw.edu.au/projects/unsw-nb15-dataset",
+      "attack_profile": "Exploits, Fuzzers, Generic, Analysis, Backdoor, Shellcode, Worms, Reconnaissance"
+    },
+    "ToN-IoT": {
+      "status": "available",
+      "rows": 211043,
+      "role": "Next-generation Industrial IoT & Industry 4.0",
+      "source_url": "https://research.unsw.edu.au/projects/toniot-dataset",
+      "attack_profile": "Telemetry Injections, Password Attacks, Scanning, Ransomware, XSS, Backdoor"
+    },
+    "NSL-KDD": {
+      "status": "available",
+      "rows": 148517,
+      "role": "Canonical historical baseline benchmark",
+      "source_url": "https://github.com/defcom17/NSL_KDD",
+      "attack_profile": "Legacy DoS (Smurf, Neptune), Probing (Satan, Portsweep), R2L (Warezclient), U2R (Buffer Overflow)"
+    }
+  }
+}
