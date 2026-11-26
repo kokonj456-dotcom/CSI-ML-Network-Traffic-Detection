@@ -1,0 +1,789 @@
+{
+  "candidate": "central_19",
+  "validation_fpr_budget": 0.05,
+  "candidates": {
+    "central_19": {
+      "threshold": 0.5,
+      "validation": {
+        "rows": 121199,
+        "binary": {
+          "f1": 0.9792156530688013,
+          "fpr": 0.05511932595174026,
+          "confusion": {
+            "tn": 42839,
+            "fp": 2499,
+            "fn": 692,
+            "tp": 75169
+          }
+        },
+        "forced_category_macro_f1": 0.8895861248175909,
+        "category_unclear": 2086,
+        "false_normal_stage2": {
+          "Benign / Normal": 810,
+          "Denial of Service (DoS)": 142,
+          "Reconnaissance & Probing": 197,
+          "Exploits & PrivEsc": 438,
+          "Credential Abuse (R2L)": 1,
+          "Malware, C2 & Botnet": 498
+        },
+        "per_class_best_attack_candidate": {
+          "Benign / Normal": {
+            "precision": 0.984103282718063,
+            "recall": 0.9448806740482597,
+            "f1": 0.964093215857048,
+            "support": 45338
+          },
+          "Denial of Service (DoS)": {
+            "precision": 0.9941316763949036,
+            "recall": 0.9229671066049006,
+            "f1": 0.9572285425070631,
+            "support": 34323
+          },
+          "Reconnaissance & Probing": {
+            "precision": 0.9753237234302468,
+            "recall": 0.8797796143250689,
+            "f1": 0.9250912461618678,
+            "support": 9075
+          },
+          "Exploits & PrivEsc": {
+            "precision": 0.5734284682080925,
+            "recall": 0.8871035350006986,
+            "f1": 0.6965823687530858,
+            "support": 7157
+          },
+          "Credential Abuse (R2L)": {
+            "precision": 0.9753694581280788,
+            "recall": 0.782608695652174,
+            "f1": 0.868421052631579,
+            "support": 253
+          },
+          "Malware, C2 & Botnet": {
+            "precision": 0.9034584867696747,
+            "recall": 0.9499061988584202,
+            "f1": 0.9261003229949021,
+            "support": 25053
+          }
+        },
+        "confusion_matrix_best_attack_candidate": [
+          [
+            42839,
+            135,
+            62,
+            447,
+            5,
+            1850
+          ],
+          [
+            100,
+            31679,
+            15,
+            2404,
+            0,
+            125
+          ],
+          [
+            76,
+            14,
+            7984,
+            977,
+            0,
+            24
+          ],
+          [
+            133,
+            24,
+            107,
+            6349,
+            0,
+            544
+          ],
+          [
+            53,
+            0,
+            1,
+            1,
+            198,
+            0
+          ],
+          [
+            330,
+            14,
+            17,
+            894,
+            0,
+            23798
+          ]
+        ]
+      }
+    }
+  },
+  "test_full": {
+    "rows": 143095,
+    "binary": {
+      "f1": 0.8885744035805303,
+      "fpr": 0.23944122746753035,
+      "confusion": {
+        "tn": 46496,
+        "fp": 14638,
+        "fn": 4731,
+        "tp": 77230
+      }
+    },
+    "forced_category_macro_f1": 0.6705192922097901,
+    "category_unclear": 7518,
+    "false_normal_stage2": {
+      "Benign / Normal": 5038,
+      "Denial of Service (DoS)": 295,
+      "Reconnaissance & Probing": 143,
+      "Exploits & PrivEsc": 999,
+      "Credential Abuse (R2L)": 6,
+      "Malware, C2 & Botnet": 1037
+    },
+    "per_class_best_attack_candidate": {
+      "Benign / Normal": {
+        "precision": 0.9076463583657056,
+        "recall": 0.7605587725324696,
+        "f1": 0.8276181237262039,
+        "support": 61134
+      },
+      "Denial of Service (DoS)": {
+        "precision": 0.931148579675455,
+        "recall": 0.8265012810098107,
+        "f1": 0.8757096747496482,
+        "support": 32006
+      },
+      "Reconnaissance & Probing": {
+        "precision": 0.8748879498015111,
+        "recall": 0.6938153752411902,
+        "f1": 0.7739012233801541,
+        "support": 9847
+      },
+      "Exploits & PrivEsc": {
+        "precision": 0.49116449915616,
+        "recall": 0.8450042698548249,
+        "f1": 0.6212330487192366,
+        "support": 11710
+      },
+      "Credential Abuse (R2L)": {
+        "precision": 0.9858657243816255,
+        "recall": 0.09897126640652713,
+        "f1": 0.17988394584139264,
+        "support": 2819
+      },
+      "Malware, C2 & Botnet": {
+        "precision": 0.6428267226938474,
+        "recall": 0.8851401540326048,
+        "f1": 0.7447697368421052,
+        "support": 25579
+      }
+    },
+    "confusion_matrix_best_attack_candidate": [
+      [
+        46496,
+        326,
+        202,
+        2934,
+        2,
+        11174
+      ],
+      [
+        1140,
+        26453,
+        506,
+        3656,
+        0,
+        251
+      ],
+      [
+        193,
+        1469,
+        6832,
+        1284,
+        0,
+        69
+      ],
+      [
+        392,
+        132,
+        206,
+        9895,
+        2,
+        1083
+      ],
+      [
+        2499,
+        8,
+        29,
+        1,
+        279,
+        3
+      ],
+      [
+        507,
+        21,
+        34,
+        2376,
+        0,
+        22641
+      ]
+    ]
+  },
+  "test_feature_group_disjoint": {
+    "rows": 75123,
+    "binary": {
+      "f1": 0.7587258039932937,
+      "fpr": 0.25374720721893235,
+      "confusion": {
+        "tn": 34403,
+        "fp": 11698,
+        "fn": 4132,
+        "tp": 24890
+      }
+    },
+    "forced_category_macro_f1": 0.6058157671012451,
+    "category_unclear": 6808,
+    "false_normal_stage2": {
+      "Benign / Normal": 4402,
+      "Denial of Service (DoS)": 288,
+      "Reconnaissance & Probing": 143,
+      "Exploits & PrivEsc": 997,
+      "Credential Abuse (R2L)": 4,
+      "Malware, C2 & Botnet": 974
+    },
+    "per_class_best_attack_candidate": {
+      "Benign / Normal": {
+        "precision": 0.8927728039444661,
+        "recall": 0.7462527927810677,
+        "f1": 0.8129637506498417,
+        "support": 46101
+      },
+      "Denial of Service (DoS)": {
+        "precision": 0.9501282416642918,
+        "recall": 0.697854526425955,
+        "f1": 0.8046823146080975,
+        "support": 9555
+      },
+      "Reconnaissance & Probing": {
+        "precision": 0.7242812608243852,
+        "recall": 0.7267987486965589,
+        "f1": 0.7255378209576683,
+        "support": 2877
+      },
+      "Exploits & PrivEsc": {
+        "precision": 0.5671629969903375,
+        "recall": 0.8188679245283019,
+        "f1": 0.6701604978709466,
+        "support": 8745
+      },
+      "Credential Abuse (R2L)": {
+        "precision": 0.9858657243816255,
+        "recall": 0.11654135338345864,
+        "f1": 0.20844228614120283,
+        "support": 2394
+      },
+      "Malware, C2 & Botnet": {
+        "precision": 0.288296791055612,
+        "recall": 0.7284901852871033,
+        "f1": 0.41310793237971394,
+        "support": 5451
+      }
+    },
+    "confusion_matrix_best_attack_candidate": [
+      [
+        34403,
+        216,
+        33,
+        2914,
+        2,
+        8533
+      ],
+      [
+        1071,
+        6668,
+        504,
+        1086,
+        0,
+        226
+      ],
+      [
+        148,
+        96,
+        2091,
+        476,
+        0,
+        66
+      ],
+      [
+        390,
+        14,
+        203,
+        7161,
+        2,
+        975
+      ],
+      [
+        2083,
+        3,
+        25,
+        1,
+        279,
+        3
+      ],
+      [
+        440,
+        21,
+        31,
+        988,
+        0,
+        3971
+      ]
+    ]
+  },
+  "test_by_source": {
+    "BoT-IoT": {
+      "rows": 20000,
+      "binary": {
+        "f1": 0.9990236575291025,
+        "fpr": 0.42857142857142855,
+        "confusion": {
+          "tn": 8,
+          "fp": 6,
+          "fn": 33,
+          "tp": 19953
+        }
+      },
+      "forced_category_macro_f1": 0.37952246161778974,
+      "category_unclear": 20,
+      "false_normal_stage2": {
+        "Benign / Normal": 5,
+        "Denial of Service (DoS)": 0,
+        "Reconnaissance & Probing": 15,
+        "Exploits & PrivEsc": 0,
+        "Credential Abuse (R2L)": 0,
+        "Malware, C2 & Botnet": 0
+      },
+      "per_class_best_attack_candidate": {
+        "Benign / Normal": {
+          "precision": 0.1951219512195122,
+          "recall": 0.5714285714285714,
+          "f1": 0.2909090909090909,
+          "support": 14
+        },
+        "Denial of Service (DoS)": {
+          "precision": 0.9999440903499944,
+          "recall": 0.9999440903499944,
+          "f1": 0.9999440903499944,
+          "support": 17886
+        },
+        "Reconnaissance & Probing": {
+          "precision": 0.9956268221574344,
+          "recall": 0.977110157367668,
+          "f1": 0.9862815884476535,
+          "support": 2097
+        },
+        "Exploits & PrivEsc": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "Credential Abuse (R2L)": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "Malware, C2 & Botnet": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3
+        }
+      },
+      "confusion_matrix_best_attack_candidate": [
+        [
+          8,
+          0,
+          6,
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          17885,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          32,
+          1,
+          2049,
+          8,
+          0,
+          7
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          3,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "CIC-IDS2017": {
+      "rows": 18219,
+      "binary": {
+        "f1": 0.9683116883116883,
+        "fpr": 0.011242973141786383,
+        "confusion": {
+          "tn": 14247,
+          "fp": 162,
+          "fn": 82,
+          "tp": 3728
+        }
+      },
+      "forced_category_macro_f1": 0.6463938662089835,
+      "category_unclear": 86,
+      "false_normal_stage2": {
+        "Benign / Normal": 74,
+        "Denial of Service (DoS)": 12,
+        "Reconnaissance & Probing": 0,
+        "Exploits & PrivEsc": 0,
+        "Credential Abuse (R2L)": 0,
+        "Malware, C2 & Botnet": 0
+      },
+      "per_class_best_attack_candidate": {
+        "Benign / Normal": {
+          "precision": 0.9942773396608277,
+          "recall": 0.9887570268582137,
+          "f1": 0.9915094996172316,
+          "support": 14409
+        },
+        "Denial of Service (DoS)": {
+          "precision": 0.9741412582014666,
+          "recall": 0.9809560823940925,
+          "f1": 0.9775367931835787,
+          "support": 2573
+        },
+        "Reconnaissance & Probing": {
+          "precision": 0.9922212618841832,
+          "recall": 0.9930795847750865,
+          "f1": 0.9926502377864246,
+          "support": 1156
+        },
+        "Exploits & PrivEsc": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "Credential Abuse (R2L)": {
+          "precision": 1.0,
+          "recall": 0.8461538461538461,
+          "f1": 0.9166666666666666,
+          "support": 65
+        },
+        "Malware, C2 & Botnet": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 16
+        }
+      },
+      "confusion_matrix_best_attack_candidate": [
+        [
+          14247,
+          67,
+          9,
+          77,
+          0,
+          9
+        ],
+        [
+          49,
+          2524,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          0,
+          1148,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          0,
+          0,
+          0,
+          55,
+          0
+        ],
+        [
+          15,
+          0,
+          0,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    "NSL-KDD": {
+      "rows": 22544,
+      "binary": {
+        "f1": 0.8184028090393446,
+        "fpr": 0.029966017917825147,
+        "confusion": {
+          "tn": 9420,
+          "fp": 291,
+          "fn": 3743,
+          "tp": 9090
+        }
+      },
+      "forced_category_macro_f1": 0.3670641606109317,
+      "category_unclear": 21,
+      "false_normal_stage2": {
+        "Benign / Normal": 10,
+        "Denial of Service (DoS)": 0,
+        "Reconnaissance & Probing": 3,
+        "Exploits & PrivEsc": 2,
+        "Credential Abuse (R2L)": 6,
+        "Malware, C2 & Botnet": 0
+      },
+      "per_class_best_attack_candidate": {
+        "Benign / Normal": {
+          "precision": 0.7156423307756591,
+          "recall": 0.9700339820821748,
+          "f1": 0.8236425636093381,
+          "support": 9711
+        },
+        "Denial of Service (DoS)": {
+          "precision": 0.7774441978853935,
+          "recall": 0.798605524269241,
+          "f1": 0.7878827964812488,
+          "support": 7458
+        },
+        "Reconnaissance & Probing": {
+          "precision": 0.5542818610923803,
+          "recall": 0.3395291201982652,
+          "f1": 0.42110655737704916,
+          "support": 2421
+        },
+        "Exploits & PrivEsc": {
+          "precision": 0.3333333333333333,
+          "recall": 0.01,
+          "f1": 0.019417475728155338,
+          "support": 200
+        },
+        "Credential Abuse (R2L)": {
+          "precision": 0.9911504424778761,
+          "recall": 0.0813362381989833,
+          "f1": 0.15033557046979865,
+          "support": 2754
+        },
+        "Malware, C2 & Botnet": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        }
+      },
+      "confusion_matrix_best_attack_candidate": [
+        [
+          9420,
+          125,
+          159,
+          3,
+          2,
+          2
+        ],
+        [
+          1031,
+          5956,
+          471,
+          0,
+          0,
+          0
+        ],
+        [
+          136,
+          1463,
+          822,
+          0,
+          0,
+          0
+        ],
+        [
+          87,
+          109,
+          2,
+          2,
+          0,
+          0
+        ],
+        [
+          2489,
+          8,
+          29,
+          1,
+          224,
+          3
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "UNSW-NB15": {
+      "rows": 82332,
+      "binary": {
+        "f1": 0.855227469462345,
+        "fpr": 0.3832162162162162,
+        "confusion": {
+          "tn": 22821,
+          "fp": 14179,
+          "fn": 873,
+          "tp": 44459
+        }
+      },
+      "forced_category_macro_f1": 0.4894766748253516,
+      "category_unclear": 7391,
+      "false_normal_stage2": {
+        "Benign / Normal": 4949,
+        "Denial of Service (DoS)": 283,
+        "Reconnaissance & Probing": 125,
+        "Exploits & PrivEsc": 997,
+        "Credential Abuse (R2L)": 0,
+        "Malware, C2 & Botnet": 1037
+      },
+      "per_class_best_attack_candidate": {
+        "Benign / Normal": {
+          "precision": 0.9631552291719423,
+          "recall": 0.6167837837837837,
+          "f1": 0.7520018453224372,
+          "support": 37000
+        },
+        "Denial of Service (DoS)": {
+          "precision": 0.3247232472324723,
+          "recall": 0.02152115431645879,
+          "f1": 0.04036697247706422,
+          "support": 4089
+        },
+        "Reconnaissance & Probing": {
+          "precision": 0.9042108646737383,
+          "recall": 0.6740953750299544,
+          "f1": 0.772377814387699,
+          "support": 4173
+        },
+        "Exploits & PrivEsc": {
+          "precision": 0.49331804128852097,
+          "recall": 0.8595134665508254,
+          "f1": 0.6268533772652389,
+          "support": 11510
+        },
+        "Credential Abuse (R2L)": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "Malware, C2 & Botnet": {
+          "precision": 0.6432102272727273,
+          "recall": 0.8857981220657277,
+          "f1": 0.7452600394996708,
+          "support": 25560
+        }
+      },
+      "confusion_matrix_best_attack_candidate": [
+        [
+          22821,
+          134,
+          28,
+          2854,
+          0,
+          11163
+        ],
+        [
+          59,
+          88,
+          35,
+          3656,
+          0,
+          251
+        ],
+        [
+          17,
+          5,
+          2813,
+          1276,
+          0,
+          62
+        ],
+        [
+          305,
+          23,
+          204,
+          9893,
+          2,
+          1083
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          492,
+          21,
+          31,
+          2375,
+          0,
+          22641
+        ]
+      ]
+    }
+  },
+  "scope": "Offline dataset evaluation. Feature-group disjointness does not establish capture or deployment independence."
+}
