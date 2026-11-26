@@ -1,6 +1,6 @@
 function jobCards() {
   if (!managementData.jobs.length) return '<p class="case-note">No training runs yet.</p>';
-  return managementData.jobs.map(job=>'<article class="management-card"><div class="panel-head"><div><strong>'+escape(job.config.strategy)+
+  return managementData.jobs.map(job=>'<article class="management-card"><div class="panel-head"><div><strong>'+escape(trainingStrategies[job.config.strategy]?.short||job.config.strategy)+
     '</strong><p>'+escape(dateText(job.created))+'</p></div>'+badge(escape(job.status),job.status==='failed'?'flag':job.status==='completed'?'normal':'')+'</div>'+
     (job.finished?'<p class="case-note">Finished '+escape(dateText(job.finished))+'</p>':'')+
     (job.error?'<p class="form-error">'+escape(job.error)+'</p>':'')+

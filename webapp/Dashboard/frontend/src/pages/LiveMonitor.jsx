@@ -37,10 +37,10 @@ export function LiveMonitor({ description, filters, presets, sourceOptions, rank
           <button className="btn" data-action="summary" data-value="flows">Explore flows ›</button>
         </div>
         <div className="chart-box">
-          <canvas tabIndex={0} id="timeline" aria-label="Traffic timeline. Use arrow keys to select a time bin and Enter to explore flows." />
+          <canvas tabIndex={0} id="timeline" aria-label="Traffic and alert trends shown as area lines on separate scales. Use arrow keys to select a time bin and Enter to explore flows." />
           <span className="chart-tooltip" id="chart-tip" hidden />
         </div>
-        <p className="chart-hint">Select a time bin to investigate its flows.</p>
+        <p className="chart-hint">Hover for flow and alert counts plus alert share. Select a time bin to explore its flows.</p>
       </section>
       <div className="overview-ranks">
         <section className="panel panel-pad">
@@ -60,8 +60,6 @@ export function LiveMonitor({ description, filters, presets, sourceOptions, rank
           <div className="ranks" id="alert-rows" /><div className="latest-alert" id="latest-alert" />
         </section>
       </div>
-      <p className="case-note" id="inference-health" />
-      <section className="panel health" id="health" aria-label="Current system health" />
     </>
   );
 }

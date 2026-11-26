@@ -15,6 +15,8 @@ function updateTrainingCounts() {
   byId('training-base-count').textContent=rows;
   byId('training-selected-count').textContent=num(selected);
   byId('training-validation-count').textContent=counts.validation==null?'—':num(counts.validation);
+  const strategy=form.elements.namedItem('strategy')?.value||trainingStrategy;
+  byId('training-strategy-summary').textContent=trainingStrategies[strategy]?.short||'—';
 }
 function trainingFeedbackPicker(rows) {
   if (!rows.length) return '<p class="case-note">No eligible feedback yet. Training can begin with CENTRAL Train.</p>';
@@ -80,6 +82,8 @@ function trainingPage() {
   const preset=managementData.parameter_defaults?'<optgroup label="Tuning preset"><option value="m9"'+
     (trainingReference==='m9'?' selected':'')+'>M9 Production</option></optgroup>':'';
   const referenceOptions=preset+comparisonOptions(versions,versions.find(item=>item.version===trainingReference),latest);
+  const strategyOptions=Object.entries(trainingStrategies).map(([value,strategy])=>
+    '<option value="'+escape(value)+'"'+(trainingStrategy===value?' selected':'')+'>'+escape(strategy.label)+'</option>').join('');
   const formFields=stage=>'<details class="training-stage"><summary>'+ (stage==='stage1'?'Stage 1 · Attack detection':'Stage 2 · Category')+
     '</summary><div class="parameter-comparison"><div class="parameter-head" aria-hidden="true"><span>Parameter</span>'+
     '<span>Training input</span><span>Reference</span></div>'+Object.entries(managementData.parameters).map(([name,rule])=>
@@ -93,6 +97,9 @@ function trainingPage() {
     '<fieldset><legend>Training feedback</legend>'+
     trainingFeedbackPicker(approved)+
     '<p class="case-note">Duplicate feature groups are excluded before training.</p></fieldset>'+
+    '<fieldset><legend>Training strategy</legend><label for="training-strategy">How should the candidate be trained?'+
+    '<select id="training-strategy" name="strategy">'+strategyOptions+'</select></label>'+
+    '<small class="case-note" id="training-strategy-help">'+escape(trainingStrategies[trainingStrategy]?.help||'')+'</small></fieldset>'+
     '<fieldset><legend>XGBoost parameters</legend><p class="case-note">The form starts with M9 Production values.</p>'+
     '<label>Reference model <select id="training-reference" aria-describedby="training-reference-date">'+referenceOptions+'</select>'+
     '<small class="comparison-picked-date" id="training-reference-date"></small></label>'+
@@ -102,7 +109,8 @@ function trainingPage() {
     '<div class="training-sidebar"><section class="panel panel-pad"><h2>Training summary</h2>'+
     '<dl class="fields"><div><dt>CENTRAL training rows</dt><dd id="training-base-count"></dd></div>'+
     '<div><dt>Feedback selected</dt><dd id="training-selected-count"></dd></div>'+
-    '<div><dt>Validation rows</dt><dd id="training-validation-count"></dd></div></dl>'+
+    '<div><dt>Validation rows</dt><dd id="training-validation-count"></dd></div>'+
+    '<div><dt>Selected strategy</dt><dd id="training-strategy-summary"></dd></div></dl>'+
     '<p class="case-note">A completed job creates a candidate for review in Model Registry.</p>'+
     '<button id="start-training" class="primary" type="submit" form="train-model-form"'+(managementData.jobs.some(job=>job.status==='running')?' disabled':'')+
     '>Start training</button></section><section class="panel panel-pad"><h2>Training jobs</h2>'+

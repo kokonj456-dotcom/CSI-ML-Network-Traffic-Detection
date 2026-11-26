@@ -32,7 +32,7 @@ const featureRuntime = {
       this.addWatchFile(path);
       return readFile(path, 'utf8');
     }));
-    return 'import { fetchModelMetadata, fetchRecentTraffic, saveAlertStatus, fetchCaptureFlows, uploadCaptureFile } from "/src/api/traffic.js";\n' +
+    return 'import { fetchModelMetadata, fetchRecentTraffic, saveAlertStatus, fetchCaptureFlows, fetchTrafficPage, uploadCaptureFile } from "/src/api/traffic.js";\n' +
       'import { managementRequest } from "/src/api/management.js";\n' +
       sources.join('\n') + '\nexport { startWorkspace };';
   },

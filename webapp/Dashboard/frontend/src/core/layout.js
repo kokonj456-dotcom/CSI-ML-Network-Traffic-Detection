@@ -1,13 +1,13 @@
 'use strict';
 
 function openCount() {
-  return capturedFlows.filter(flow=>flow.kind==='flag'&&!review[flow.id]).length;
+  return savedAlertFlows.filter(flow=>!review[flow.id]).length;
 }
 function nav() {
   renderWorkspace({
     views, view:state.view, alerts:openCount(), theme:document.documentElement.dataset.theme,
     locked:state.locked, modelAvailable:Boolean(modelInfo),
-    modelInfo, captureCount:capturedFlows.length, latestCapture:allFlows()[0]?.timestamp,
+    modelInfo, captureCount:totalFlowCount, latestCapture:allFlows()[0]?.timestamp,
     liveStatus,
     monitor:{filters:state.filters,presets,sourceOptions,ranking:state.ranking},
     management:{tab:managementTab,tabs:managementTabs},
@@ -38,11 +38,16 @@ function render() {
     let selected=0;
     const showBin=index=>{
       selected=index;
-      const {bins,width,left,step,span}=drawChart(index);
+      const {bins,width,left,step,span,interval}=drawChart(index);
       const bin=bins[index], tip=byId('chart-tip');
-      tip.textContent=(span<=day?time(bin.time).slice(0,5):localDay.format(bin.time))+' · '+bin.total+' flows · '+bin.flags+' alerts';
-      tip.style.left=Math.max(0,Math.min(width-182,left+index*step+6))+'px';
+      const timeLabel=span<=day?
+        time(bin.time).slice(0,5)+'–'+time(bin.time+interval).slice(0,5):
+        localDay.format(bin.time)+' · '+time(bin.time).slice(0,5);
+      const alertRate=bin.total?(100*bin.flags/bin.total).toFixed(1):'0.0';
+      tip.textContent=timeLabel+'\n'+num(bin.total)+' flows · '+num(bin.flags)+' alerts ('+alertRate+'% flagged)';
       tip.hidden=false;
+      const tipWidth=tip.getBoundingClientRect().width;
+      tip.style.left=Math.max(0,Math.min(width-tipWidth,left+index*step+6))+'px';
     };
     const openBin=index=>{
       const {bins,interval}=chartGeometry;

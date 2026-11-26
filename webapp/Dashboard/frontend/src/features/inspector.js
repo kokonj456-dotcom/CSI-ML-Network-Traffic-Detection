@@ -72,7 +72,9 @@ function flowInspector(flow) {
       details+='<div class="actions">'+
         (status==='Resolved'?button('Reopen','review','New'):button('Resolve','review','Resolved','primary'))+
         (flow.src?blockSourceButton(flow.src,flow.id):'')+
-        (modelInfo?button('Report false positive','reportFalsePositive',flow.id):'')+'</div>';
+        (flow.falsePositiveReported
+          ? badge('False positive reported','reviewed')
+          : flow.alertId?button('Report false positive','reportFalsePositive',flow.id):'')+'</div>';
     }
   } else if (state.tab==='Evidence') {
     details=formatFields([['Capture',flow.file],['Observed at',new Date(flow.timestamp).toISOString()],
@@ -152,6 +154,8 @@ function ipInspector(ip) {
   const {peer,ipBin}=state.selection;
   const activity=peer?scoped.filter(f=>peerIp(f,ip)===peer):scoped;
   const visible=ipBin?activity.filter(f=>f.timestamp>=ipBin.start&&f.timestamp<ipBin.end):activity;
+  const expanded=Boolean(state.selection.showAllIpConnections);
+  const rows=expanded?visible:visible.slice(0,12);
   const peers=new Set(matches.map(f=>peerIp(f,ip)));
   const domains=[...new Set(matches.map(f=>f.domain).filter(Boolean))];
   const alerts=matches.filter(f=>f.kind==='flag').length;
@@ -160,9 +164,11 @@ function ipInspector(ip) {
     '<div class="actions">'+button('Search this IP','searchIp',ip,'primary')+blockSourceButton(ip)+'</div><h3>Connections</h3><div class="tabs" aria-label="IP connection role">'+[['all','Both roles'],['src','As source'],['dst','As destination']].map(([key,label])=>
     '<button class="tab" aria-pressed="'+(state.role===key)+'" data-action="role" data-value="'+key+'">'+label+'</button>').join('')+
     '</div>'+ipTimeline(activity)+ipPeerMap(ip,scoped)+
-    '<p class="case-note ip-connection-count">'+(visible.length>12?'Showing latest 12 of '+num(visible.length):num(visible.length))+' matching connections</p>'+
-    '<div class="table-scroll"><table class="flow-table"><thead><tr><th>Time</th><th>Peer</th><th>App</th><th>Verdict</th></tr></thead><tbody>'+
-    (visible.slice(0,12).map(f=>'<tr><td>'+button(time(f.timestamp),'flow',f.id,'text-button mono')+'</td><td class="mono">'+escape(peerIp(f,ip))+'</td><td>'+escape(f.app)+'</td><td>'+verdict(f)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No connections match these filters.</td></tr>')+
+    '<div class="ip-connection-toolbar"><p class="case-note ip-connection-count">'+(visible.length>12&&!expanded?'Showing latest 12 of '+num(visible.length):'Showing '+num(rows.length)+' of '+num(visible.length))+' matching connections</p>'+
+    (visible.length>12?'<button type="button" class="btn related-toggle" data-action="toggleIpConnections" aria-controls="ip-connection-list" aria-expanded="'+expanded+'">'+
+      (expanded?'Show latest 12':'Show all '+num(visible.length))+'</button>':'')+'</div>'+
+    '<div class="table-scroll"><table class="flow-table"><thead><tr><th>Time</th><th>Peer</th><th>App</th><th>Verdict</th></tr></thead><tbody id="ip-connection-list">'+
+    (rows.map(f=>'<tr><td>'+button(time(f.timestamp),'flow',f.id,'text-button mono')+'</td><td class="mono">'+escape(peerIp(f,ip))+'</td><td>'+escape(f.app)+'</td><td>'+verdict(f)+'</td></tr>').join('')||'<tr><td colspan="4" class="empty">No connections match these filters.</td></tr>')+
     '</tbody></table></div></div>';
 }
 function showInspector() {

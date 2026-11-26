@@ -37,17 +37,40 @@ let blocks = [];
 let firewallInfo = null;
 let blockSearch = '', blockFilter = '';
 let capturedFlows=[];
+let savedAlertFlows=[];
+let totalFlowCount=null;
+let totalAlertFlowCount=null;
+let flowsNextBeforeId=null;
+let alertsNextBeforeId=null;
+let flowsPageInitialized=false;
+let alertsPageInitialized=false;
+let flowsLoadedMore=false;
+let alertsLoadedMore=false;
+let captureFlowCursors={};
+let captureFlowCounts={};
+let captureFlowLoadedMore={};
+let captureAlertFlowCursors={};
+let captureAlertFlowCounts={};
+let captureAlertFlowLoadedMore={};
+let loadingMoreFlows=false;
 let liveStatus = null;
-const allFlows = () => [...capturedFlows].sort((a,b)=>b.timestamp-a.timestamp);
+const allFlows = () => {
+  const rows=new Map(capturedFlows.map(flow=>[flow.id,flow]));
+  for (const flow of savedAlertFlows) {
+    if (state.view==='alerts'||!rows.has(flow.id)) rows.set(flow.id,flow);
+  }
+  return [...rows.values()].sort((a,b)=>b.timestamp-a.timestamp);
+};
 const localDay = new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',day:'numeric',month:'short',year:'numeric'});
 const shortDay = new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',day:'numeric',month:'short'});
 
 function timeBounds() {
   const {range, from, to, bucket} = state.filters;
   if (bucket) return bucket;
-  const latest = Math.max(...capturedFlows.map(flow=>flow.timestamp));
+  const flows = state.view==='alerts'?savedAlertFlows:capturedFlows;
+  const latest = Math.max(...flows.map(flow=>flow.timestamp));
   const last = Math.max(latest,Date.now());
-  const first = Math.min(last,...capturedFlows.map(flow=>flow.timestamp));
+  const first = Math.min(last,...flows.map(flow=>flow.timestamp));
   if (range === 'custom') {
     const start = from ? Date.parse(from+'T00:00:00+07:00') : first;
     const end = to ? Date.parse(to+'T00:00:00+07:00')+day-1 : last;

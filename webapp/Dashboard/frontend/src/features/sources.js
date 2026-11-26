@@ -43,44 +43,66 @@ async function loadModelInfo() {
   } catch {}
 }
 
+function dashboardFlow(row) {
+  const prediction = row.evidence.prediction || {status:'not_scored'};
+  const id = 'DB-'+row.id;
+  const status = {acknowledged:'Acknowledged',resolved:'Resolved'}[row.alert_status];
+  if (status) review[id] = status;
+  else delete review[id];
+  const protocol = row.transport_protocol.toUpperCase();
+  const observation = row.evidence.protocol_observation;
+  const app = observation?.label ?? ({https_ssl:protocol==='UDP'?'QUIC?':'HTTPS/TLS',other:protocol}[row.service_group] ||
+    (row.service_group || protocol).toUpperCase());
+  return {
+    id, alertId:row.alert_id, falsePositiveReported:Boolean(row.false_positive_reported), timestamp:Date.parse(row.started_at),
+    src:row.src, dst:row.dst, sport:row.src_port, dport:row.dst_port,
+    protocol, app, source:row.source_type==='live_capture'?'Live Capture':captureSource,
+    interface:row.interface_name, run:row.capture_file_id ?? 0, file:row.capture_file,
+    packets:row.packets_forward+row.packets_backward, bytes:row.bytes_forward+row.bytes_backward,
+    duration:((Date.parse(row.ended_at)-Date.parse(row.started_at))/1000).toFixed(3),
+    firewall:'Unavailable', frames:row.evidence.frames||[], raw:row.evidence.raw||{},
+    serviceBasis:observation?.basis,
+    prediction, score:prediction.binary_score, label:category(prediction),
+    kind:prediction.status!=='scored'?'unscored':prediction.flagged?'flag':'normal',
+  };
+}
+
 async function refreshTraffic(schedule=true) {
   try {
     const captureId=state.filters.captureFileId;
-    const [statusResponse, flowsResponse] = await fetchRecentTraffic();
+    const [statusResponse, flowsResponse, alertsResponse] = await fetchRecentTraffic();
     if (statusResponse.ok) liveStatus = await statusResponse.json();
     if (flowsResponse.ok) {
-      const {flows} = await flowsResponse.json();
+      const payload=await flowsResponse.json();
+      const {flows}=payload;
+      totalFlowCount=payload.total_flows ?? totalFlowCount;
+      if (!flowsPageInitialized || !flowsLoadedMore) flowsNextBeforeId=payload.next_before_id;
+      flowsPageInitialized=true;
       if (captureId) {
-        const captureResponse=await fetchCaptureFlows(captureId);
+        const captureAlerts=state.view==='alerts';
+        const captureResponse=await fetchCaptureFlows(captureId,captureAlerts);
         if (captureResponse.ok && captureId===state.filters.captureFileId) {
-          const {flows:imported}=await captureResponse.json();
-          const known=new Set(flows.map(row=>row.id));
-          flows.push(...imported.filter(row=>!known.has(row.id)));
+          const capturePayload=await captureResponse.json();
+          if (captureAlerts) {
+            captureAlertFlowCounts[captureId]=capturePayload.total_flows ?? captureAlertFlowCounts[captureId] ?? null;
+            if (!captureAlertFlowLoadedMore[captureId]) captureAlertFlowCursors[captureId]=capturePayload.next_before_id;
+            savedAlertFlows=mergeDashboardFlows(savedAlertFlows,capturePayload.flows.map(dashboardFlow));
+          } else {
+            captureFlowCounts[captureId]=capturePayload.total_flows ?? captureFlowCounts[captureId] ?? null;
+            if (!captureFlowLoadedMore[captureId]) captureFlowCursors[captureId]=capturePayload.next_before_id;
+            const known=new Set(flows.map(row=>row.id));
+            flows.push(...capturePayload.flows.filter(row=>!known.has(row.id)));
+          }
         }
       }
-      capturedFlows = flows.map(row => {
-        const prediction = row.evidence.prediction || {status:'not_scored'};
-        const id = 'DB-'+row.id;
-        const status = {acknowledged:'Acknowledged',resolved:'Resolved'}[row.alert_status];
-        if (status) review[id] = status;
-        else delete review[id];
-        const protocol = row.transport_protocol.toUpperCase();
-        const observation = row.evidence.protocol_observation;
-        const app = observation?.label ?? ({https_ssl:protocol==='UDP'?'QUIC?':'HTTPS/TLS',other:protocol}[row.service_group] ||
-          (row.service_group || protocol).toUpperCase());
-        return {
-          id, alertId:row.alert_id, timestamp:Date.parse(row.started_at),
-          src:row.src, dst:row.dst, sport:row.src_port, dport:row.dst_port,
-          protocol, app, source:row.source_type==='live_capture'?'Live Capture':captureSource,
-          interface:row.interface_name, run:row.capture_file_id ?? 0, file:row.capture_file,
-          packets:row.packets_forward+row.packets_backward, bytes:row.bytes_forward+row.bytes_backward,
-          duration:((Date.parse(row.ended_at)-Date.parse(row.started_at))/1000).toFixed(3),
-          firewall:'Unavailable', frames:row.evidence.frames||[], raw:row.evidence.raw||{},
-          serviceBasis:observation?.basis,
-          prediction, score:prediction.binary_score, label:category(prediction),
-          kind:prediction.status!=='scored'?'unscored':prediction.flagged?'flag':'normal',
-        };
-      });
+      capturedFlows = mergeDashboardFlows(capturedFlows,flows.map(dashboardFlow));
+    }
+    if (alertsResponse.ok) {
+      const payload=await alertsResponse.json();
+      totalAlertFlowCount=payload.total_flows ?? totalAlertFlowCount;
+      if (!alertsPageInitialized || !alertsLoadedMore) alertsNextBeforeId=payload.next_before_id;
+      alertsPageInitialized=true;
+      savedAlertFlows=mergeDashboardFlows(savedAlertFlows,payload.flows.map(dashboardFlow));
     }
     nav();
     if (!byId('inspector').open) {
@@ -91,5 +113,58 @@ async function refreshTraffic(schedule=true) {
     liveStatus=null;
   } finally {
     if (schedule) setTimeout(refreshTraffic, 3000);
+  }
+}
+
+function mergeDashboardFlows(existing,incoming) {
+  const rows=new Map(existing.map(flow=>[flow.id,flow]));
+  for (const flow of incoming) rows.set(flow.id,flow);
+  return [...rows.values()].sort((a,b)=>b.timestamp-a.timestamp);
+}
+
+async function loadMoreTrafficFlows() {
+  if (loadingMoreFlows) return;
+  const captureId=state.filters.captureFileId;
+  const isAlerts=state.view==='alerts';
+  const beforeId=captureId
+    ? isAlerts?captureAlertFlowCursors[captureId]:captureFlowCursors[captureId]
+    : isAlerts?alertsNextBeforeId:flowsNextBeforeId;
+  if (!beforeId) return;
+  loadingMoreFlows=true;
+  renderTable();
+  try {
+    const response=await fetchTrafficPage({beforeId,captureId,alertsOnly:isAlerts});
+    const payload=await response.json();
+    if (!response.ok) throw Error(payload.detail||'Could not load the next flow batch.');
+    const received=payload.flows.map(dashboardFlow);
+    if (captureId && isAlerts) {
+      captureAlertFlowCursors[captureId]=payload.next_before_id;
+      captureAlertFlowCounts[captureId]=payload.total_flows ?? captureAlertFlowCounts[captureId] ?? null;
+      captureAlertFlowLoadedMore[captureId]=true;
+      savedAlertFlows=mergeDashboardFlows(savedAlertFlows,received);
+    } else if (captureId) {
+      captureFlowCursors[captureId]=payload.next_before_id;
+      captureFlowCounts[captureId]=payload.total_flows ?? captureFlowCounts[captureId] ?? null;
+      captureFlowLoadedMore[captureId]=true;
+      capturedFlows=mergeDashboardFlows(capturedFlows,received);
+    } else if (isAlerts) {
+      alertsNextBeforeId=payload.next_before_id;
+      totalAlertFlowCount=payload.total_flows ?? totalAlertFlowCount;
+      alertsLoadedMore=true;
+      savedAlertFlows=mergeDashboardFlows(savedAlertFlows,received);
+    } else {
+      flowsNextBeforeId=payload.next_before_id;
+      totalFlowCount=payload.total_flows ?? totalFlowCount;
+      flowsLoadedMore=true;
+      capturedFlows=mergeDashboardFlows(capturedFlows,received);
+    }
+    nav();
+    renderTable();
+    toast('Loaded '+num(received.length)+' more '+(isAlerts?'alerts':'flows'));
+  } catch (error) {
+    toast(error.message);
+  } finally {
+    loadingMoreFlows=false;
+    renderTable();
   }
 }

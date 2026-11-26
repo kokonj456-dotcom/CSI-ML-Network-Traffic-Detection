@@ -42,7 +42,6 @@ function renderMetrics() {
     metric('Flagged flows','⚑',num(alerts.length),ratio+'% of matching flows','flagged','alert-metric')+
     metric('Destination IPs','◎',num(new Set(flows.map(flow=>flow.dst).filter(Boolean)).size),'Unique observed destinations','destinations')+
     metric('Unreviewed alerts','◉',num(unreviewed),'In selected range','unreviewed');
-  byId('inference-health').textContent=num(flows.filter(flow=>flow.prediction.status==='not_scored').length)+' not scored';
   const protocols=state.ranking==='protocols';
   byId('ranking-title').textContent=protocols?'Top Protocols':'Top Destinations';
   byId('rank-rows').innerHTML=rankingRows(rankFlows(protocols?flows:flows.filter(flow=>flow.dst),flow=>protocols?flow.app:JSON.stringify([flow.dst,flow.dport])),protocols?'protocol':'destination',true);
@@ -51,10 +50,6 @@ function renderMetrics() {
   byId('latest-alert').innerHTML=latest
     ? '<span><strong>Latest alert</strong> '+shortDay.format(latest.timestamp)+' '+time(latest.timestamp)+' ICT · '+escape(latest.app)+' · '+escape(destinationLabel([latest.dst,latest.dport]))+'</span>'+button('View alert ›','latestAlert',latest.id,'text-button')
     : '<span>No alerts in this selection.</span>';
-  byId('health').innerHTML=button('<strong>System health</strong>', 'navigate','status','health-link')+
-    [['Live capture',liveStatus?.running?'Running':liveStatus?.error?'Stopped with error':'Not connected'],
-      ['Recent flows',num(capturedFlows.length)],['Model',modelInfo?'Available':'Unavailable']]
-      .map(([name,value])=>'<div><span>'+name+'</span><strong>'+value+'</strong></div>').join('');
   drawChart();
 }
 const themeKey='flowwatch-color-theme';
@@ -72,6 +67,12 @@ function initialTheme() {
   catch {return 'light';}
 }
 let chartGeometry;
+function chartCeiling(value) {
+  if (value<=1) return 1;
+  const magnitude=10**Math.floor(Math.log10(value));
+  for (const factor of [1,2,4,5,8,10]) if (value<=magnitude*factor) return magnitude*factor;
+  return magnitude*10;
+}
 function drawChart(active=-1) {
   const canvas=byId('timeline');
   if (!canvas) return;
@@ -107,7 +108,7 @@ function drawChart(active=-1) {
     ['total','Flows',palette.getPropertyValue('--flows-chart').trim(),top,split-10],
     ['flags','Alerts',palette.getPropertyValue('--alerts-chart').trim(),split+2,bottom]
   ]) {
-    const cap=Math.max(1,...bins.map(bin=>bin[key]));
+    const cap=chartCeiling(Math.max(...bins.map(bin=>bin[key])));
     const y=value=>regionBottom-(regionBottom-regionTop-3)*value/cap;
     ctx.textAlign='left';
     ctx.fillStyle=color;
@@ -115,15 +116,20 @@ function drawChart(active=-1) {
     ctx.fillStyle=chartText;
     ctx.textAlign='right';
     ctx.fillText(cap,left-8,regionTop+10);
+    if (cap>=2) {
+      const midpoint=cap/2;
+      ctx.fillText(Number.isInteger(midpoint)?midpoint:midpoint.toFixed(1),left-8,(regionTop+regionBottom)/2+4);
+    }
     ctx.fillText('0',left-8,regionBottom);
-    for (const line of [regionTop,Math.round((regionTop+regionBottom)/2),regionBottom]) {
+    const gridLines=cap>=2?[regionTop,Math.round((regionTop+regionBottom)/2),regionBottom]:[regionTop,regionBottom];
+    for (const line of gridLines) {
       ctx.strokeStyle=grid;
       ctx.beginPath();ctx.moveTo(left,line);ctx.lineTo(right,line);ctx.stroke();
     }
     const trace=()=>bins.forEach((bin,i)=>i===0?ctx.moveTo(x(i),y(bin[key])):ctx.lineTo(x(i),y(bin[key])));
     ctx.beginPath();trace();ctx.lineTo(right,regionBottom);ctx.lineTo(left,regionBottom);ctx.closePath();
     ctx.fillStyle=color+'19';ctx.fill();
-    ctx.beginPath();trace();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();ctx.lineWidth=1;
+    ctx.beginPath();trace();ctx.strokeStyle=color;ctx.lineWidth=2.25;ctx.stroke();ctx.lineWidth=1;
     if (bins[active]) {
       ctx.strokeStyle='#9aa4bc';ctx.beginPath();ctx.moveTo(x(active),regionTop);ctx.lineTo(x(active),regionBottom);ctx.stroke();
       ctx.fillStyle=color;ctx.beginPath();ctx.arc(x(active),y(bins[active][key]),3.5,0,Math.PI*2);ctx.fill();

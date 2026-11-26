@@ -43,6 +43,8 @@ document.addEventListener('click',async event=>{
       renderTable();
       if (state.view==='explorer') document.querySelector('.explorer-table .table-head').scrollIntoView({block:'nearest'});
       break;
+    case 'loadMoreFlows':
+      await loadMoreTrafficFlows();break;
     case 'explorerDomain':
       state.filters.search='domain:'+value;
       byId('search').value=state.filters.search;
@@ -78,6 +80,11 @@ document.addEventListener('click',async event=>{
       showInspector();
       byId('inspector').querySelector('[data-action="toggleRelated"]')?.focus({preventScroll:true});
       break;
+    case 'toggleIpConnections':
+      state.selection.showAllIpConnections=!state.selection.showAllIpConnections;
+      showInspector();
+      byId('inspector').querySelector('[data-action="toggleIpConnections"]')?.focus({preventScroll:true});
+      break;
     case 'reportFalsePositive': {
       const flow=allFlows().find(item=>item.id===value);
       if (!flow || flow.kind!=='flag') break;
@@ -88,7 +95,7 @@ document.addEventListener('click',async event=>{
     case 'flow': state.selection={type:'flow',id:value};state.tab=state.view==='alerts'?'Model':'Overview';showInspector();break;
     case 'ip': {
       const parent=state.selection?.type==='flow'?{...state.selection,tab:state.tab}:null;
-      state.selection={type:'ip',id:value,parent};
+      state.selection={type:'ip',id:value,parent,showAllIpConnections:false};
       state.role='all';showInspector();break;
     }
     case 'backToFlow': {

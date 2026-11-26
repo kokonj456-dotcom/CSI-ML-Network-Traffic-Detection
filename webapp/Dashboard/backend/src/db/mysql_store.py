@@ -124,22 +124,27 @@ class MySQLStore:
             identifiers.append({"flow_id": flow_id, "prediction_id": prediction_id, "alert_id": alert_id})
         return identifiers
 
-    def flows(self, limit, before_id, capture_id=None):
+    def flows(self, limit, before_id, capture_id=None, alerts_only=False):
+        prediction_lookup = "SELECT MAX(p2.id) FROM predictions p2 WHERE p2.flow_id=f.id"
+        if alerts_only:
+            prediction_lookup += " AND EXISTS (SELECT 1 FROM alerts a2 WHERE a2.prediction_id=p2.id)"
         with self.transaction() as db:
             db.execute(
-                """SELECT f.id, f.source_type, f.started_at, f.ended_at, f.interface_name,
+                f"""SELECT f.id, f.source_type, f.started_at, f.ended_at, f.interface_name,
                           INET6_NTOA(f.src_ip) AS src, INET6_NTOA(f.dst_ip) AS dst,
                           f.src_port, f.dst_port, f.transport_protocol, f.service_group, f.connection_state,
                           f.packets_forward, f.packets_backward, f.bytes_forward, f.bytes_backward,
                           f.capture_file_id, c.original_name AS capture_file, p.model_id, p.status AS prediction_status,
                           p.binary_score, p.threshold_used, p.category_id, p.category_score, p.inputs_json,
-                          a.id AS alert_id, a.status AS alert_status
+                          a.id AS alert_id, a.status AS alert_status,
+                          EXISTS (SELECT 1 FROM false_positive_feedback fp WHERE fp.alert_id=a.id) AS false_positive_reported
                    FROM traffic_flows f LEFT JOIN capture_files c ON c.id=f.capture_file_id
-                   LEFT JOIN predictions p ON p.id=(SELECT MAX(id) FROM predictions WHERE flow_id=f.id)
+                   LEFT JOIN predictions p ON p.id=({prediction_lookup})
                    LEFT JOIN alerts a ON a.prediction_id=p.id
                    WHERE (%s IS NULL OR f.id < %s) AND (%s IS NULL OR f.capture_file_id=%s)
+                     AND (NOT %s OR a.id IS NOT NULL)
                    ORDER BY f.id DESC LIMIT %s""",
-                (before_id, before_id, capture_id, capture_id, limit),
+                (before_id, before_id, capture_id, capture_id, alerts_only, limit),
             )
             rows = db.fetchall()
         for row in rows:
@@ -147,6 +152,22 @@ class MySQLStore:
             for key in ("started_at", "ended_at"):
                 row[key] = wire_time(row[key])
         return rows
+
+    def flow_count(self, capture_id=None, alerts_only=False):
+        """Return the full matching flow count, independent of the page cursor."""
+        with self.transaction() as db:
+            db.execute(
+                """SELECT COUNT(*) AS total
+                   FROM traffic_flows f
+                   WHERE (%s IS NULL OR f.capture_file_id=%s)
+                     AND (NOT %s OR EXISTS (
+                       SELECT 1 FROM predictions p
+                       JOIN alerts a ON a.prediction_id=p.id
+                       WHERE p.flow_id=f.id
+                     ))""",
+                (capture_id, capture_id, alerts_only),
+            )
+            return db.fetchone()["total"]
 
     def protocol_events(self, flow_id):
         with self.transaction() as db:
@@ -226,11 +247,19 @@ class MySQLStore:
             if not db.fetchone():
                 raise ValueError("Alert does not exist.")
             db.execute("SELECT id FROM false_positive_feedback WHERE alert_id=%s", (alert_id,))
-            if db.fetchone():
-                raise ValueError("This alert already has a feedback entry.")
-            db.execute("INSERT INTO false_positive_feedback (alert_id,reason,evidence_note,status) VALUES (%s,%s,%s,'approved')",
-                       (alert_id, reason, evidence or None))
-            return f"mysql-{db.lastrowid}"
+            existing = db.fetchone()
+            if existing:
+                feedback_id = existing["id"]
+            else:
+                db.execute("INSERT INTO false_positive_feedback (alert_id,reason,evidence_note,status) VALUES (%s,%s,%s,'approved')",
+                           (alert_id, reason, evidence or None))
+                feedback_id = db.lastrowid
+            db.execute(
+                """UPDATE alerts SET status='resolved',
+                   acknowledged_at=COALESCE(acknowledged_at, UTC_TIMESTAMP(6)),
+                   resolved_at=COALESCE(resolved_at, UTC_TIMESTAMP(6)) WHERE id=%s""", (alert_id,),
+            )
+            return f"mysql-{feedback_id}"
 
     def review(self, identifier, status, note):
         with self.transaction() as db:

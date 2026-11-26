@@ -1,7 +1,7 @@
 """Combine packets into bidirectional flows and prepare model inputs."""
 from scapy.all import DNS, ICMP, IP, IPv6, TCP, UDP
 
-from .protocols import HTTP_LINE, SERVICES, web_observation
+from .protocols import SERVICES, dns_event, has_http_start_line, has_tls_handshake_header, web_observation
 
 TCP_FIN = 0x01
 TCP_SYN = 0x02
@@ -10,6 +10,18 @@ TCP_ACK = 0x10
 TCP_IDLE_SECONDS = 60
 OTHER_IDLE_SECONDS = 15
 MAX_LIVE_FLOW_SECONDS = 120
+
+
+def transport_payload_length(payload, network, tcp, udp):
+    """Count observed transport payload bytes up to the header's declared length."""
+    observed = len(payload)
+    if udp:
+        return min(observed, max(0, int(udp.len or 8) - 8))
+    if isinstance(network, IP):
+        ip_header = int(network.ihl or 5) * 4
+        transport_header = int(tcp.dataofs or 5) * 4 if tcp else 8
+        return min(observed, max(0, int(network.len or 0) - ip_header - transport_header))
+    return observed
 
 
 class FlowCollector:
@@ -29,16 +41,16 @@ class FlowCollector:
         if transport is None:
             return None
         protocol = "tcp" if tcp else "udp" if udp else "icmp"
-        src = (network.src, getattr(transport,"sport",None))
-        dst = (network.dst, getattr(transport,"dport",None))
-        key = (protocol, frozenset((src,dst)))
-        at = float(packet.time)
+        src = (network.src, getattr(transport, "sport", None))
+        dst = (network.dst, getattr(transport, "dport", None))
+        key = (protocol, frozenset((src, dst)))
+        timestamp = float(packet.time)
         flags = int(tcp.flags) if tcp else 0
         flow = self.active.get(key)
         initial_syn = bool(flags & TCP_SYN and not flags & TCP_ACK)
         syn_ack = bool(flags & TCP_SYN and flags & TCP_ACK)
         idle_seconds = TCP_IDLE_SECONDS if tcp else OTHER_IDLE_SECONDS
-        if flow and (at-flow["end"] > idle_seconds or (initial_syn and flow["terminated"])):
+        if flow and (timestamp - flow["end"] > idle_seconds or (initial_syn and flow["terminated"])):
             completed = self.active.pop(key)
             flow = None
         if flow is None:
@@ -46,47 +58,31 @@ class FlowCollector:
                 self.skipped += 1
                 return completed
             # SYN-ACK as the first observed packet indicates the other endpoint initiated.
-            direction = (dst,src) if syn_ack else (src,dst)
-            flow = {"src":direction[0],"dst":direction[1],"start":at,"end":at,"protocol":protocol,
-                    "frames":[],"bytes":[0,0],"packets":[0,0],"syn":False,"syn_ack":False,
-                    "reset":False,"terminated":False,"dns_events":[],"http":False,"tls":False}
+            origin, destination = (dst, src) if syn_ack else (src, dst)
+            flow = {
+                "src": origin, "dst": destination, "start": timestamp, "end": timestamp,
+                "protocol": protocol, "frames": [], "bytes": [0, 0], "packets": [0, 0],
+                "syn": False, "syn_ack": False, "reset": False, "terminated": False,
+                "dns_events": [], "http": False, "tls": False,
+            }
             self.active[key] = flow
-        index = 0 if src == flow["src"] else 1
-        flow["end"] = max(flow["end"],at)
+        direction_index = 0 if src == flow["src"] else 1
+        flow["end"] = max(flow["end"], timestamp)
         if self.evidence:
             flow["frames"].append(frame)
-        # Limit to observed transport bytes and exclude Ethernet padding.
         payload = bytes(transport.payload)
-        observed = len(payload)
         if tcp and payload:
-            flow["http"] |= bool(HTTP_LINE.match(payload[:2048]))
-            flow["tls"] |= (len(payload) >= 9 and payload[0] == 22 and payload[1] == 3
-                            and payload[2] <= 3 and payload[5] in (1, 2)
-                            and 4 <= int.from_bytes(payload[3:5], "big") <= 16384)
-        if udp:
-            observed = min(observed,max(0,int(udp.len or 8)-8))
-        elif isinstance(network, IP):
-            header = int(network.ihl or 5)*4 + (int(tcp.dataofs or 5)*4 if tcp else 8)
-            observed = min(observed,max(0,int(network.len or 0)-header))
-        flow["bytes"][index] += observed
-        flow["packets"][index] += 1
+            flow["http"] |= has_http_start_line(payload)
+            flow["tls"] |= has_tls_handshake_header(payload)
+        flow["bytes"][direction_index] += transport_payload_length(payload, network, tcp, udp)
+        flow["packets"][direction_index] += 1
         flow["syn"] |= initial_syn
         flow["syn_ack"] |= syn_ack
         flow["reset"] |= bool(flags & TCP_RST)
         flow["terminated"] |= bool(flags & (TCP_FIN | TCP_RST))
         dns = packet.getlayer(DNS)
         if dns is not None and (self.evidence or len(flow["dns_events"]) < 32):
-            question = dns.qd[0] if dns.qd else None
-            flow["dns_events"].append({
-                "at": at, "frame": frame, "protocol": "dns",
-                "details": {
-                    "transaction_id": int(dns.id),
-                    "response": bool(dns.qr),
-                    "response_code": int(dns.rcode),
-                    "question": question.qname.decode("utf-8", errors="replace") if question else None,
-                    "question_type": int(question.qtype) if question else None,
-                },
-            })
+            flow["dns_events"].append(dns_event(dns, timestamp, frame))
         return completed
 
     def drain(self, now):

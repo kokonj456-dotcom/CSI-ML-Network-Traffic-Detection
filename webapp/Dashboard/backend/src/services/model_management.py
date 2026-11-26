@@ -154,6 +154,22 @@ class Management:
             feedback = [dict(row) for row in db.execute("SELECT * FROM feedback ORDER BY created DESC")]
             jobs = [dict(row) for row in db.execute("SELECT * FROM jobs ORDER BY created DESC")]
             version, warning = self.version, self.load_warning
+        # A job is shown as a model version only while it is running or when its
+        # completed bundle is still present and readable in the model registry.
+        visible_jobs = []
+        for row in jobs:
+            if row["status"] == "running":
+                visible_jobs.append(row)
+                continue
+            if row["status"] != "completed":
+                continue
+            try:
+                bundle = self.registry.get_bundle(row["id"])
+            except (OSError, ValueError, KeyError, json.JSONDecodeError):
+                continue
+            if bundle["manifest"].get("model_id"):
+                visible_jobs.append(row)
+        jobs = visible_jobs
         for row in feedback:
             row.update(json.loads(row.pop("payload")))
         if self.traffic_store:
@@ -188,6 +204,34 @@ class Management:
         except (OSError,ValueError,KeyError):
             return {}
 
+    def training_feedback(self, db, feedback_ids):
+        selected = []
+        for feedback_id in dict.fromkeys(feedback_ids):
+            if feedback_id.startswith("mysql-"):
+                mysql_id = feedback_id.removeprefix("mysql-")
+                reports = []
+                if self.traffic_store and mysql_id.isdigit():
+                    reports = self.traffic_store.feedback(int(mysql_id))
+                payload = reports[0] if reports else None
+                status = payload["status"] if payload else None
+            else:
+                row = db.execute(
+                    "SELECT status,payload FROM feedback WHERE id=?", (feedback_id,)
+                ).fetchone()
+                payload = json.loads(row["payload"]) if row else None
+                status = row["status"] if row else None
+
+            if status != "approved":
+                raise ValueError("Choose approved feedback only.")
+            if not payload["eligible"]:
+                raise ValueError("Simulator and CENTRAL Test feedback cannot become training data.")
+            selected.append({
+                "id": feedback_id,
+                "source": payload["source"],
+                "raw": payload["snapshot"]["raw"],
+            })
+        return selected
+
     def start(self, body):
         config = normalize_config(body.config)
         identifier = uuid4().hex
@@ -195,21 +239,7 @@ class Management:
         with self.lock, self.connect() as db:
             if db.execute("SELECT 1 FROM jobs WHERE status='running'").fetchone():
                 raise ValueError("A training job is already running.")
-            selected = []
-            for id_ in dict.fromkeys(body.feedback_ids):
-                if id_.startswith("mysql-"):
-                    reports = self.traffic_store.feedback(int(id_[6:])) if self.traffic_store and id_[6:].isdigit() else []
-                    payload = reports[0] if reports else None
-                    status = payload["status"] if payload else None
-                else:
-                    row = db.execute("SELECT status,payload FROM feedback WHERE id=?", (id_,)).fetchone()
-                    payload = json.loads(row["payload"]) if row else None
-                    status = row["status"] if row else None
-                if status != "approved":
-                    raise ValueError("Choose approved feedback only.")
-                if not payload["eligible"]:
-                    raise ValueError("Simulator and CENTRAL Test feedback cannot become training data.")
-                selected.append({"id":id_,"source":payload["source"],"raw":payload["snapshot"]["raw"]})
+            selected = self.training_feedback(db, body.feedback_ids)
             folder.mkdir(parents=True)
             config["feedback"] = selected
             (folder/"run.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
@@ -218,11 +248,16 @@ class Management:
         return identifier
 
     def train(self, identifier, folder):
-        status,error = "failed",None
+        status, error = "failed", None
         try:
+            command = [
+                sys.executable, "-u", str(TRAINER),
+                "--run-config", str(folder/"run.json"),
+                "--output", str(self.registry.bundle_path(identifier)),
+                "--managed-output",
+            ]
             with (folder/"training.log").open("wb") as log:
-                result = subprocess.run([sys.executable,"-u",str(TRAINER),"--run-config",str(folder/"run.json"),
-                                          "--output",str(self.registry.bundle_path(identifier)),"--managed-output"], cwd=ROOT,stdout=log,stderr=subprocess.STDOUT)
+                result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
             if result.returncode:
                 raise ValueError(f"Training exited with code {result.returncode}. See job output.")
             self.registry.load_candidate(identifier)

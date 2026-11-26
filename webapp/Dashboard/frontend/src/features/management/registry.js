@@ -1,9 +1,13 @@
 function versionDetails(version, latest) {
   const {manifest,evaluation}=version;
   const finished=manifest.training?.finished_at;
-  return '<details class="management-version"><summary><span class="version-title">'+escape(manifest.model_id)+' '+
-    badge(version.version===managementData.active?'Active':version.version==='baseline'?'Baseline':'Candidate')+
-    (version.version===latest?badge('Latest trained'):'')+'</span>'+
+  const isActive=version.version===managementData.active;
+  const isBaseline=version.version==='baseline';
+  const isLatest=version.version===latest;
+  const role=isActive?['In use','version-in-use']:isBaseline?['Baseline','version-baseline']:['Candidate','version-candidate'];
+  const classes=['management-version',isActive?'version-active':'',isLatest?'version-latest':'',isBaseline?'version-baseline':''].filter(Boolean).join(' ');
+  return '<details class="'+classes+'"><summary><span class="version-title"><span class="version-model-id">'+escape(manifest.model_id)+'</span>'+
+    badge(role[0],'version-state '+role[1])+(isLatest?badge('Latest trained','version-state version-newest'):'')+'</span>'+
     '<small class="version-date">'+(finished?'Trained '+escape(dateText(finished)):'Training date not recorded')+'</small></summary>'+
     formatFields([['Training started',dateText(manifest.training?.started_at)],['Training finished',dateText(manifest.training?.finished_at)],['Strategy',manifest.candidate],
       ['Threshold',scoreText(manifest.threshold)],['Training rows',manifest.training?.train_rows??'Not recorded'],['Validation rows',manifest.training?.validation_rows??'Not recorded'],
@@ -53,6 +57,7 @@ function registryPage() {
       ' <select id="compare-'+side+'" aria-describedby="compare-date-'+side+'">'+comparisonOptions(versions,index===0?first:second,latest)+
       '</select><small class="comparison-picked-date" id="compare-date-'+side+'"></small></label>').join('')+
     '</div><div id="model-comparison"></div></section><section class="panel panel-pad firewall-panel"><h2>Available models</h2>'+
+    '<p class="case-note model-registry-note">In use serves new predictions. Latest trained is the newest run and may still need review.</p>'+
     versions.map(item=>versionDetails(item,latest)).join('')+'</section>';
 }
 function renderComparison() {

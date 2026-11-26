@@ -4,9 +4,11 @@ function filtered() {
   const f = state.filters;
   const query = f.search.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const {start,end}=timeBounds();
-  return allFlows().filter(flow => {
+  const flows=state.view==='alerts'?savedAlertFlows:capturedFlows;
+  return [...flows].sort((a,b)=>b.timestamp-a.timestamp).filter(flow => {
     if (f.captureFileId && flow.run!==f.captureFileId) return false;
     if (state.view==='alerts' && flow.kind!=='flag') return false;
+    if (state.view==='alerts' && !f.status && flow.falsePositiveReported && review[flow.id]==='Resolved') return false;
     if (flow.timestamp < start || flow.timestamp > end) return false;
     if (f.protocol && f.protocol !== flow.app && f.protocol !== flow.protocol) return false;
     if (f.decision && f.decision !== flow.kind) return false;
@@ -95,6 +97,7 @@ async function bulkAlertAction(action) {
           review[flow.id]='Resolved';
         } else {
           await managementRequest('/feedback',{flow:{alert_id:flow.alertId}});
+          markReportedFalsePositive(flow);
         }
         selectedAlerts.delete(flow.id);
         succeeded++;
@@ -166,6 +169,7 @@ function renderTable() {
   if (explorer) {
     const suspicious=rows.filter(flow=>flow.kind==='flag').length;
     byId('explorer-total').textContent=num(rows.length);
+    byId('explorer-system').textContent=totalFlowCount==null?'—':num(totalFlowCount);
     byId('explorer-flagged').textContent=num(suspicious);
     byId('explorer-peers').textContent=num(new Set(rows.map(flow=>flow.dst).filter(Boolean)).size);
   }
@@ -188,14 +192,34 @@ function renderTable() {
     '</td><td>' + (alerts?escape(flow.label):verdict(flow)) + '</td>'+
     (explorer?'<td>'+escape(flow.label)+(flow.dataset?'<small class="flow-sub">Actual · '+escape(attackClasses[flow.dataset.attack_category_id])+'</small>':'')+'</td>':'')+'<td class="mono">' +scoreText(flow.score)+ '</td>' +
     (explorer ? '<td>'+badge(escape(flow.source))+'</td>' : '')+
-    (alerts ? '<td>' + badge(escape(review[flow.id] || 'New'),review[flow.id]?'reviewed':'flag') + '</td>' : '') +
+    (alerts ? '<td>' + badge(escape(review[flow.id] || 'New'),review[flow.id]?'reviewed':'flag') +
+      (flow.falsePositiveReported?' '+badge('False positive reported','reviewed'):'') + '</td>' : '') +
     '<td>' + button('<span aria-hidden="true">›</span><span class="sr-only">Inspect ' + flow.id + '</span>','flow',flow.id,'text-button row-arrow') + '</td></tr>'
   )).join('') || '<tr><td class="empty" colspan="' + (explorer||alerts?9:7) + '">No flows match these filters. Try a wider time range or reset the filters.</td></tr>';
   if (alerts) updateAlertSelection();
-  byId('result-count').textContent = rows.length ? (first+1) + '–' + Math.min(first+pageSize,rows.length) + ' of ' + num(rows.length) + (grouped?' groups · '+num(individual.length)+' alerts':alerts?' alerts':' flows') : (alerts?'0 alerts':'0 flows');
   byId('table-prev').disabled = index===0;
   byId('table-next').disabled = (index+1)*pageSize>=rows.length;
   byId('export').disabled = !rows.length;
+  const loadMore=byId('load-more-flows');
+  if (loadMore) {
+    const captureId=state.filters.captureFileId;
+    const cursor=captureId
+      ? alerts?captureAlertFlowCursors[captureId]:captureFlowCursors[captureId]
+      : alerts?alertsNextBeforeId:flowsNextBeforeId;
+    loadMore.disabled=loadingMoreFlows||!cursor;
+    loadMore.textContent=loadingMoreFlows?'Loading…':'Load 250 more';
+  }
+  const total=state.filters.captureFileId
+    ? alerts
+      ? (captureAlertFlowCounts[state.filters.captureFileId]??totalAlertFlowCount)
+      : (captureFlowCounts[state.filters.captureFileId]??totalFlowCount)
+    : alerts?totalAlertFlowCount:totalFlowCount;
+  const totalLabel=state.filters.captureFileId?'in selected capture':alerts?'alerts in system':'flows in system';
+  const systemTotal=total==null?'Database total unavailable':num(total)+' '+totalLabel;
+  byId('result-count').textContent=rows.length
+    ? (first+1)+'–'+Math.min(first+pageSize,rows.length)+' of '+num(rows.length)+' loaded '+(grouped?'groups':alerts?'alerts':'flows')+
+      ' · '+systemTotal
+    : (alerts?'0 alerts':'0 flows')+' · '+systemTotal;
 }
 function tableSection(title, subtitle) {
   const alerts = state.view==='alerts';
@@ -232,12 +256,14 @@ function tableSection(title, subtitle) {
       button('Report false positive','bulkAlert','report')+
       '<button type="button" class="btn" id="clear-alert-selection" data-action="clearAlertSelection">Clear selection</button>':'')+
     '</div><div class="pagination">'+(explorer?'<label class="sort-field">Rows <select id="explorer-size" aria-label="Rows per page">'+
-    [15,25,50].map(size=>'<option'+(size===state.explorerSize?' selected':'')+'>'+size+'</option>').join('')+'</select></label>':'')+'<button class="btn" id="table-prev" data-action="page" data-value="-1">‹ Previous</button><button class="btn" id="table-next" data-action="page" data-value="1">Next ›</button></div></div></section>';
+    [15,25,50].map(size=>'<option'+(size===state.explorerSize?' selected':'')+'>'+size+'</option>').join('')+'</select></label>':'')+
+    (explorer||alerts?'<button class="btn" id="load-more-flows" data-action="loadMoreFlows">Load 250 more</button>':'')+
+    '<button class="btn" id="table-prev" data-action="page" data-value="-1">‹ Previous</button><button class="btn" id="table-next" data-action="page" data-value="1">Next ›</button></div></div></section>';
 }
 
 function explorerOverview() {
   return '<section class="explorer-overview" aria-label="Filtered flow summary">'+
-    [['total','Matching flows'],['flagged','Suspicious flows'],['peers','Destination IPs']].map(([key,label])=>
+    [['total','Loaded matching flows'],['system','Total flows in system'],['flagged','Suspicious flows loaded'],['peers','Destination IPs loaded']].map(([key,label])=>
       '<div><span>'+label+'</span><strong id="explorer-'+key+'">0</strong></div>').join('')+
     '</section>';
 }

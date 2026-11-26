@@ -12,13 +12,13 @@ With published CENTRAL data and train_smote already built, train a model bundle.
 
 The default output is data-pipeline/CENTRAL/output/flowwatch_bundle. To keep an existing bundle, choose a new output directory with --output and pass that path to the server with --bundle. Each bundle contains paired model files, fitted preprocessing, file fingerprints, schema, class mapping, threshold and evaluation results.
 
-Build the React frontend with Node.js 22.12+ and npm, then start FastAPI.
+Start both the React frontend and FastAPI with one command. Install Node.js
+22.12+ and npm first. The launcher uses the repository's `.venv` when available,
+installs frontend dependencies when needed, builds React, and serves the build
+from the same address as the API. Press Ctrl+C to stop the server.
 
-    cd webapp/Dashboard/frontend
-    npm ci
-    npm run build
-    cd ..
-    ..\..\.venv\Scripts\python.exe -m backend.main
+    cd webapp/Dashboard
+    python run_dashboard.py
 
 For frontend development, leave FastAPI running on port 8794 and run `npm run dev`
 in `webapp/Dashboard/frontend`. Vite serves the React app at
@@ -105,7 +105,8 @@ Feedback, job logs and registry history are persisted in .flowwatch at the repos
             ├── config/          Workspace paths and capture discovery
             ├── db/              MySQL schema, setup, and queries
             ├── models/          Request schemas and shared CENTRAL preprocessing
-            ├── routes/          HTTP routes
+            ├── routes/          HTTP paths, methods, and input schemas
+            ├── controllers/     Handle API requests and call backend services
             └── services/        Capture, inference, and model management
 
 FastAPI serves the Vite build from frontend/dist on loopback. Existing traffic tables, inspector and model forms use their current feature controllers inside the React workspace. With a custom --state-dir, model bundles are stored in its own model_backup subdirectory.
@@ -116,16 +117,16 @@ FastAPI serves the Vite build from frontend/dist on loopback. Existing traffic t
 |---|---|
 | What starts the app and connects the API? | [backend/src/app.py](backend/src/app.py) → `create_app()` |
 | How do we listen for traffic on Windows? | [live_capture.py](backend/src/services/live_capture.py) → `LiveCapture.run()` |
-| How do we read an imported PCAP? | [routes/inference.py](backend/src/routes/inference.py) → `upload_capture()`, then [capture/pcap.py](backend/src/services/capture/pcap.py) → `capture_flows()` |
+| How do we read an imported PCAP? | [routes/inference.py](backend/src/routes/inference.py) → [controllers/inference.py](backend/src/controllers/inference.py) → [capture/pcap.py](backend/src/services/capture/pcap.py) |
 | How do we turn packets into a flow? | [capture/flows.py](backend/src/services/capture/flows.py) → `FlowCollector.push()` pairs endpoints and updates counters. `drain()` sets the live time windows. |
 | Where do protocol names and the six raw inputs come from? | [capture/protocols.py](backend/src/services/capture/protocols.py) → `web_observation()`, and [capture/flows.py](backend/src/services/capture/flows.py) → `flow_record()` |
 | How do six raw fields become 19 features? | [central_contract.py](backend/src/models/central_contract.py) → `transform_features()` |
 | How does XGBoost decide whether to alert and which category to show? | [services/inference.py](backend/src/services/inference.py) → `Predictor.predict()` |
 | Where are flows, predictions, alerts and feedback saved? | [db/mysql_store.py](backend/src/db/mysql_store.py) → `save_records()` and `report()`. Table definitions are in [db/schema.sql](backend/src/db/schema.sql). |
-| What happens when I press Start training? | [routes/management.py](backend/src/routes/management.py) → [services/model_management.py](backend/src/services/model_management.py) → `start()` and `train()` → [train_flowwatch.py](../../model/xgboost/train_flowwatch.py) |
+| What happens when I press Start training? | [routes/management.py](backend/src/routes/management.py) → [controllers/management.py](backend/src/controllers/management.py) → [services/model_management.py](backend/src/services/model_management.py) → [train_flowwatch.py](../../model/xgboost/train_flowwatch.py) |
 | Where is the selected model stored? | [services/model_registry.py](backend/src/services/model_registry.py) → `save_active_version()` writes `backend/model_backup/active-version.txt`. |
 | Where can I find each part of Model Management? | [features/management/](frontend/src/features/management/) stores Overview, Feedback, Training, Registry and UI events in separate files. |
-| Where does the IP block button reach Windows? | [routes/firewall.py](backend/src/routes/firewall.py) → [services/firewall.py](backend/src/services/firewall.py) → [windows_firewall.ps1](backend/src/services/windows_firewall.ps1) |
+| Where does the IP block button reach Windows? | [routes/firewall.py](backend/src/routes/firewall.py) → [controllers/firewall.py](backend/src/controllers/firewall.py) → [services/firewall.py](backend/src/services/firewall.py) → [windows_firewall.ps1](backend/src/services/windows_firewall.ps1) |
 
 To trace a prediction end to end, start with `LiveCapture.run()` or
 `capture_flows()`, then open `flow_record()`, `transform_features()`,

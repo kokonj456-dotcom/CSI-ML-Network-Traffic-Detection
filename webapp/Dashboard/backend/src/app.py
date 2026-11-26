@@ -4,9 +4,8 @@ from contextlib import asynccontextmanager
 from os import environ
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from dotenv import dotenv_values
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from mysql.connector import Error as MySQLError
@@ -14,8 +13,9 @@ import uvicorn
 
 from .routes.inference import mount_inference
 from .routes.firewall import mount_firewall
+from .routes.frontend import mount_frontend
 from .routes.management import mount_management
-from .config import DASHBOARD, DEFAULT_BUNDLE, FRONTEND_BUILD, MODEL_BACKUP_DIR, STATE_DIR
+from .config import DASHBOARD, DEFAULT_BUNDLE, MODEL_BACKUP_DIR, STATE_DIR
 from .services.inference import Predictor
 from .services.firewall import Firewall
 from .services.live_capture import LiveCapture
@@ -32,7 +32,8 @@ def create_app(bundle=DEFAULT_BUNDLE, state_dir=STATE_DIR):
     config = {**dotenv_values(DASHBOARD/".env"), **environ} if default_workspace else {}
     live = LiveCapture(store, manager, config.get("FLOWWATCH_LIVE_INTERFACE"), config.get("FLOWWATCH_LIVE_IP"),
                        config.get("FLOWWATCH_LIVE_DIRECTION", "inbound"),
-                       capture_https=config.get("FLOWWATCH_LIVE_HTTPS", "on").strip().lower() != "off")
+                       capture_https=config.get("FLOWWATCH_LIVE_HTTPS", "on").strip().lower() != "off",
+                       settings_path=state_dir/"live_capture.json")
     firewall = Firewall(config.get("FLOWWATCH_WINDOWS_FIREWALL", "off").strip().lower() == "on")
 
     @asynccontextmanager
@@ -53,22 +54,10 @@ def create_app(bundle=DEFAULT_BUNDLE, state_dir=STATE_DIR):
         return JSONResponse({"detail": "MySQL is unavailable or its schema has not been initialized."}, status_code=503)
 
     mount_management(app, manager)
-    mount_inference(app, manager, store)
+    mount_inference(app, manager, store, live)
     mount_firewall(app, firewall, live.address)
 
-    @app.get("/api/traffic/live")
-    def live_status():
-        return live.snapshot()
-
-    app.mount("/assets", StaticFiles(directory=FRONTEND_BUILD/"assets", check_dir=False), name="frontend-assets")
-
-    @app.get("/", include_in_schema=False)
-    @app.get("/index.html", include_in_schema=False)
-    def frontend():
-        index = FRONTEND_BUILD/"index.html"
-        if not index.is_file():
-            raise HTTPException(503, "Build the React frontend with npm ci and npm run build in the frontend folder.")
-        return FileResponse(index, headers={"Cache-Control":"no-store"})
+    mount_frontend(app)
 
     return app
 
