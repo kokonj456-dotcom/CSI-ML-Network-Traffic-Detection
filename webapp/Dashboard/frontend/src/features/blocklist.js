@@ -64,7 +64,7 @@ function exportBlockIps() {
   toast('Exported '+num(ips.length)+' active IPs');
 }
 function blockPage() {
-  return heading(button('View active rules','firewallRules')+button('Export IPs (.txt)','exportBlockIps')+
+  return heading(button('Read Firewall','openFirewallLog')+button('View active rules','firewallRules')+button('Export IPs (.txt)','exportBlockIps')+
     button('Block IP','blockIp','[]','primary'))+
     '<section class="block-banner"><div><strong>Windows Firewall</strong><p id="firewall-status" role="status">Checking firewall connection…</p></div><span id="block-count" class="badge flag"></span></section>'+
     '<section class="panel table-panel"><div class="panel-head table-head"><div><h2>'+uiSymbol('⊙')+'IP block rules</h2><p>Temporary blocks and their history</p></div></div>'+
@@ -92,7 +92,9 @@ function renderBlocks() {
       return '<tr><td>'+ipLink(b.ip)+'</td><td>'+badge(status,status==='Active'?'flag':'')+'</td><td class="block-reason">'+escape(b.reason)+
         (b.flowId?'<small>'+(ref?button(escape(b.flowId),'flow',b.flowId,'text-button'):escape(b.flowId))+'</small>':'')+
         '</td><td>Local analyst</td><td>'+blockDate(b.createdAt)+'</td><td>'+blockDate(b.expiresAt)+
-        '</td><td>'+(b.enabled?'<div class="actions">'+button('Edit','editBlock',b.id,'btn')+button('Unblock','unblockIp',b.id,'btn')+'</div>':b.unblockedAt?'<span class="muted">'+blockDate(b.unblockedAt)+'</span>':'—')+'</td></tr>';
+        '</td><td><div class="actions">'+button('View Log','openFirewallLog',b.id,'btn')+
+        (b.enabled?button('Edit','editBlock',b.id,'btn')+button('Unblock','unblockIp',b.id,'btn'):
+          b.unblockedAt?'<span class="muted">'+blockDate(b.unblockedAt)+'</span>':'')+'</div></td></tr>';
     }).join('') || '<tr><td class="empty" colspan="7">'+(blocks.length?'No blocks match these filters.':'No IPs have been blocked. Use Block IP or open a suspicious flow.')+'</td></tr>';
   }
 }

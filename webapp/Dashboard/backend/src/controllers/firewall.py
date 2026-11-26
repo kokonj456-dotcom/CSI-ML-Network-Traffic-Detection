@@ -33,6 +33,16 @@ class FirewallController:
     def rules(self):
         return self.run("list") | {"connected": self.firewall.enabled}
 
+    def open_log(self, request, rule_id=None):
+        self.local_write(request)
+        try:
+            self.firewall.open_log(rule_id)
+        except LookupError as error:
+            raise HTTPException(404, str(error)) from error
+        except RuntimeError as error:
+            raise HTTPException(503, str(error)) from error
+        return {"ok": True}
+
     def add(self, body, request):
         self.local_write(request)
         now = epoch_ms()
