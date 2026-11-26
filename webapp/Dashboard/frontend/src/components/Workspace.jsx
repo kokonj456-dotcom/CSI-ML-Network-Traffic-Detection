@@ -31,24 +31,15 @@ function Sidebar({ views, view, alerts, theme }) {
             </button>
           ))}
         </div>
-        <button type="button" className="account" data-action="lock" aria-label="Lock workspace">
-          <span className="avatar">LA</span>
-          <span><strong>Local analyst</strong><small>Lock workspace</small></span>
-          <span aria-hidden="true">↗</span>
-        </button>
       </div>
     </aside>
   );
 }
 
-function Topbar({ title, modelAvailable }) {
+function Topbar({ title }) {
   return (
     <header className="topbar">
       <div><span>Workspace</span><span className="slash">/</span><strong id="breadcrumb">{title}</strong></div>
-      <div className="top-right">
-        <span className="demo">{modelAvailable ? 'Offline model available' : 'Backend unavailable'}</span>
-        <button type="button" className="icon-button" data-action="navigate" data-value="alerts" aria-label="Open alerts">♧<i /></button>
-      </div>
     </header>
   );
 }
@@ -73,14 +64,14 @@ function ModelManagement({ title, description, tab, tabs }) {
   );
 }
 
-export function Workspace({ views, view, alerts, theme, locked, modelAvailable, modelInfo, captureCount, latestCapture, liveStatus, monitor, management }) {
+export function Workspace({ views, view, alerts, theme, locked, modelInfo, captureCount, latestCapture, liveStatus, monitor, management }) {
   const pageProps = { title: views[view][1], description: views[view][2], modelInfo };
   return (
     <>
       <div className="shell" id="workspace" hidden={locked}>
         <Sidebar views={views} view={view} alerts={alerts} theme={theme} />
         <main>
-          <Topbar title={views[view][1]} modelAvailable={modelAvailable} />
+          <Topbar title={views[view][1]} />
           <div key={view} className="content" id="page">
             {view === 'live' && <LiveMonitor {...monitor} description={pageProps.description} />}
             {view === 'management' && <ModelManagement {...pageProps} {...management} />}
