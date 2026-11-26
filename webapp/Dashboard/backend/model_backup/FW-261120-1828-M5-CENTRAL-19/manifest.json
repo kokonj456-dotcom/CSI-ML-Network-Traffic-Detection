@@ -1,0 +1,70 @@
+{
+  "model_id": "flowwatch-central-m5_19",
+  "schema_version": 5,
+  "feature_names": [
+    "log_duration",
+    "log_bytes_forward",
+    "log_bytes_backward",
+    "signed_log_bytes_ratio",
+    "proto_tcp",
+    "proto_udp",
+    "proto_icmp",
+    "proto_other",
+    "service_dns",
+    "service_ftp",
+    "service_http",
+    "service_https_ssl",
+    "service_smtp",
+    "service_ssh",
+    "service_other",
+    "state_established",
+    "state_no-reply",
+    "state_reset",
+    "state_other"
+  ],
+  "class_names": [
+    "Benign / Normal",
+    "Denial of Service (DoS)",
+    "Reconnaissance & Probing",
+    "Exploits & PrivEsc",
+    "Credential Abuse (R2L)",
+    "Malware, C2 & Botnet"
+  ],
+  "threshold": 0.5,
+  "files": {
+    "binary.json": "bd9c4991bcab1b1992bb2a43e156578d1dcd8bf1a419649b34099db8394afca6",
+    "multiclass.json": "5735c02a1d2b93bb78971f4ea1d4ab0d167bbcead85b0003e5dbbad2035eaca4",
+    "preprocessor.joblib": "54448a7fec88809e085ae3e60e06ffa1d5725f1e871267dcb988fb8c3c6475a9"
+  },
+  "fit_record_ids_sha256": "b119af8a68a926a3c60be69ed90e5dc3082a4a2ad9c5f904f37a70a03542614f",
+  "dataset_audit_sha256": "f0b4e186da160fedc0efc18f95b59e94d39a71d7bd760f57cc0be741768a7904",
+  "candidate": "central_19",
+  "scope": "diagnostic",
+  "evaluation_sha256": "21e2c7ce1aed71b8c192127cb947f90237d80eef7719b3904ef154dd9a861172",
+  "training": {
+    "started_at": "2026-11-20T18:20:00+00:00",
+    "finished_at": "2026-11-20T18:28:00+00:00",
+    "dataset": "CENTRAL-19 (Harmonized 19 features, 4 datasets)",
+    "train_rows": 467860,
+    "validation_rows": 121199,
+    "test_rows": 143095,
+    "strategy": "central_19",
+    "seed": 42,
+    "config": {
+      "strategy": "central_19",
+      "max_validation_fpr": 0.05,
+      "stage1": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "tree_method": "hist"
+      },
+      "stage2": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "tree_method": "hist"
+      }
+    }
+  }
+}
