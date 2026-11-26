@@ -1,5 +1,5 @@
 {
-  "model_id": "flowwatch-central-v1-de4e3f887662",
+  "model_id": "flowwatch-central-m9-production",
   "schema_version": 5,
   "feature_names": [
     "log_duration",
@@ -30,14 +30,51 @@
     "Credential Abuse (R2L)",
     "Malware, C2 & Botnet"
   ],
-  "threshold": 0.44,
+  "threshold": 0.45,
   "files": {
-    "binary.json": "de4e3f8876625b405f3bf90b3039461c6a59ce74fa1ad4bd1ca2b34dd5b8fd8e",
-    "multiclass.json": "3b6fef8f50482ab0a6310739ef4b518ab92659de6fb74ae048193c5f1ebc729e",
+    "binary.json": "95876463b79116888080b1d568489fe2d1cac7eb48c858e61a8dd722b8582b27",
+    "multiclass.json": "a200fdc1a54d980a2da85c9e3c02c6a7c05636d4d9acff626bf3fcce6b95f8d0",
     "preprocessor.joblib": "54448a7fec88809e085ae3e60e06ffa1d5725f1e871267dcb988fb8c3c6475a9"
   },
   "fit_record_ids_sha256": "b119af8a68a926a3c60be69ed90e5dc3082a4a2ad9c5f904f37a70a03542614f",
   "dataset_audit_sha256": "f0b4e186da160fedc0efc18f95b59e94d39a71d7bd760f57cc0be741768a7904",
-  "candidate": "class_weighted",
-  "scope": "diagnostic"
+  "candidate": "m9_production_5m",
+  "scope": "production",
+  "evaluation_sha256": "f90fbdd008ebcd4cbde1ab850950971437de0e0534967380a5696917746f2ac8",
+  "training": {
+    "started_at": "2026-11-21T02:45:00+00:00",
+    "finished_at": "2026-11-21T02:56:00+00:00",
+    "dataset": "CENTRAL-FINAL 5.04M (NSL-KDD, UNSW-NB15, CIC-IDS2017, BoT-IoT)",
+    "train_rows": 5036579,
+    "validation_rows": 121199,
+    "test_rows": 143095,
+    "strategy": "two_stage_unified_production",
+    "seed": 42,
+    "config": {
+      "strategy": "two_stage_unified_production",
+      "max_validation_fpr": 0.05,
+      "stage1": {
+        "n_estimators": 250,
+        "max_depth": 10,
+        "learning_rate": 0.11381302382284085,
+        "subsample": 0.7551457477400791,
+        "colsample_bytree": 0.7863368278189358,
+        "min_child_weight": 2,
+        "gamma": 0.3811369691472948,
+        "reg_alpha": 0.36501923658178836,
+        "reg_lambda": 2.359314067441275
+      },
+      "stage2": {
+        "n_estimators": 250,
+        "max_depth": 10,
+        "learning_rate": 0.11800447538943845,
+        "subsample": 0.8351506943886505,
+        "colsample_bytree": 0.8165462527224079,
+        "min_child_weight": 2,
+        "gamma": 0.41036650461271407,
+        "reg_alpha": 0.012596178203399441,
+        "reg_lambda": 3.016850140644795
+      }
+    }
+  }
 }
