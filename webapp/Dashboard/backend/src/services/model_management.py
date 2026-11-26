@@ -166,7 +166,12 @@ class Management:
                     stream.seek(max(0,log.stat().st_size-2400))
                     row["log_tail"] = stream.read(2400).decode("utf-8", errors="replace")
         versions = []
-        for identifier in ["baseline",*(row["id"] for row in jobs if row["status"]=="completed")]:
+        known_identifiers = ["baseline", *(row["id"] for row in jobs if row["status"]=="completed")]
+        for marker in sorted(self.registry.backup_dir.glob("*/.registry-version")):
+            ver = marker.read_text(encoding="utf-8").strip()
+            if ver and ver not in known_identifiers:
+                known_identifiers.append(ver)
+        for identifier in known_identifiers:
             try:
                 versions.append(self.registry.get_bundle(identifier))
             except (OSError, ValueError):
@@ -194,10 +199,12 @@ class Management:
 
     def activate(self, body):
         with self.lock, self.connect() as db:
-            if body.version != "baseline" and not db.execute(
-                "SELECT 1 FROM jobs WHERE id=? AND status='completed'",(body.version,)
-            ).fetchone():
-                raise ValueError("Only a completed candidate or the baseline can be activated.")
+            is_job = db.execute(
+                "SELECT 1 FROM jobs WHERE id=? AND status='completed'", (body.version,)
+            ).fetchone()
+            is_registered = (self.registry.bundle_path(body.version)/"manifest.json").is_file()
+            if body.version != "baseline" and not is_job and not is_registered:
+                raise ValueError("Only a completed candidate or a registered backup model can be activated.")
             model = self.registry.load_candidate(body.version)
             self.registry.save_active_version(body.version)
             self.version, self.predictor = body.version, model
