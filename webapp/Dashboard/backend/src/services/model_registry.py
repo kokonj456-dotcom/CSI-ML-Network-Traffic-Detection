@@ -73,7 +73,7 @@ class ModelRegistry:
         return directory
 
     def bundle_path(self, version):
-        if version != "baseline" and not re.fullmatch(r"[0-9a-f]{32}", version):
+        if version != "baseline" and not re.fullmatch(r"[0-9a-zA-Z_-]+", version):
             raise ValueError("Unknown model version.")
         for path in self.backup_dir.glob(f"*__{version}"):
             if path.is_dir():
@@ -81,6 +81,8 @@ class ModelRegistry:
         for marker in self.backup_dir.glob("*/.registry-version"):
             if marker.read_text(encoding="utf-8").strip() == version:
                 return marker.parent
+        if (self.backup_dir/version).is_dir():
+            return self.backup_dir/version
         return self.backup_dir/version
 
     def load_candidate(self, version):
