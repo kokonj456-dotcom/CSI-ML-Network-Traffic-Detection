@@ -46,8 +46,7 @@ function trainingFeedbackPicker(rows) {
     '<p class="case-note" id="training-feedback-empty" hidden>No feedback matches your search.</p></div>';
 }
 function referenceConfig() {
-  return trainingReference==='m9'?managementData.parameter_defaults:
-    managementData.versions.find(version=>version.version===trainingReference)?.manifest.training?.config;
+  return managementData.versions.find(version=>version.version===trainingReference)?.manifest.training?.config;
 }
 function referenceParameter(stage, name) {
   return referenceConfig()?.[stage]?.[name]??'Not recorded';
@@ -59,8 +58,7 @@ function updateTrainingReference() {
   document.querySelector('[data-management="useReference"]').disabled=!referenceConfig();
   const model=managementData.versions.find(item=>item.version===trainingReference);
   const finished=model?.manifest.training?.finished_at;
-  byId('training-reference-date').textContent=trainingReference==='m9'?
-    'Default tuning preset':finished?'Trained '+dateText(finished):'Training date not recorded';
+  byId('training-reference-date').textContent=finished?'Trained '+dateText(finished):'Training date not recorded';
 }
 function setTrainingParameters(config) {
   const form=byId('train-model-form');
@@ -76,12 +74,12 @@ function setTrainingParameters(config) {
 function trainingPage() {
   const approved=managementData.feedback.filter(row=>row.status==='approved'&&row.eligible);
   const {versions,latest}=orderedVersions();
-  if (trainingReference==='m9'&&!managementData.parameter_defaults || trainingReference!=='m9'&&!versions.some(item=>item.version===trainingReference)) {
-    trainingReference=managementData.parameter_defaults?'m9':versions[0]?.version;
+  const baseline = versions.find(item=>item.version==='baseline');
+  const baselineConfig = baseline?.manifest.training?.config;
+  if (!versions.some(item=>item.version===trainingReference)) {
+    trainingReference=(baseline??versions[0])?.version;
   }
-  const preset=managementData.parameter_defaults?'<optgroup label="Tuning preset"><option value="m9"'+
-    (trainingReference==='m9'?' selected':'')+'>M9 Production</option></optgroup>':'';
-  const referenceOptions=preset+comparisonOptions(versions,versions.find(item=>item.version===trainingReference),latest);
+  const referenceOptions=comparisonOptions(versions,versions.find(item=>item.version===trainingReference),latest);
   const strategyOptions=Object.entries(trainingStrategies).map(([value,strategy])=>
     '<option value="'+escape(value)+'"'+(trainingStrategy===value?' selected':'')+'>'+escape(strategy.label)+'</option>').join('');
   const formFields=stage=>'<details class="training-stage"><summary>'+ (stage==='stage1'?'Stage 1 · Attack detection':'Stage 2 · Category')+
@@ -89,7 +87,7 @@ function trainingPage() {
     '<span>Training input</span><span>Reference</span></div>'+Object.entries(managementData.parameters).map(([name,rule])=>
       '<div class="training-parameter"><label for="'+stage+'-'+name+'">'+escape(name)+'</label>'+
       '<div class="training-input-value"><input required type="number" id="'+stage+'-'+name+'" name="'+stage+'.'+name+'" min="'+rule.min+'" max="'+rule.max+'" step="'+
-      (rule.integer?'1':'any')+'" value="'+(managementData.parameter_defaults?.[stage]?.[name]??rule.default)+'"></div>'+
+      (rule.integer?'1':'any')+'" value="'+(baselineConfig?.[stage]?.[name]??rule.default)+'"></div>'+
       '<output class="training-reference-value" aria-label="Reference '+escape(name)+'" data-reference-stage="'+stage+'" data-reference-parameter="'+name+'">'+
       escape(String(referenceParameter(stage,name)))+'</output></div>').join('')+'</div></details>';
   return '<div class="training-layout"><section class="panel panel-pad"><h2>'+uiSymbol('☷')+'Configure training</h2>'+
@@ -100,7 +98,8 @@ function trainingPage() {
     '<fieldset><legend>Training strategy</legend><label for="training-strategy">How should the candidate be trained?'+
     '<select id="training-strategy" name="strategy">'+strategyOptions+'</select></label>'+
     '<small class="case-note" id="training-strategy-help">'+escape(trainingStrategies[trainingStrategy]?.help||'')+'</small></fieldset>'+
-    '<fieldset><legend>XGBoost parameters</legend><p class="case-note">The form starts with M9 Production values.</p>'+
+    '<fieldset><legend>XGBoost parameters</legend><p class="case-note">'+
+    (baselineConfig?'The form starts with Baseline values. Unrecorded parameters use their training defaults.':'Baseline parameters are unavailable. The form uses training defaults.')+'</p>'+
     '<label>Reference model <select id="training-reference" aria-describedby="training-reference-date">'+referenceOptions+'</select>'+
     '<small class="comparison-picked-date" id="training-reference-date"></small></label>'+
     '<div class="actions training-param-actions">'+managedButton('Use reference values','useReference','')+
