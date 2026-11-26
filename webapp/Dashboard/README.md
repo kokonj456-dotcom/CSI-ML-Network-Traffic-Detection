@@ -110,6 +110,27 @@ Feedback, job logs and registry history are persisted in .flowwatch at the repos
 
 FastAPI serves the Vite build from frontend/dist on loopback. Existing traffic tables, inspector and model forms use their current feature controllers inside the React workspace. With a custom --state-dir, model bundles are stored in its own model_backup subdirectory.
 
+## Where to start when presenting the code
+
+| Question | File or function to open |
+|---|---|
+| What starts the app and connects the API? | [backend/src/app.py](backend/src/app.py) → `create_app()` |
+| How do we listen for traffic on Windows? | [live_capture.py](backend/src/services/live_capture.py) → `LiveCapture.run()` |
+| How do we read an imported PCAP? | [routes/inference.py](backend/src/routes/inference.py) → `upload_capture()`, then [capture/pcap.py](backend/src/services/capture/pcap.py) → `capture_flows()` |
+| How do we turn packets into a flow? | [capture/flows.py](backend/src/services/capture/flows.py) → `FlowCollector.push()` pairs endpoints and updates counters. `drain()` sets the live time windows. |
+| Where do protocol names and the six raw inputs come from? | [capture/protocols.py](backend/src/services/capture/protocols.py) → `web_observation()`, and [capture/flows.py](backend/src/services/capture/flows.py) → `flow_record()` |
+| How do six raw fields become 19 features? | [central_contract.py](backend/src/models/central_contract.py) → `transform_features()` |
+| How does XGBoost decide whether to alert and which category to show? | [services/inference.py](backend/src/services/inference.py) → `Predictor.predict()` |
+| Where are flows, predictions, alerts and feedback saved? | [db/mysql_store.py](backend/src/db/mysql_store.py) → `save_records()` and `report()`. Table definitions are in [db/schema.sql](backend/src/db/schema.sql). |
+| What happens when I press Start training? | [routes/management.py](backend/src/routes/management.py) → [services/model_management.py](backend/src/services/model_management.py) → `start()` and `train()` → [train_flowwatch.py](../../model/xgboost/train_flowwatch.py) |
+| Where is the selected model stored? | [services/model_registry.py](backend/src/services/model_registry.py) → `save_active_version()` writes `backend/model_backup/active-version.txt`. |
+| Where can I find each part of Model Management? | [features/management/](frontend/src/features/management/) stores Overview, Feedback, Training, Registry and UI events in separate files. |
+| Where does the IP block button reach Windows? | [routes/firewall.py](backend/src/routes/firewall.py) → [services/firewall.py](backend/src/services/firewall.py) → [windows_firewall.ps1](backend/src/services/windows_firewall.ps1) |
+
+To trace a prediction end to end, start with `LiveCapture.run()` or
+`capture_flows()`, then open `flow_record()`, `transform_features()`,
+`Predictor.predict()`, and `MySQLStore.save_records()` in that order.
+
 ## Windows Firewall
 
 Set `FLOWWATCH_WINDOWS_FIREWALL=on` and run the loopback backend as Administrator.

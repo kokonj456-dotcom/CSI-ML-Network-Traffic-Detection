@@ -7,7 +7,7 @@ from time import monotonic, time
 
 from scapy.all import AsyncSniffer, conf
 
-from .captures import FlowCollector, flow_record
+from .capture.flows import FlowCollector, flow_record
 
 
 class LiveCapture:

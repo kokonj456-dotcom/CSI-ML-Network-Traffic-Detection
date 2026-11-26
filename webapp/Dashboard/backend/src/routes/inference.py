@@ -9,7 +9,7 @@ from scapy.error import Scapy_Exception
 from starlette.concurrency import run_in_threadpool
 
 from ..config import CAPTURES, capture_files
-from ..services.captures import capture_flows
+from ..services.capture.pcap import capture_flows
 
 MAX_CAPTURE_BYTES = 32*1024*1024
 CAPTURE_MAGIC = {bytes.fromhex(value) for value in ("d4c3b2a1","a1b2c3d4","4d3cb2a1","a1b23c4d","0a0d0d0a")}

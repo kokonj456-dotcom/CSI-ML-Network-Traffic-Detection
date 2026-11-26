@@ -63,34 +63,47 @@ class Predictor:
             return output
         start = perf_counter()
         raw = pd.DataFrame([item for _, item in valid]).assign(record_id=[str(i) for i, _ in valid])
-        X = transform_features(raw, self.prep)[NAMES]
-        scores = self.binary.predict_proba(X)[:, 1]
-        probabilities = self.multi.predict_proba(X)
+        features = transform_features(raw, self.prep)[NAMES]
+        attack_scores = self.binary.predict_proba(features)[:, 1]
+        category_probabilities = self.multi.predict_proba(features)
         latency = (perf_counter() - start) * 1000 / len(valid)
-        contributions = self.binary.get_booster().predict(xgb.DMatrix(X), pred_contribs=True) if explain else None
+        contributions = None
+        if explain:
+            contributions = self.binary.get_booster().predict(xgb.DMatrix(features), pred_contribs=True)
         threshold = self.manifest["threshold"]
-        for row,(index, item) in enumerate(valid):
-            score = float(scores[row])
+
+        for row, (index, item) in enumerate(valid):
+            score = float(attack_scores[row])
             flagged = score >= threshold
-            best = int(probabilities[row].argmax()) if flagged else None
+            probabilities = category_probabilities[row]
+            best = int(probabilities.argmax()) if flagged else None
             unclear = flagged and best == 0
-            class_id = None if unclear else best if flagged else 0
-            candidate = int(probabilities[row,1:].argmax())+1 if flagged else None
+            class_id = 0
+            if flagged:
+                class_id = None if unclear else best
+            candidate = int(probabilities[1:].argmax()) + 1 if flagged else None
+
+            top_factors = None
+            if contributions is not None:
+                row_contributions = contributions[row]
+                feature_indices = sorted(range(len(NAMES)), key=lambda i: abs(row_contributions[i]), reverse=True)
+                top_factors = [
+                    {"feature": NAMES[i], "log_odds_delta": float(row_contributions[i])}
+                    for i in feature_indices[:5]
+                ]
+
             output[index] = {
                 "status":"scored", "model_id":self.manifest["model_id"], "flagged":bool(flagged),
                 "inference_ms":latency,
                 "binary_score":score, "threshold":threshold, "class_id":class_id,
-                "class_score":float(probabilities[row,best]) if flagged and not unclear else None,
+                "class_score":float(probabilities[best]) if flagged and not unclear else None,
                 "stage2_top_class_id":best,
-                "stage2_top_score":float(probabilities[row,best]) if flagged else None,
+                "stage2_top_score":float(probabilities[best]) if flagged else None,
                 "best_attack_candidate_id":candidate,
-                "best_attack_candidate_score":float(probabilities[row,candidate]) if flagged else None,
+                "best_attack_candidate_score":float(probabilities[candidate]) if flagged else None,
                 "category_unclear":bool(unclear), "raw_inputs":item,
-                "encoded_inputs":{name:float(value) for name,value in X.iloc[row].items()},
+                "encoded_inputs":{name:float(value) for name,value in features.iloc[row].items()},
                 "preprocessor_sha256":self.manifest["files"]["preprocessor.joblib"],
-                "binary_contributions": [
-                    {"feature":NAMES[i],"log_odds_delta":float(row_contributions[i])}
-                    for i in sorted(range(len(NAMES)),key=lambda i:abs(row_contributions[i]),reverse=True)[:5]
-                ] if (row_contributions := contributions[row] if contributions is not None else None) is not None else None,
+                "binary_contributions":top_factors,
             }
         return output

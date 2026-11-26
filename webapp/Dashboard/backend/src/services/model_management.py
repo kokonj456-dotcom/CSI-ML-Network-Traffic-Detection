@@ -1,22 +1,19 @@
 """Local feedback, training jobs and version registry for Flowwatch."""
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import hashlib
 import hmac
 import json
-from pathlib import Path
-import re
 import secrets
-import shutil
 import sqlite3
-from tempfile import TemporaryDirectory
 import subprocess
 import sys
 from threading import Lock, Thread
-from time import sleep
 from uuid import uuid4
 
 
 from ..config import ROOT, TRAINER
+from .model_registry import ModelRegistry
+
 sys.path.insert(0, str(TRAINER.parent))
 from train_flowwatch import CENTRAL, PARAMETERS, normalize_config  # noqa: E402
 
@@ -39,16 +36,9 @@ class Management:
         self.directory = directory.resolve()
         self.directory.mkdir(parents=True, exist_ok=True)
         self.db = self.directory/"management.sqlite3"
-        self.backup_dir = backup_dir.resolve()
-        self.backup_dir.mkdir(parents=True, exist_ok=True)
-        self.active_path = self.backup_dir/"active-version.txt"
-        self.predictor_class = predictor_class
+        self.registry = ModelRegistry(backup_dir, predictor_class)
         self.traffic_store = traffic_store
-        self.base = self.bundle_path("baseline")
-        if not self.base.exists():
-            legacy_baseline = self.directory/"baseline"
-            self.copy_backup(legacy_baseline if legacy_baseline.is_dir() else existing_bundle.resolve(), self.base)
-        self.base = self.name_backup(self.base, "baseline")
+        self.registry.prepare_baseline(existing_bundle, self.directory/"baseline")
         self.key = secrets.token_bytes(32)
         self.lock = Lock()
         with self.connect() as db:
@@ -64,95 +54,27 @@ class Management:
             for job in db.execute("SELECT id FROM jobs WHERE status='completed'"):
                 version = job["id"]
                 legacy_bundle = self.directory/"jobs"/version/"bundle"
-                destination = self.bundle_path(version)
-                if legacy_bundle.is_dir() and not destination.exists():
-                    self.copy_backup(legacy_bundle, destination)
-                if destination.is_dir():
-                    self.name_backup(destination, version)
-            if self.active_path.is_file():
-                self.version = self.active_path.read_text(encoding="utf-8").strip()
+                self.registry.restore_backup(version, legacy_bundle)
+            if self.registry.active_path.is_file():
+                self.version = self.registry.active_path.read_text(encoding="utf-8").strip()
             else:
                 legacy = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='activations'").fetchone()
                 row = db.execute("SELECT version FROM activations ORDER BY id DESC LIMIT 1").fetchone() if legacy else None
                 self.version = row["version"] if row else "baseline"
-                self.save_active_version(self.version)
+                self.registry.save_active_version(self.version)
         self.load_warning = None
         try:
-            self.predictor = self.load_candidate(self.version)
+            self.predictor = self.registry.load_candidate(self.version)
         except (OSError, ValueError, KeyError) as error:
             if self.version == "baseline":
                 raise
             self.load_warning = f"Saved activation could not be restored. Baseline loaded: {error}"
             self.version = "baseline"
-            self.predictor = self.load_candidate(self.version)
+            self.predictor = self.registry.load_candidate(self.version)
 
     def connect(self):
         # The caller's context manager commits/rolls back and closes the connection.
         return Connection(self.db)
-
-    def save_active_version(self, version):
-        with TemporaryDirectory(dir=self.backup_dir) as temp:
-            staged = Path(temp)/self.active_path.name
-            staged.write_text(version+"\n", encoding="utf-8")
-            staged.replace(self.active_path)
-
-    def copy_backup(self, source, destination):
-        with TemporaryDirectory(dir=self.backup_dir) as temp:
-            staged = Path(temp)/"bundle"
-            shutil.copytree(source, staged)
-            self.predictor_class(staged)
-            staged.rename(destination)
-
-    def name_backup(self, directory, version):
-        prefix = "Base" if version == "baseline" else "FW"
-        if directory.name == version:
-            manifest = json.loads((directory/"manifest.json").read_text(encoding="utf-8"))
-            finished = (manifest.get("training") or {}).get("finished_at")
-            timestamp = datetime.fromisoformat(finished) if finished else datetime.now(timezone.utc)
-            local_time = timestamp.astimezone(timezone(timedelta(hours=7)))
-        else:
-            old_stamp = re.search(r"__(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})_ICT(?:__.+|_\d+)?$", directory.name)
-            if not old_stamp:
-                return directory
-            local_time = datetime.strptime(old_stamp[1], "%Y-%m-%d_%H-%M-%S")
-        name = f"{prefix}-{local_time:%y%m%d-%H%M}"
-        destination = self.backup_dir/name
-        suffix = 2
-        while destination.exists():
-            destination = self.backup_dir/f"{name}_{suffix}"
-            suffix += 1
-        # Explorer and antivirus can briefly hold Windows directory handles.
-        # The registry can still resolve a verified bundle from its version directory.
-        for delay in (0, .25, .5, 1):
-            if delay:
-                sleep(delay)
-            try:
-                (directory/".registry-version").write_text(version, encoding="utf-8")
-                return directory.rename(destination)
-            except PermissionError:
-                continue
-        return directory
-
-    def bundle_path(self, version):
-        if version != "baseline" and not re.fullmatch(r"[0-9a-f]{32}", version):
-            raise ValueError("Unknown model version.")
-        for path in self.backup_dir.glob(f"*__{version}"):
-            if path.is_dir():
-                return path
-        for marker in self.backup_dir.glob("*/.registry-version"):
-            if marker.read_text(encoding="utf-8").strip() == version:
-                return marker.parent
-        return self.backup_dir/version
-
-    def load_candidate(self, version):
-        model = self.predictor_class(self.bundle_path(version))
-        result = model.predict([{
-            "duration":1, "bytes_forward":120, "bytes_backward":50,
-            "protocol":"tcp", "service_group":"http", "conn_state_group":"established",
-        }])
-        if result[0]["status"] != "scored":
-            raise ValueError("Inference smoke check failed.")
-        return model
 
     def sign(self, encoded):
         return hmac.new(self.key, encoded.encode(), hashlib.sha256).hexdigest()
@@ -227,14 +149,6 @@ class Management:
             if not changed.rowcount:
                 raise ValueError("Feedback is unavailable or already reviewed.")
 
-    def get_bundle(self, version):
-        directory = self.bundle_path(version)
-        with (directory/"manifest.json").open(encoding="utf-8") as stream:
-            manifest = json.load(stream)
-        with (directory/"evaluation.json").open(encoding="utf-8") as stream:
-            evaluation = json.load(stream)
-        return {"version":version,"manifest":manifest,"evaluation":evaluation}
-
     def overview(self):
         with self.lock, self.connect() as db:
             feedback = [dict(row) for row in db.execute("SELECT * FROM feedback ORDER BY created DESC")]
@@ -255,7 +169,7 @@ class Management:
         versions = []
         for identifier in ["baseline",*(row["id"] for row in jobs if row["status"]=="completed")]:
             try:
-                versions.append(self.get_bundle(identifier))
+                versions.append(self.registry.get_bundle(identifier))
             except (OSError, ValueError):
                 continue
         return {
@@ -308,11 +222,11 @@ class Management:
         try:
             with (folder/"training.log").open("wb") as log:
                 result = subprocess.run([sys.executable,"-u",str(TRAINER),"--run-config",str(folder/"run.json"),
-                                          "--output",str(self.bundle_path(identifier)),"--managed-output"], cwd=ROOT,stdout=log,stderr=subprocess.STDOUT)
+                                          "--output",str(self.registry.bundle_path(identifier)),"--managed-output"], cwd=ROOT,stdout=log,stderr=subprocess.STDOUT)
             if result.returncode:
                 raise ValueError(f"Training exited with code {result.returncode}. See job output.")
-            self.load_candidate(identifier)
-            self.name_backup(self.bundle_path(identifier), identifier)
+            self.registry.load_candidate(identifier)
+            self.registry.name_backup(self.registry.bundle_path(identifier), identifier)
             status = "completed"
         except Exception as exc:
             error = str(exc)
@@ -325,8 +239,8 @@ class Management:
                 "SELECT 1 FROM jobs WHERE id=? AND status='completed'",(body.version,)
             ).fetchone():
                 raise ValueError("Only a completed candidate or the baseline can be activated.")
-            model = self.load_candidate(body.version)
-            self.save_active_version(body.version)
+            model = self.registry.load_candidate(body.version)
+            self.registry.save_active_version(body.version)
             self.version, self.predictor = body.version, model
             self.load_warning = None
 

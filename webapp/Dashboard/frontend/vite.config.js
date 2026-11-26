@@ -6,7 +6,16 @@ import { defineConfig } from 'vite';
 const featureFiles = [
   'core/state.js', 'core/layout.js', 'features/traffic.js', 'features/monitor.js',
   'features/blocklist.js', 'features/sources.js', 'features/inspector.js',
-  'features/management.js', 'app.js',
+  'features/management/state.js',
+  'features/management/jobs.js',
+  'features/management/page.js',
+  'features/management/evaluation.js',
+  'features/management/overview.js',
+  'features/management/feedback.js',
+  'features/management/training.js',
+  'features/management/registry.js',
+  'features/management/events.js',
+  'app.js',
 ];
 const runtimeId = '\0flowwatch-features';
 
@@ -24,6 +33,7 @@ const featureRuntime = {
       return readFile(path, 'utf8');
     }));
     return 'import { fetchModelMetadata, fetchRecentTraffic, saveAlertStatus, fetchCaptureFlows, uploadCaptureFile } from "/src/api/traffic.js";\n' +
+      'import { managementRequest } from "/src/api/management.js";\n' +
       sources.join('\n') + '\nexport { startWorkspace };';
   },
 };
