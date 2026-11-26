@@ -46,32 +46,28 @@ function render() {
         time(bin.time).slice(0,5)+'–'+time(bin.time+interval).slice(0,5):
         localDay.format(bin.time)+' · '+time(bin.time).slice(0,5);
       const alertRate=bin.total?(100*bin.flags/bin.total).toFixed(1):'0.0';
-      const normalCount = Math.max(0, bin.total - bin.flags);
-      const normalRate = bin.total ? (100 * normalCount / bin.total).toFixed(1) : '100.0';
 
       tip.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:8px;">
-          <strong style="font-size:12px;color:#ffffff;font-family:Consolas,monospace;">${timeLabel}</strong>
-          <span style="font-size:10px;font-weight:700;color:#818cf8;letter-spacing:0.04em;">CLICK TO FILTER</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
+          <span style="font-weight:700;color:#ffffff;font-size:12px;font-family:Consolas,monospace;">${timeLabel}</span>
+          <span style="font-size:10px;font-weight:700;color:#818cf8;letter-spacing:0.5px;">CLICK TO FILTER</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;gap:12px;">
-          <span style="color:#93c5fd;">Total Volume:</span>
-          <strong style="color:#ffffff;">${num(bin.total)} flows (${formatBytes(bin.bytes)})</strong>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:9px;gap:12px;">
-          <span style="color:#93c5fd;">Packets:</span>
-          <strong style="color:#ffffff;">${num(bin.packets)} pkts</strong>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);border-radius:6px;padding:6px 8px;">
-            <div style="color:#6ee7b7;font-size:10px;font-weight:600;">✓ Normal Traffic</div>
-            <div style="font-size:14px;font-weight:700;color:#ffffff;margin:2px 0;">${num(normalCount)}</div>
-            <div style="font-size:10px;color:#a7f3d0;">(${normalRate}%)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:6px;padding:5px 8px;">
+            <div style="color:#a5b4fc;font-size:10px;font-weight:600;display:flex;align-items:center;gap:3px;">
+              <span>⇄</span> Flows
+            </div>
+            <div style="color:#ffffff;font-size:13px;font-weight:700;margin-top:2px;">
+              ${num(bin.total)}
+            </div>
           </div>
-          <div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);border-radius:6px;padding:6px 8px;">
-            <div style="color:#fca5a5;font-size:10px;font-weight:600;">⚑ Attacks</div>
-            <div style="font-size:14px;font-weight:700;color:#ffffff;margin:2px 0;">${num(bin.flags)}</div>
-            <div style="font-size:10px;color:#fecaca;">(${alertRate}%)</div>
+          <div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:5px 8px;">
+            <div style="color:#f87171;font-size:10px;font-weight:600;display:flex;align-items:center;gap:3px;">
+              <span>🚩</span> Alerts
+            </div>
+            <div style="color:#ffffff;font-size:13px;font-weight:700;margin-top:2px;">
+              ${num(bin.flags)} <span style="color:#94a3b8;font-size:10px;font-weight:normal;">(${alertRate}%)</span>
+            </div>
           </div>
         </div>
       `;
