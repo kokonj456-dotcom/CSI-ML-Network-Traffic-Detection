@@ -11,7 +11,9 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from mysql.connector import Error as MySQLError
 import uvicorn
 
+from .routes.captures import mount_captures
 from .routes.inference import mount_inference
+from .routes.traffic import mount_traffic
 from .routes.firewall import mount_firewall
 from .routes.frontend import mount_frontend
 from .routes.management import mount_management
@@ -54,7 +56,9 @@ def create_app(bundle=DEFAULT_BUNDLE, state_dir=STATE_DIR):
         return JSONResponse({"detail": "MySQL is unavailable or its schema has not been initialized."}, status_code=503)
 
     mount_management(app, manager)
-    mount_inference(app, manager, store, live)
+    mount_inference(app, manager, store)
+    mount_captures(app, manager, store)
+    mount_traffic(app, store, live)
     mount_firewall(app, firewall, live.address)
 
     mount_frontend(app)

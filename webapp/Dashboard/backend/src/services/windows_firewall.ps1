@@ -26,6 +26,18 @@ function Find-Rule([string]$id) {
 }
 
 switch ($request.action) {
+    'find-log' {
+        $profiles = @(Get-NetFirewallProfile -PolicyStore ActiveStore | Where-Object LogBlocked -EQ 'True')
+        $paths = @($profiles | ForEach-Object {
+            [Environment]::ExpandEnvironmentVariables([string]$_.LogFileName)
+        } | Where-Object { $_ -match '^[A-Za-z]:\\' } | Sort-Object -Unique)
+        $files = @(foreach ($path in $paths) {
+            Get-Item -LiteralPath $path -ErrorAction SilentlyContinue | Where-Object { !$_.PSIsContainer }
+        })
+        $latest = $files | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+        @{ loggingEnabled = ($profiles.Count -gt 0); path = $latest.FullName; rules = @(Read-FlowwatchRules) } |
+            ConvertTo-Json -Depth 5 -Compress
+    }
     'list' {
         $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
             [Security.Principal.WindowsBuiltInRole]::Administrator)

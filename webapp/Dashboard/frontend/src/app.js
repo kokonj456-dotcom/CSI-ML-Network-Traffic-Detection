@@ -1,5 +1,7 @@
 'use strict';
 
+let firewallLogPending=false;
+
 document.addEventListener('click',async event=>{
   if (event.target.closest('.alert-select')) return;
   const control=event.target.closest('[data-action]');
@@ -53,6 +55,21 @@ document.addEventListener('click',async event=>{
       break;
     case 'firewallRules':
       state.selection={type:'firewallRules'};showInspector();break;
+    case 'openFirewallLog':
+      if (firewallLogPending) break;
+      firewallLogPending=true;
+      control.disabled=true;
+      try {
+        const path='/api/firewall/open-log'+(value?'?rule_id='+encodeURIComponent(value):'');
+        await firewallRequest(path,'POST');
+        toast('Opening the Windows Firewall log in Notepad.');
+      } catch (error) {
+        toast(error.message);
+      } finally {
+        firewallLogPending=false;
+        control.disabled=false;
+      }
+      break;
     case 'exportBlockIps':
       exportBlockIps();break;
     case 'editBlock':

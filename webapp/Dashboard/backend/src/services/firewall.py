@@ -4,8 +4,11 @@ import json
 import os
 from pathlib import Path
 import subprocess
+from tempfile import NamedTemporaryFile, TemporaryDirectory
 from threading import Event, Lock, Thread
 from time import time
+
+from .firewall_log import format_drop_report
 
 
 def epoch_ms():
@@ -18,6 +21,46 @@ class Firewall:
         self.lock = Lock()
         self.stop_event = Event()
         self.worker = None
+        self.log_reports = None
+
+    def open_log(self, rule_id=None):
+        log = self.run("find-log")
+        rule = None
+        if rule_id is not None:
+            rule = next((record for record in log["rules"] if record["id"] == rule_id), None)
+            if rule is None:
+                raise LookupError("This Flowwatch rule is no longer available.")
+        if not log["loggingEnabled"]:
+            raise RuntimeError("Enable Log dropped packets in Windows Firewall before opening its log.")
+        if not log["path"]:
+            raise RuntimeError("No readable Windows Firewall log was found. Check the log path and try again after a packet is dropped.")
+        editor = Path(os.environ["SystemRoot"]) / "System32" / "notepad.exe"
+        try:
+            report = format_drop_report(Path(log["path"]), log["rules"], rule)
+        except PermissionError as error:
+            raise RuntimeError("Flowwatch cannot read the Windows Firewall log. Restart the Flowwatch backend from PowerShell as Administrator.") from error
+        except ValueError as error:
+            raise RuntimeError(str(error)) from error
+        except OSError as error:
+            raise RuntimeError("Could not read the Windows Firewall log. Check that the log still exists and try again.") from error
+        try:
+            with self.lock:
+                if self.log_reports is None:
+                    self.log_reports = TemporaryDirectory(prefix="flowwatch-firewall-", ignore_cleanup_errors=True)
+                with NamedTemporaryFile(
+                    mode="w", encoding="utf-8", dir=self.log_reports.name,
+                    prefix="Firewall drops ", suffix=".txt", delete=False,
+                ) as stream:
+                    stream.write(report)
+                    report_path = stream.name
+        except OSError as error:
+            raise RuntimeError("Could not write the Windows Firewall summary to the temporary folder.") from error
+        try:
+            os.startfile(editor, operation="runas", arguments=subprocess.list2cmdline([report_path]))
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1223:
+                raise RuntimeError("Notepad was not opened because the Windows administrator prompt was canceled.") from error
+            raise RuntimeError("Could not open the Windows Firewall log in Notepad.") from error
 
     def start(self):
         if self.enabled:
@@ -26,6 +69,10 @@ class Firewall:
 
     def stop(self):
         self.stop_event.set()
+        with self.lock:
+            if self.log_reports is not None:
+                self.log_reports.cleanup()
+                self.log_reports = None
 
     def sweep(self):
         while not self.stop_event.is_set():

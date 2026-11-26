@@ -4,8 +4,20 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 const featureFiles = [
-  'core/state.js', 'core/layout.js', 'features/traffic.js', 'features/monitor.js',
-  'features/blocklist.js', 'features/sources.js', 'features/inspector.js',
+  'core/state.js', 'core/layout.js',
+  'features/traffic/filterFlows.js',
+  'features/traffic/endpoints.js',
+  'features/alerts/selection.js',
+  'features/alerts/groupedView.js',
+  'features/traffic/table.js',
+  'features/monitor.js',
+  'features/blocklist.js',
+  'features/traffic/importCapture.js',
+  'features/traffic/mapFlow.js',
+  'features/traffic/loadTraffic.js',
+  'features/inspector/flowDetails.js',
+  'features/inspector/ipHistory.js',
+  'features/inspector/drawer.js',
   'features/management/state.js',
   'features/management/jobs.js',
   'features/management/page.js',

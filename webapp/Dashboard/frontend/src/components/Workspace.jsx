@@ -20,7 +20,9 @@ function Sidebar({ views, view, alerts, theme }) {
           <button key={key} type="button" className={key === view ? 'nav-item active' : 'nav-item'}
             aria-current={key === view ? 'page' : undefined} data-action="navigate" data-value={key}>
             <span className="nav-icon" aria-hidden="true">{icon}</span>{title}
-            {key === 'alerts' && alerts > 0 && <span className="nav-count">{alerts}</span>}
+            {key === 'alerts' && alerts > 0 && <span className="nav-count" title={`${alerts} alerts need review`}>
+              {alerts > 99 ? '99+' : alerts}
+            </span>}
           </button>
         ))}
       </nav>
