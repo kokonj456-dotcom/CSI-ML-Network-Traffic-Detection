@@ -2,7 +2,7 @@
 
 const byId = id => document.getElementById(id);
 const views = {
-  live: ['◈', 'Live Monitor', 'Track network activity, detection trends, and system health.'],
+  live: ['◈', 'Live Monitor', 'Track network activity, detection trends, and threat telemetry across observed traffic.'],
   explorer: ['⌕', 'Traffic Explorer', 'Search recorded flows and pivot into connected IPs.'],
   alerts: ['⚑', 'Alerts', 'Review flows whose model score crossed the alert threshold.'],
   blocklist: ['⊘', 'IP Blocklist', 'Manage Flowwatch source IP rules in Windows Firewall.'],
@@ -72,27 +72,48 @@ function timeBounds() {
   const last = Math.max(latest,Date.now());
   const first = Math.min(last,...flows.map(flow=>flow.timestamp));
   if (range === 'custom') {
-    const start = from ? Date.parse(from+'T00:00:00+07:00') : first;
-    const end = to ? Date.parse(to+'T00:00:00+07:00')+day-1 : last;
+    let fromStr = from;
+    let toStr = to;
+    if (fromStr && !fromStr.includes('T')) fromStr += 'T' + (state.filters.from_time || '00:00') + ':00+07:00';
+    else if (fromStr && fromStr.includes('T') && !fromStr.includes('+')) fromStr += ':00+07:00';
+    if (toStr && !toStr.includes('T')) toStr += 'T' + (state.filters.to_time || '23:59') + ':59+07:00';
+    else if (toStr && toStr.includes('T') && !toStr.includes('+')) toStr += ':59+07:00';
+    const start = fromStr ? Date.parse(fromStr) : first;
+    const end = toStr ? Date.parse(toStr) : last;
     return {start,end};
   }
   return {start:range ? last-Number(range)*60000 : first,end:last};
 }
 function rangeText() {
-  const {range,from,to,bucket}=state.filters;
+  const {range,from,to,from_time,to_time,bucket}=state.filters;
   if (bucket) return localDay.format(bucket.start)+' '+time(bucket.start)+' – '+localDay.format(bucket.end)+' '+time(bucket.end);
   if (range!=='custom') return presets.find(([value])=>value===range)[1];
-  return (from || 'Earliest')+' to '+(to || 'Latest');
+  const fText = from ? (from_time ? from + ' ' + from_time : from) : 'Earliest';
+  const tText = to ? (to_time ? to + ' ' + to_time : to) : 'Latest';
+  return fText + ' to ' + tText;
 }
 function dateFilters() {
   return '<div class="date-fields" id="custom-dates"'+(state.filters.range!=='custom'?' hidden':'')+'>'+
-    ['from','to'].map(key=>'<label>'+ (key==='from'?'From':'Through') +
-      ' <input type="date" data-filter="'+key+'" value="'+escape(state.filters[key])+'"></label>').join('')+
+    '<label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px">From '+
+      '<input type="date" data-filter="from" value="'+escape(state.filters.from)+'">'+
+      '<input type="time" data-filter="from_time" value="'+escape(state.filters.from_time || '00:00')+'">'+
+    '</label>'+
+    '<label style="cursor:pointer;display:inline-flex;align-items:center;gap:4px">Through '+
+      '<input type="date" data-filter="to" value="'+escape(state.filters.to)+'">'+
+      '<input type="time" data-filter="to_time" value="'+escape(state.filters.to_time || '23:59')+'">'+
+    '</label>'+
     '<span id="date-error" role="alert"></span></div>';
 }
 const escape = value => String(value ?? '—').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 const num = value => new Intl.NumberFormat('en').format(value);
 const time = timestamp => new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(timestamp);
+function formatBytes(bytes) {
+  if (!bytes || bytes <= 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
+  return `${(bytes / Math.pow(k, i)).toFixed(i === 0 ? 0 : 1)} ${sizes[i]}`;
+}
 const valueText = value => value ?? '—';
 const runName = run => 'RUN-' + String(run).padStart(3,'0');
 const snapshot = flow => flow.file || flow.interface || flow.source;

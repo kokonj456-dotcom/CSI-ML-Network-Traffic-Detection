@@ -1,3 +1,6 @@
+import React from 'react';
+import { SecurityAnalytics } from './SecurityAnalytics.jsx';
+
 function Filter({ name, label, options, value }) {
   return (
     <select data-filter={name} aria-label={label} defaultValue={value}>
@@ -6,59 +9,158 @@ function Filter({ name, label, options, value }) {
   );
 }
 
-export function LiveMonitor({ description, filters, presets, sourceOptions, ranking }) {
+export function LiveMonitor({
+  description,
+  filters = {},
+  presets = [],
+  sourceOptions = [],
+  ranking = 'destinations',
+  flows = []
+}) {
   return (
     <>
+      {/* ==================================================== */}
+      {/* 1. UPPER SECTION: Native Flowwatch Live Monitor     */}
+      {/* ==================================================== */}
       <div className="page-heading">
-        <div><h1>Live Monitor</h1><p>{description}</p></div>
+        <div>
+          <h1>Live Monitor</h1>
+          <p>{description || 'Track network activity, detection trends, and system health.'}</p>
+        </div>
       </div>
+
       <div className="time-toolbar">
         <strong>Time range</strong>
         <div className="periods">
           {[['10080', 'Week'], ['43200', 'Month'], ['525600', 'Year']].map(([value, label]) => (
-            <button key={value} type="button" className="btn period" data-action="period" data-value={value}
-              aria-pressed={filters.range === value}>{label}</button>
+            <button
+              key={value}
+              type="button"
+              className="btn period"
+              data-action="period"
+              data-value={value}
+              aria-pressed={filters.range === value}
+            >
+              {label}
+            </button>
           ))}
         </div>
         <Filter name="range" label="Time range" options={presets} value={filters.range} />
         <Filter name="origin" label="Source" options={sourceOptions} value={filters.origin} />
         <div className="date-fields" id="custom-dates" hidden={filters.range !== 'custom'}>
-          {[['from', 'From'], ['to', 'Through']].map(([key, label]) => (
-            <label key={key}>{label} <input type="date" data-filter={key} defaultValue={filters[key]} /></label>
-          ))}
+          <label style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            From{' '}
+            <input
+              type="date"
+              data-filter="from"
+              defaultValue={filters.from ? filters.from.split('T')[0] : ''}
+              onClick={e => { try { e.target.showPicker(); } catch {} }}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { try { e.target.showPicker(); } catch {} } }}
+              style={{ cursor: 'pointer' }}
+            />
+            <input
+              type="time"
+              data-filter="from_time"
+              defaultValue={filters.from_time || (filters.from && filters.from.includes('T') ? filters.from.split('T')[1].slice(0, 5) : '00:00')}
+              onClick={e => { try { e.target.showPicker(); } catch {} }}
+              style={{ cursor: 'pointer' }}
+              title="Filter start time"
+            />
+          </label>
+          <label style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            Through{' '}
+            <input
+              type="date"
+              data-filter="to"
+              defaultValue={filters.to ? filters.to.split('T')[0] : ''}
+              onClick={e => { try { e.target.showPicker(); } catch {} }}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { try { e.target.showPicker(); } catch {} } }}
+              style={{ cursor: 'pointer' }}
+            />
+            <input
+              type="time"
+              data-filter="to_time"
+              defaultValue={filters.to_time || (filters.to && filters.to.includes('T') ? filters.to.split('T')[1].slice(0, 5) : '23:59')}
+              onClick={e => { try { e.target.showPicker(); } catch {} }}
+              style={{ cursor: 'pointer' }}
+              title="Filter end time"
+            />
+          </label>
           <span id="date-error" role="alert" />
         </div>
         <span id="run-status" />
       </div>
+
       <div className="metrics" id="metrics" />
+
       <section className="panel panel-pad overview-trend">
         <div className="panel-head">
-          <div><h2><span className="ui-symbol" aria-hidden="true">⌁</span>Traffic and alert trends</h2><p id="trend-range" /></div>
+          <div>
+            <h2><span className="ui-symbol" aria-hidden="true">∿</span> Traffic and alert trends</h2>
+            <p id="trend-range" />
+          </div>
           <button className="btn" data-action="summary" data-value="flows">Explore flows ›</button>
         </div>
         <div className="chart-box">
-          <canvas tabIndex={0} id="timeline" aria-label="Traffic and alert trends shown as area lines on separate scales. Use arrow keys to select a time bin and Enter to explore flows." />
-          <span className="chart-tooltip" id="chart-tip" hidden />
+          <canvas
+            tabIndex={0}
+            id="timeline"
+            aria-label="Traffic and alert trends shown as area lines on separate scales. Use arrow keys to select a time bin and Enter to explore flows."
+          />
+          <div className="chart-tooltip" id="chart-tip" hidden />
         </div>
         <p className="chart-hint">Hover for flow and alert counts plus alert share. Select a time bin to explore its flows.</p>
       </section>
+
       <div className="overview-ranks">
         <section className="panel panel-pad">
           <div className="panel-head">
-            <div><h2 id="ranking-title" /><p>Ranked by flows · flagged counts in pink</p></div>
+            <div>
+              <h2 id="ranking-title" />
+              <p>Ranked by flows · flagged counts in pink</p>
+            </div>
             <select id="ranking" aria-label="Rank by" defaultValue={ranking}>
-              <option value="destinations">Destinations</option><option value="protocols">Protocols</option>
+              <option value="destinations">Destinations</option>
+              <option value="protocols">Protocols</option>
             </select>
           </div>
           <div className="ranks" id="rank-rows" />
         </section>
+
         <section className="panel panel-pad alert-ranks">
           <div className="panel-head">
-            <div><h2><span className="ui-symbol" aria-hidden="true">⚑</span>Alert Breakdown</h2><p>By predicted category</p></div>
+            <div>
+              <h2><span className="ui-symbol" aria-hidden="true">⚑</span> Alert Breakdown</h2>
+              <p>By predicted category</p>
+            </div>
             <button className="text-button" data-action="summary" data-value="flagged">View alerts ›</button>
           </div>
-          <div className="ranks" id="alert-rows" /><div className="latest-alert" id="latest-alert" />
+          <div className="ranks" id="alert-rows" />
+          <div className="latest-alert" id="latest-alert" />
         </section>
+      </div>
+
+      {/* ==================================================== */}
+      {/* 2. LOWER SECTION: Security Analytics & Overview     */}
+      {/* ==================================================== */}
+      <div style={{ marginTop: 40, paddingTop: 28, borderTop: '2px solid var(--line)' }}>
+        <div className="page-heading" style={{ marginBottom: 16 }}>
+          <div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: 'var(--ink)' }}>
+              <span className="ui-symbol">◔</span> Security Analytics & Network Traffic Overview
+            </h2>
+            <p style={{ margin: '4px 0 0 0', color: 'var(--muted)' }}>
+              Overview of network data volume, traffic health status, and detected attacks.
+            </p>
+          </div>
+        </div>
+
+        <SecurityAnalytics
+          flows={flows}
+          embedded={true}
+          filters={filters}
+          presets={presets}
+        />
       </div>
     </>
   );

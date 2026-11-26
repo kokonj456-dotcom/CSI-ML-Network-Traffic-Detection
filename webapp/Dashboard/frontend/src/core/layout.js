@@ -11,6 +11,7 @@ function nav() {
     liveStatus,
     monitor:{filters:state.filters,presets,sourceOptions,ranking:state.ranking},
     management:{tab:managementTab,tabs:managementTabs},
+    flows: allFlows(),
   });
 }
 function heading(actions='') {
@@ -30,24 +31,53 @@ function render() {
   nav();
   const page=byId('page');
   if (state.view==='live') {
-    renderMetrics();
     const chart=byId('timeline');
+    if (!chart || chart.dataset?.interactive) return;
+    renderMetrics();
     const indexAt=event=>Math.min(chartGeometry.bins.length-1,Math.max(0,Math.round((event.offsetX-chartGeometry.left)/chartGeometry.step)));
-    if (chart.dataset.interactive) return;
     chart.dataset.interactive='true';
     let selected=0;
     const showBin=index=>{
       selected=index;
       const {bins,width,left,step,span,interval}=drawChart(index);
       const bin=bins[index], tip=byId('chart-tip');
+      if (!bin || !tip) return;
       const timeLabel=span<=day?
         time(bin.time).slice(0,5)+'–'+time(bin.time+interval).slice(0,5):
         localDay.format(bin.time)+' · '+time(bin.time).slice(0,5);
       const alertRate=bin.total?(100*bin.flags/bin.total).toFixed(1):'0.0';
-      tip.textContent=timeLabel+'\n'+num(bin.total)+' flows · '+num(bin.flags)+' alerts ('+alertRate+'% flagged)';
+      const normalCount = Math.max(0, bin.total - bin.flags);
+      const normalRate = bin.total ? (100 * normalCount / bin.total).toFixed(1) : '100.0';
+
+      tip.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:8px;">
+          <strong style="font-size:12px;color:#ffffff;font-family:Consolas,monospace;">${timeLabel}</strong>
+          <span style="font-size:10px;font-weight:700;color:#818cf8;letter-spacing:0.04em;">CLICK TO FILTER</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;gap:12px;">
+          <span style="color:#93c5fd;">Total Volume:</span>
+          <strong style="color:#ffffff;">${num(bin.total)} flows (${formatBytes(bin.bytes)})</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:9px;gap:12px;">
+          <span style="color:#93c5fd;">Packets:</span>
+          <strong style="color:#ffffff;">${num(bin.packets)} pkts</strong>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);border-radius:6px;padding:6px 8px;">
+            <div style="color:#6ee7b7;font-size:10px;font-weight:600;">✓ Normal Traffic</div>
+            <div style="font-size:14px;font-weight:700;color:#ffffff;margin:2px 0;">${num(normalCount)}</div>
+            <div style="font-size:10px;color:#a7f3d0;">(${normalRate}%)</div>
+          </div>
+          <div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);border-radius:6px;padding:6px 8px;">
+            <div style="color:#fca5a5;font-size:10px;font-weight:600;">⚑ Attacks</div>
+            <div style="font-size:14px;font-weight:700;color:#ffffff;margin:2px 0;">${num(bin.flags)}</div>
+            <div style="font-size:10px;color:#fecaca;">(${alertRate}%)</div>
+          </div>
+        </div>
+      `;
       tip.hidden=false;
       const tipWidth=tip.getBoundingClientRect().width;
-      tip.style.left=Math.max(0,Math.min(width-tipWidth,left+index*step+6))+'px';
+      tip.style.left=Math.max(10,Math.min(width-tipWidth-10,left+index*step+6))+'px';
     };
     const openBin=index=>{
       const {bins,interval}=chartGeometry;
@@ -103,7 +133,16 @@ function updateFilters() {
   state.page=0;
   const custom=byId('custom-dates');
   if (custom) {
+    const wasHidden = custom.hidden;
     custom.hidden=state.filters.range!=='custom';
+    if (wasHidden && !custom.hidden) {
+      setTimeout(() => {
+        const firstInput = custom.querySelector('input[type="date"]');
+        if (firstInput) {
+          try { firstInput.showPicker(); } catch {}
+        }
+      }, 50);
+    }
     const {from,to}=state.filters;
     byId('date-error').textContent=!custom.hidden && from && to && from>to ? 'End date must be on or after start date.' : '';
   }
