@@ -96,8 +96,14 @@ const time = timestamp => new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangko
 const valueText = value => value ?? '—';
 const runName = run => 'RUN-' + String(run).padStart(3,'0');
 const snapshot = flow => flow.file || flow.interface || flow.source;
+const uiSymbol = glyph => '<span class="ui-symbol" aria-hidden="true">'+escape(glyph)+'</span>';
+const actionSymbols = {blockIp:'⊘',unblockIp:'↶',editBlock:'✎',exportBlockIps:'↓',firewallRules:'⊙',
+  searchIp:'⌕',reportFalsePositive:'⚑',clearRelatedDates:'↺'};
 const button = (label, action, value = '', kind = 'btn') =>
-  '<button type="button" class="' + kind + '" data-action="' + action + '" data-value="' + escape(value) + '">' + label + '</button>';
+  '<button type="button" class="' + kind + '" data-action="' + action + '" data-value="' + escape(value) + '">' +
+  (action==='review'?uiSymbol(value==='Resolved'?'✓':'↶'):
+    action==='bulkAlert'?uiSymbol({resolve:'✓',block:'⊘',report:'⚑'}[value]):
+    actionSymbols[action]?uiSymbol(actionSymbols[action]):'') + label + '</button>';
 const badge = (label, variant = '') => '<span class="badge ' + variant + '">' + label + '</span>';
 const verdict = flow => badge(flow.kind==='flag'?'Suspicious':flow.kind==='unscored'?'Not scored':'No alert',flow.kind);
 const scoreText = value => value==null?'—':(value*100).toFixed(1)+'%';
@@ -106,4 +112,4 @@ function category(prediction) {
   if (prediction.status!=='scored') return noCategory;
   return prediction.category_unclear?unclearCategory:attackClasses[prediction.class_id];
 }
-const sourceOptions=[['','All sources'],['Live Capture','Live Capture'],[captureSource,captureSource]];
+const sourceOptions=[['','All sources'],['Live Capture','Live Capture'],[captureSource,captureSource],['CENTRAL Test','CENTRAL Test']];

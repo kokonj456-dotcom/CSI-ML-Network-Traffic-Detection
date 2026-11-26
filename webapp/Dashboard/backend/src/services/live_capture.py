@@ -1,9 +1,8 @@
 """Passive Npcap capture, bounded queues and live capacity metrics."""
-import ctypes
 import json
-import os
 from collections import deque
 from ipaddress import ip_address
+from itertools import groupby
 from queue import Empty, Full, Queue
 from threading import Event, Lock, Thread
 from time import monotonic, process_time, time
@@ -11,6 +10,7 @@ from time import monotonic, process_time, time
 from scapy.all import AsyncSniffer, conf
 
 from .capture.flows import FlowCollector, flow_record
+from .capture.metrics import capture_snapshot
 
 
 DEFAULT_SETTINGS = {
@@ -18,60 +18,7 @@ DEFAULT_SETTINGS = {
     "packet_queue_capacity": 8192,
     "flow_queue_capacity": 8192,
 }
-QUEUE_PACKET_BYTES_ESTIMATE = 3072
-QUEUE_FLOW_BYTES_ESTIMATE = 4096
-
-
-def process_memory():
-    """Return process working set and machine RAM in MiB where available."""
-    if os.name == "nt":
-        class ProcessMemoryCounters(ctypes.Structure):
-            _fields_ = [("cb", ctypes.c_ulong), ("PageFaultCount", ctypes.c_ulong),
-                        ("PeakWorkingSetSize", ctypes.c_size_t), ("WorkingSetSize", ctypes.c_size_t),
-                        ("QuotaPeakPagedPoolUsage", ctypes.c_size_t), ("QuotaPagedPoolUsage", ctypes.c_size_t),
-                        ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t), ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
-                        ("PagefileUsage", ctypes.c_size_t), ("PeakPagefileUsage", ctypes.c_size_t)]
-
-        class MemoryStatus(ctypes.Structure):
-            _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
-                        ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
-                        ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
-                        ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
-                        ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
-
-        try:
-            counters = ProcessMemoryCounters()
-            counters.cb = ctypes.sizeof(counters)
-            kernel = ctypes.WinDLL("kernel32", use_last_error=True)
-            psapi = ctypes.WinDLL("psapi", use_last_error=True)
-            kernel.GetCurrentProcess.restype = ctypes.c_void_p
-            psapi.GetProcessMemoryInfo.argtypes = [ctypes.c_void_p, ctypes.POINTER(ProcessMemoryCounters), ctypes.c_ulong]
-            psapi.GetProcessMemoryInfo.restype = ctypes.c_int
-            kernel.GlobalMemoryStatusEx.argtypes = [ctypes.POINTER(MemoryStatus)]
-            kernel.GlobalMemoryStatusEx.restype = ctypes.c_int
-            if not psapi.GetProcessMemoryInfo(kernel.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
-                return None, None, None
-            status = MemoryStatus()
-            status.dwLength = ctypes.sizeof(status)
-            total = None
-            used = None
-            if kernel.GlobalMemoryStatusEx(ctypes.byref(status)):
-                total = status.ullTotalPhys / (1024 * 1024)
-                used = (status.ullTotalPhys - status.ullAvailPhys) / (1024 * 1024)
-            return counters.WorkingSetSize / (1024 * 1024), used, total
-        except (AttributeError, OSError, ctypes.ArgumentError):
-            return None, None, None
-    try:
-        import resource
-        rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        return rss / (1024 if sys_platform_is_macos() else 1024 * 1024), None, None
-    except (ImportError, AttributeError, OSError):
-        return None, None, None
-
-
-def sys_platform_is_macos():
-    import sys
-    return sys.platform == "darwin"
+LOCALHOST_IPV4 = ip_address("127.0.0.1")
 
 
 class LiveCapture:
@@ -152,70 +99,7 @@ class LiveCapture:
         return dict(updated)
 
     def snapshot(self):
-        now = monotonic()
-        elapsed = max(now - self._last_stats_time, 0.001)
-        with self._stats_lock:
-            flow_in_rate = max(0, self._flow_arrivals_total - self._last_arrivals) / elapsed
-            flow_out_rate = max(0, self._processed_total - self._last_processed) / elapsed
-            self._last_stats_time = now
-            self._last_arrivals = self._flow_arrivals_total
-            self._last_processed = self._processed_total
-        cpu_elapsed = max(now - self._cpu_sample_time, 0.001)
-        cpu_now = process_time()
-        cores = os.cpu_count() or 1
-        self._cpu_percent = max(0.0, (cpu_now - self._cpu_sample) / cpu_elapsed / cores * 100)
-        self._cpu_sample_time, self._cpu_sample = now, cpu_now
-        with self.settings_lock:
-            settings = dict(self.settings)
-        packet_depth = self.packets.qsize()
-        flow_depth = len(self.pending_flows)
-        queue_elapsed = max(now - self._last_queue_sample_time, 0.001)
-        packet_growth = (packet_depth - self._last_packet_depth) / queue_elapsed
-        flow_growth = (flow_depth - self._last_flow_depth) / queue_elapsed
-        self._last_queue_sample_time, self._last_packet_depth, self._last_flow_depth = now, packet_depth, flow_depth
-        packet_util = packet_depth / settings["packet_queue_capacity"]
-        flow_util = flow_depth / settings["flow_queue_capacity"]
-        memory_mb, system_used_mb, total_memory_mb = process_memory()
-        input_per_second = flow_in_rate
-        configured_rate = settings["max_flows_per_second"]
-        target_rate = configured_rate or input_per_second
-        avg_cpu_per_flow = (self._inference_cpu_seconds / self._inference_flows) if self._inference_flows else None
-        estimated_cpu = (min(100.0, avg_cpu_per_flow * target_rate / cores * 100)
-                         if avg_cpu_per_flow is not None else None)
-        queue_ram_mb = (settings["packet_queue_capacity"] * QUEUE_PACKET_BYTES_ESTIMATE +
-                        settings["flow_queue_capacity"] * QUEUE_FLOW_BYTES_ESTIMATE) / (1024 * 1024)
-        baseline_ram_mb = system_used_mb if system_used_mb is not None else memory_mb
-        projected_ram_mb = baseline_ram_mb + queue_ram_mb if baseline_ram_mb is not None else None
-        queue_fill_times = []
-        if packet_growth > 0:
-            queue_fill_times.append(max(0, settings["packet_queue_capacity"] - packet_depth) / packet_growth)
-        if flow_growth > 0:
-            queue_fill_times.append(max(0, settings["flow_queue_capacity"] - flow_depth) / flow_growth)
-        seconds_to_full = min(queue_fill_times) if queue_fill_times else None
-        overloaded = (packet_util >= .85 or flow_util >= .85 or
-                      (estimated_cpu is not None and estimated_cpu >= 85) or
-                      (projected_ram_mb is not None and total_memory_mb and projected_ram_mb / total_memory_mb >= .85))
-        return {
-            "running": self.ready.is_set() and bool(self.thread and self.thread.is_alive()),
-            "interface": self.interface, "address": self.address, "direction": self.direction,
-            "capture_https": self.capture_https, "error": self.error,
-            "saved": self.saved, "dropped": self.dropped, "dropped_flows": self.dropped_flows,
-            "settings": settings,
-            "queues": {
-                "packets": {"waiting": packet_depth, "capacity": settings["packet_queue_capacity"], "utilization": packet_util},
-                "flows": {"waiting": flow_depth, "capacity": settings["flow_queue_capacity"], "utilization": flow_util},
-            },
-            "rates": {"flows_in_per_second": round(flow_in_rate, 2), "flows_processed_per_second": round(flow_out_rate, 2)},
-            "resources": {"process_cpu_percent": round(self._cpu_percent, 1),
-                          "estimated_model_cpu_percent": round(estimated_cpu, 1) if estimated_cpu is not None else None,
-                          "process_ram_mb": round(memory_mb, 1) if memory_mb is not None else None,
-                          "system_ram_used_mb": round(system_used_mb, 1) if system_used_mb is not None else None,
-                          "estimated_ram_at_full_queues_mb": round(projected_ram_mb, 1) if projected_ram_mb is not None else None,
-                          "system_ram_mb": round(total_memory_mb, 1) if total_memory_mb is not None else None,
-                          "queue_ram_estimate_mb": round(queue_ram_mb, 1)},
-            "overload_risk": overloaded, "seconds_to_queue_full": round(seconds_to_full, 1) if seconds_to_full is not None else None,
-            "overflow_policy": "Drop newest and count it",
-        }
+        return capture_snapshot(self, LOCALHOST_IPV4)
 
     def start(self):
         if not self.interface or not self.address:
@@ -237,54 +121,113 @@ class LiveCapture:
         except Full:
             self.dropped += 1
 
-    def run(self):
-        sniffer = None
-        collector = FlowCollector(evidence=False, max_flows=8192)
+    def enqueue_flow(self, flow, targets):
+        if self.direction != "both" and ip_address(flow["dst"][0]) not in targets:
+            return
+        with self._stats_lock:
+            self._flow_arrivals_total += 1
+        with self.settings_lock:
+            capacity = self.settings["flow_queue_capacity"]
+        if len(self.pending_flows) >= capacity:
+            self.dropped_flows += 1
+            return
+        self.pending_flows.append(flow)
 
-        def enqueue(flow, target):
-            if self.direction != "both" and ip_address(flow["dst"][0]) != target:
-                return
+    def capture_filter(self, target):
+        local_filter = f"host {LOCALHOST_IPV4}"
+        # Saving a flow to local MySQL must not generate another captured flow.
+        database = self.store.settings
+        if database.get("host") in {"localhost", "127.0.0.1"}:
+            local_filter += f" and not tcp port {int(database['port'])}"
+        capture_filter = f"({local_filter})"
+        if target != LOCALHOST_IPV4:
+            capture_filter = f"(host {target} or {capture_filter})"
+        if not self.capture_https:
+            capture_filter += " and not (tcp port 443 or tcp port 8443 or udp port 443)"
+        return capture_filter
+
+    def start_capture_adapters(self, interfaces, capture_filter, sniffers):
+        # Let each adapter read independently while sharing the bounded packet queue.
+        adapter_ready = []
+        for adapter in interfaces:
+            started = Event()
+            sniffer = AsyncSniffer(iface=adapter, filter=capture_filter, store=False,
+                                   prn=self.receive, started_callback=started.set)
+            sniffer.start()
+            sniffers.append(sniffer)
+            adapter_ready.append(started)
+        return adapter_ready
+
+    def collect_packets(self, collector, targets):
+        try:
+            packet = self.packets.get(timeout=.25)
+        except Empty:
+            packet = None
+        if packet is not None:
+            completed = collector.push(packet)
+            if completed:
+                self.enqueue_flow(completed, targets)
+            for _ in range(4095):
+                try:
+                    packet = self.packets.get_nowait()
+                except Empty:
+                    break
+                completed = collector.push(packet)
+                if completed:
+                    self.enqueue_flow(completed, targets)
+
+    def score_pending_flows(self, interface, loopback):
+        with self.settings_lock:
+            rate_limit = self.settings["max_flows_per_second"]
+        allowance = rate_limit or len(self.pending_flows)
+        while self.pending_flows and allowance > 0:
+            batch = []
+            while self.pending_flows and len(batch) < min(128, allowance):
+                batch.append(flow_record(self.pending_flows.popleft()))
+            if not batch:
+                break
+            cpu_start = process_time()
+            predictions = self.manager.predictor.predict([flow["raw"] for flow in batch], explain=True)
+            cpu_used = process_time() - cpu_start
+            def capture_interface(pair):
+                record, _ = pair
+                if str(LOCALHOST_IPV4) in (record["src"], record["dst"]):
+                    return loopback.name
+                return getattr(interface, "name", str(interface))
+
+            for interface_name, group in groupby(zip(batch, predictions, strict=True), capture_interface):
+                records, results = zip(*group)
+                self.store.save_live(interface_name, records, results)
+            self._inference_cpu_seconds += cpu_used
+            self._inference_flows += len(batch)
+            self.saved += len(batch)
+            allowance -= len(batch)
             with self._stats_lock:
-                self._flow_arrivals_total += 1
-            with self.settings_lock:
-                capacity = self.settings["flow_queue_capacity"]
-            if len(self.pending_flows) >= capacity:
-                self.dropped_flows += 1
-                return
-            self.pending_flows.append(flow)
+                self._processed_total += len(batch)
+
+    def run(self):
+        sniffers = []
+        collector = FlowCollector(evidence=False, max_flows=8192)
 
         try:
             target = ip_address(self.address)
             if self.direction not in ("inbound", "both"):
                 raise ValueError("Unsupported capture direction.")
             interface = conf.ifaces.dev_from_index(int(self.interface)) if self.interface.isdecimal() else self.interface
-            capture_filter = f"host {target}"
-            if not self.capture_https:
-                capture_filter += " and not (tcp port 443 or tcp port 8443 or udp port 443)"
-            sniffer = AsyncSniffer(iface=interface, filter=capture_filter, store=False,
-                                   prn=self.receive, started_callback=self.ready.set)
-            sniffer.start()
+            targets = {target, LOCALHOST_IPV4}
+            loopback = conf.ifaces.dev_from_networkname(conf.loopback_name)
+            interfaces = [loopback] if target == LOCALHOST_IPV4 else [interface, loopback]
+            capture_filter = self.capture_filter(target)
+            adapter_ready = self.start_capture_adapters(interfaces, capture_filter, sniffers)
             next_flush = monotonic()
             while not self.stop_event.is_set():
-                if not sniffer.thread.is_alive():
-                    sniffer.join()
-                    raise RuntimeError("Capture stopped unexpectedly.")
-                try:
-                    packet = self.packets.get(timeout=.25)
-                except Empty:
-                    packet = None
-                if packet is not None:
-                    completed = collector.push(packet)
-                    if completed:
-                        enqueue(completed, target)
-                    for _ in range(4095):
-                        try:
-                            packet = self.packets.get_nowait()
-                        except Empty:
-                            break
-                        completed = collector.push(packet)
-                        if completed:
-                            enqueue(completed, target)
+                for sniffer in sniffers:
+                    if not sniffer.thread.is_alive():
+                        sniffer.join()
+                        raise RuntimeError("Capture stopped unexpectedly.")
+                if all(started.is_set() for started in adapter_ready):
+                    self.ready.set()
+                self.collect_packets(collector, targets)
                 if monotonic() < next_flush:
                     continue
                 next_flush = monotonic() + 1
@@ -292,29 +235,12 @@ class LiveCapture:
                     self.dropped_flows += collector.skipped
                     collector.skipped = 0
                 for flow in collector.drain(time()):
-                    enqueue(flow, target)
-                with self.settings_lock:
-                    rate_limit = self.settings["max_flows_per_second"]
-                allowance = rate_limit or len(self.pending_flows)
-                while self.pending_flows and allowance > 0:
-                    batch = []
-                    while self.pending_flows and len(batch) < min(128, allowance):
-                        batch.append(flow_record(self.pending_flows.popleft()))
-                    if not batch:
-                        break
-                    cpu_start = process_time()
-                    predictions = self.manager.predictor.predict([flow["raw"] for flow in batch], explain=True)
-                    cpu_used = process_time() - cpu_start
-                    self.store.save_live(getattr(interface, "name", str(interface)), batch, predictions)
-                    self._inference_cpu_seconds += cpu_used
-                    self._inference_flows += len(batch)
-                    self.saved += len(batch)
-                    allowance -= len(batch)
-                    with self._stats_lock:
-                        self._processed_total += len(batch)
+                    self.enqueue_flow(flow, targets)
+                self.score_pending_flows(interface, loopback)
         except Exception as error:
             self.error = f"{type(error).__name__}: live capture stopped. Check Npcap, the interface and MySQL."
         finally:
             self.ready.clear()
-            if sniffer and sniffer.running and hasattr(sniffer, "stop_cb"):
-                sniffer.stop()
+            for sniffer in sniffers:
+                if sniffer.running and hasattr(sniffer, "stop_cb"):
+                    sniffer.stop()

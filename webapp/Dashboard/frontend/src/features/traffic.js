@@ -20,7 +20,7 @@ function filtered() {
     if (f.destination && (flow.dst !== f.destination[0] || flow.dport !== f.destination[1])) return false;
     if (f.status && f.status !== (review[flow.id] || 'New')) return false;
     const fields = {ip:[flow.src,flow.dst], src:[flow.src], dst:[flow.dst], port:[flow.sport,flow.dport], domain:[flow.domain], run:[runName(flow.run)]};
-    const searchable = [flow.id,flow.src,flow.dst,flow.sport,flow.dport,flow.protocol,flow.app,flow.domain,flow.label,runName(flow.run)].join(' ').toLowerCase();
+    const searchable = [flow.id,flow.dataset?.record_id,flow.src,flow.dst,flow.sport,flow.dport,flow.protocol,flow.app,flow.domain,flow.label,runName(flow.run)].join(' ').toLowerCase();
     return query.every(term => {
       const [field,...parts] = term.split(':');
       if (parts.length && Object.hasOwn(fields,field)) {
@@ -35,8 +35,15 @@ function ipLink(ip) { return ip?button(escape(ip), 'ip', ip, 'text-button mono')
 function endpoint(ip, port) {
   return (ip ? ipLink(ip) : '<span class="muted">—</span>') + (port == null ? '' : '<span class="port mono">:' + port + '</span>');
 }
+function flowEndpoint(flow, direction, includePort = true) {
+  const ip = flow[direction];
+  const port = includePort ? flow[direction === 'src' ? 'sport' : 'dport'] : null;
+  if (ip || !flow.dataset) return endpoint(ip, port);
+  const demoIp = direction === 'src' ? '192.0.2.10' : '198.51.100.20';
+  return '<span class="mono">' + demoIp + '</span><small class="flow-sub">Demo IP</small>';
+}
 function alertKey(flow) {
-  return JSON.stringify([flow.label,flow.src,flow.dst,flow.dport,flow.app,modelVersion(flow)]);
+  return JSON.stringify([flow.label,flow.src,flow.dst,flow.dport,flow.app,modelVersion(flow),flow.dataset?.record_id]);
 }
 const selectedAlerts = new Set();
 let alertSelectionRows = [];
@@ -146,8 +153,8 @@ function alertGroupRow(group, index) {
   const f=group.latest;
   return '<tr class="flagged-row" data-action="flow" data-value="'+escape(f.id)+'">'+
     alertCheckbox(index,'Select group for '+f.src+' · '+f.label)+'<td class="mono">'+button(shortDay.format(f.timestamp)+' '+time(f.timestamp),'flow',f.id,'text-button')+
-    '</td><td><strong class="alert-pattern">'+escape(f.label)+'</strong><small class="flow-sub">'+escape(f.app)+'</small></td><td>'+ipLink(f.src)+
-    '</td><td>'+endpoint(f.dst,f.dport)+'</td><td class="mono">'+num(group.count)+
+    '</td><td><strong class="alert-pattern">'+escape(f.label)+'</strong><small class="flow-sub">'+escape(f.dataset?.record_id || f.app)+'</small></td><td>'+flowEndpoint(f,'src',false)+
+    '</td><td>'+flowEndpoint(f,'dst')+'</td><td class="mono">'+num(group.count)+
     '</td><td>'+badge(num(group.newCount)+' new',group.newCount?'flag':'')+
     '</td><td class="mono">'+(group.score*100).toFixed(0)+'%</td><td>'+
     button('View alerts ›','alertGroup',group.key,'text-button')+'</td></tr>';
@@ -168,7 +175,6 @@ function renderTable() {
   if (!table) return;
   if (explorer) {
     const suspicious=rows.filter(flow=>flow.kind==='flag').length;
-    byId('explorer-total').textContent=num(rows.length);
     byId('explorer-system').textContent=totalFlowCount==null?'—':num(totalFlowCount);
     byId('explorer-flagged').textContent=num(suspicious);
     byId('explorer-peers').textContent=num(new Set(rows.map(flow=>flow.dst).filter(Boolean)).size);
@@ -183,8 +189,8 @@ function renderTable() {
   table.innerHTML = (grouped?visible.map(alertGroupRow):visible.map((flow,index) =>
     '<tr data-action="flow" data-value="'+escape(flow.id)+'"'+(explorer&&flow.kind==='flag'?' class="flagged-row"':'')+'>'+
     (alerts?alertCheckbox(index,'Select alert '+flow.id):'')+'<td class="mono">' + button((explorer||state.filters.range==='custom'||Number(state.filters.range)>1440||!state.filters.range?shortDay.format(flow.timestamp)+' ':'')+time(flow.timestamp),'flow',flow.id,'text-button') +
-    (explorer ? '<small class="flow-sub">'+escape(flow.dataset?.record_id||flow.id)+'</small>' : '')+
-    '</td><td>' + endpoint(flow.src,flow.sport) + '</td><td>' + endpoint(flow.dst,flow.dport) +
+    (explorer || flow.dataset ? '<small class="flow-sub">'+escape(flow.dataset?.record_id||flow.id)+'</small>' : '')+
+    '</td><td>' + flowEndpoint(flow,'src') + '</td><td>' + flowEndpoint(flow,'dst') +
     (explorer && flow.domain ? '<small class="flow-sub flow-domain" title="'+escape(flow.domain)+'">'+
       button(escape(flow.domain),'explorerDomain',flow.domain,'text-button')+'</small>' : '')+
     '</td><td>' + badge(escape(flow.app)) +
@@ -233,11 +239,11 @@ function tableSection(title, subtitle) {
   const header=(alerts?'<th scope="col" class="alert-select"><input id="select-alert-page" type="checkbox" aria-label="Select alerts on this page"></th>':'')+
     columns.map(label=>'<th scope="col">'+(label||'<span class="sr-only">Details</span>')+'</th>').join('');
   const modes=alerts?'<div class="alert-modes" aria-label="Alert view">'+[['grouped','Grouped'],['individual','Individual']].map(([key,label])=>
-    '<button type="button" class="btn period" aria-pressed="'+(state.alertMode===key)+'" data-action="alertMode" data-value="'+key+'">'+label+'</button>').join('')+'</div>':'';
+    '<button type="button" class="btn period" aria-pressed="'+(state.alertMode===key)+'" data-action="alertMode" data-value="'+key+'">'+uiSymbol(key==='grouped'?'▦':'≡')+label+'</button>').join('')+'</div>':'';
   const importer=explorer?'<button type="button" class="primary" id="capture-upload-button" data-action="importPcap"'+
-    (captureUploadPending?' disabled aria-busy="true"':'')+'>'+(captureUploadPending?'Importing…':'Import PCAP')+
+    (captureUploadPending?' disabled aria-busy="true"':'')+'>'+(captureUploadPending?'Importing…':uiSymbol('↑')+'Import PCAP')+
     '</button><input type="file" id="capture-upload-file" accept=".pcap,.pcapng" hidden>':'';
-  return (explorer?explorerOverview():alerts?alertSummary():'')+'<section class="panel table-panel'+(explorer?' explorer-table':'')+'"><div class="panel-head table-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div><div class="actions">'+modes+importer+'<button class="btn" id="export" data-action="export">↓ &nbsp;Export CSV</button></div></div>' +
+  return (explorer?explorerOverview():alerts?alertSummary():'')+'<section class="panel table-panel'+(explorer?' explorer-table':'')+'"><div class="panel-head table-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div><div class="actions">'+modes+importer+'<button class="btn" id="export" data-action="export">'+uiSymbol('↓')+'Export CSV</button></div></div>' +
     '<div class="filters"><label class="search"><span aria-hidden="true">⌕</span><input id="search" data-filter="search" aria-label="Search flows" placeholder="Search IP, port, domain, or flow ID" value="' + escape(state.filters.search) + '"></label>' +
     (state.view==='live'?'':select('range','Time range',presets)+dateFilters()) +
     select('protocol','Protocol',[['','All protocols'],...['TCP','UDP','HTTP','HTTPS/TLS','TLS','QUIC?','DNS','SSH','ICMP'].map(x=>[x,x])]) +
@@ -263,7 +269,7 @@ function tableSection(title, subtitle) {
 
 function explorerOverview() {
   return '<section class="explorer-overview" aria-label="Filtered flow summary">'+
-    [['total','Loaded matching flows'],['system','Total flows in system'],['flagged','Suspicious flows loaded'],['peers','Destination IPs loaded']].map(([key,label])=>
+    [['system','Total flows in system'],['flagged','Suspicious flows loaded'],['peers','Destination IPs loaded']].map(([key,label])=>
       '<div><span>'+label+'</span><strong id="explorer-'+key+'">0</strong></div>').join('')+
     '</section>';
 }

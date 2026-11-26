@@ -52,11 +52,11 @@ function registryPage() {
   const {versions,latest}=orderedVersions();
   const first=versions.find(item=>item.version===managementData.active)||versions[0];
   const second=versions.find(item=>item!==first)||first;
-  return '<section class="panel panel-pad"><h2>Compare versions</h2><p class="case-note">Compare evaluations by their test-data fingerprint.</p>'+
+  return '<section class="panel panel-pad"><h2>'+uiSymbol('↔')+'Compare versions</h2><p class="case-note">Compare evaluations by their test-data fingerprint.</p>'+
     '<div class="management-compare">'+['left','right'].map((side,index)=>'<label>Version '+(index+1)+
       ' <select id="compare-'+side+'" aria-describedby="compare-date-'+side+'">'+comparisonOptions(versions,index===0?first:second,latest)+
       '</select><small class="comparison-picked-date" id="compare-date-'+side+'"></small></label>').join('')+
-    '</div><div id="model-comparison"></div></section><section class="panel panel-pad firewall-panel"><h2>Available models</h2>'+
+    '</div><div id="model-comparison"></div></section><section class="panel panel-pad firewall-panel"><h2>'+uiSymbol('◫')+'Available models</h2>'+
     '<p class="case-note model-registry-note">In use serves new predictions. Latest trained is the newest run and may still need review.</p>'+
     versions.map(item=>versionDetails(item,latest)).join('')+'</section>';
 }

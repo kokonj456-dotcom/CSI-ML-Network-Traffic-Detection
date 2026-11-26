@@ -92,7 +92,7 @@ function trainingPage() {
       (rule.integer?'1':'any')+'" value="'+(managementData.parameter_defaults?.[stage]?.[name]??rule.default)+'"></div>'+
       '<output class="training-reference-value" aria-label="Reference '+escape(name)+'" data-reference-stage="'+stage+'" data-reference-parameter="'+name+'">'+
       escape(String(referenceParameter(stage,name)))+'</output></div>').join('')+'</div></details>';
-  return '<div class="training-layout"><section class="panel panel-pad"><h2>Configure training</h2>'+
+  return '<div class="training-layout"><section class="panel panel-pad"><h2>'+uiSymbol('☷')+'Configure training</h2>'+
     '<form class="management-form" id="train-model-form">'+
     '<fieldset><legend>Training feedback</legend>'+
     trainingFeedbackPicker(approved)+
@@ -106,13 +106,13 @@ function trainingPage() {
     '<div class="actions training-param-actions">'+managedButton('Use reference values','useReference','')+
     managedButton('Reset to defaults','resetTrainingParameters','')+'</div>'+
     formFields('stage1')+formFields('stage2')+'</fieldset></form></section>'+
-    '<div class="training-sidebar"><section class="panel panel-pad"><h2>Training summary</h2>'+
+    '<div class="training-sidebar"><section class="panel panel-pad"><h2>'+uiSymbol('▤')+'Training summary</h2>'+
     '<dl class="fields"><div><dt>CENTRAL training rows</dt><dd id="training-base-count"></dd></div>'+
     '<div><dt>Feedback selected</dt><dd id="training-selected-count"></dd></div>'+
     '<div><dt>Validation rows</dt><dd id="training-validation-count"></dd></div>'+
     '<div><dt>Selected strategy</dt><dd id="training-strategy-summary"></dd></div></dl>'+
     '<p class="case-note">A completed job creates a candidate for review in Model Registry.</p>'+
     '<button id="start-training" class="primary" type="submit" form="train-model-form"'+(managementData.jobs.some(job=>job.status==='running')?' disabled':'')+
-    '>Start training</button></section><section class="panel panel-pad"><h2>Training jobs</h2>'+
+    '>'+uiSymbol('▶')+'Start training</button></section><section class="panel panel-pad"><h2>Training jobs</h2>'+
     '<div id="management-jobs">'+jobCards()+'</div></section></div></div>';
 }

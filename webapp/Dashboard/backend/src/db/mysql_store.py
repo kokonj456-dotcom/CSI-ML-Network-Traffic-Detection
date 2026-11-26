@@ -1,6 +1,5 @@
 """MySQL persistence for capture analysis and false-positive feedback."""
 from contextlib import contextmanager
-from datetime import datetime, timezone
 from hashlib import file_digest
 import json
 from os import environ
@@ -9,6 +8,8 @@ from dotenv import dotenv_values
 from mysql.connector import connect
 
 from ..config import DASHBOARD
+from . import alert_queries, feedback_queries
+from .timestamps import utc_time, wire_time
 
 
 def mysql_settings():
@@ -26,14 +27,6 @@ def mysql_settings():
         "connection_timeout": 5,
         "time_zone": "+00:00",
     }
-
-
-def utc_time(epoch_seconds):
-    return datetime.fromtimestamp(epoch_seconds, timezone.utc).replace(tzinfo=None)
-
-
-def wire_time(value):
-    return value.replace(tzinfo=timezone.utc).isoformat() if value is not None else None
 
 
 class MySQLStore:
@@ -65,8 +58,12 @@ class MySQLStore:
         with self.transaction() as db:
             return self.save_records(db, records, predictions, interface=interface)
 
+    def save_central_test(self, records, predictions):
+        with self.transaction() as db:
+            return self.save_records(db, records, predictions, source_type="central_test")
+
     @staticmethod
-    def save_records(db, records, predictions, capture_id=None, interface=None):
+    def save_records(db, records, predictions, capture_id=None, interface=None, source_type=None):
         identifiers = []
         for flow, prediction in zip(records, predictions, strict=True):
             raw = flow["raw"]
@@ -87,7 +84,7 @@ class MySQLStore:
                        src_port, dst_port, transport_protocol, service_group, connection_state,
                        packets_forward, packets_backward, bytes_forward, bytes_backward
                        ) VALUES (%s,%s,%s,%s,%s,%s,INET6_ATON(%s),INET6_ATON(%s),%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                    (capture_id, first_frame, 'pcap' if capture_id is not None else 'live_capture',
+                    (capture_id, first_frame, source_type or ('pcap' if capture_id is not None else 'live_capture'),
                      interface, utc_time(flow["started_at"]), utc_time(flow["ended_at"]),
                      flow["src"], flow["dst"], flow["sport"], flow["dport"], raw["protocol"],
                      raw["service_group"], raw["conn_state_group"], flow["packets_forward"],
@@ -111,7 +108,8 @@ class MySQLStore:
                  prediction.get("threshold"), prediction.get("flagged"), prediction.get("class_id"),
                  prediction.get("class_score"), json.dumps({"raw": raw, "prediction": prediction,
                                                                "frames": flow["frames"],
-                                                               "protocol_observation": flow["protocol_observation"]}, allow_nan=False)),
+                                                               "protocol_observation": flow["protocol_observation"],
+                                                               "dataset": flow.get("dataset")}, allow_nan=False)),
             )
             prediction_id = db.lastrowid
             alert_id = None
@@ -185,87 +183,16 @@ class MySQLStore:
         return rows
 
     def alerts(self, limit, before_id):
-        with self.transaction() as db:
-            db.execute(
-                """SELECT a.id, a.prediction_id, a.status, a.opened_at, a.acknowledged_at,
-                          a.resolved_at, p.flow_id, p.model_id, p.binary_score, p.category_id
-                   FROM alerts a JOIN predictions p ON p.id=a.prediction_id
-                   WHERE (%s IS NULL OR a.id < %s) ORDER BY a.id DESC LIMIT %s""",
-                (before_id, before_id, limit),
-            )
-            rows = db.fetchall()
-        for row in rows:
-            for key in ("opened_at", "acknowledged_at", "resolved_at"):
-                row[key] = wire_time(row[key])
-        return rows
+        return alert_queries.alerts(self, limit, before_id)
 
     def set_alert_status(self, alert_id, status):
-        with self.transaction() as db:
-            db.execute("SELECT id FROM alerts WHERE id=%s FOR UPDATE", (alert_id,))
-            if not db.fetchone():
-                return False
-            db.execute(
-                """UPDATE alerts SET status=%s,
-                   acknowledged_at=CASE WHEN %s='new' THEN NULL ELSE COALESCE(acknowledged_at, UTC_TIMESTAMP(6)) END,
-                   resolved_at=CASE WHEN %s='resolved' THEN COALESCE(resolved_at, UTC_TIMESTAMP(6)) ELSE NULL END
-                   WHERE id=%s""", (status, status, status, alert_id),
-            )
-        return True
+        return alert_queries.set_alert_status(self, alert_id, status)
 
     def feedback(self, identifier=None):
-        with self.transaction() as db:
-            db.execute(
-                """SELECT fp.id, fp.reason, fp.evidence_note, fp.status, fp.reported_at, fp.reviewed_at,
-                          fp.review_note, p.inputs_json, f.source_type, f.started_at, c.original_name,
-                          f.first_frame, f.id AS flow_id, INET6_NTOA(f.src_ip) AS src,
-                          INET6_NTOA(f.dst_ip) AS dst, f.src_port, f.dst_port
-                   FROM false_positive_feedback fp JOIN alerts a ON a.id=fp.alert_id
-                   JOIN predictions p ON p.id=a.prediction_id JOIN traffic_flows f ON f.id=p.flow_id
-                   LEFT JOIN capture_files c ON c.id=f.capture_file_id
-                   WHERE (%s IS NULL OR fp.id=%s) ORDER BY fp.id DESC""", (identifier, identifier),
-            )
-            rows = db.fetchall()
-        reports = []
-        for row in rows:
-            inputs = json.loads(row["inputs_json"])
-            source = "Analyzed PCAP" if row["source_type"] == "pcap" else "Live Capture"
-            reports.append({
-                "id": f'mysql-{row["id"]}', "flow_id": f'DB-{row["flow_id"]}', "source": source,
-                "record": f'{row["original_name"]}:{row["first_frame"]}' if row["original_name"] else str(row["flow_id"]),
-                "eligible": bool(inputs.get("raw")), "status": row["status"], "reason": row["reason"],
-                "evidence_note": row["evidence_note"], "proposed_label": "Benign",
-                "created": wire_time(row["reported_at"]), "reviewed": wire_time(row["reviewed_at"]), "note": row["review_note"],
-                "snapshot": {"raw": inputs.get("raw"), "prediction": inputs["prediction"],
-                             "timestamp": int(row["started_at"].replace(tzinfo=timezone.utc).timestamp()*1000),
-                             "src": row["src"], "dst": row["dst"], "sport": row["src_port"], "dport": row["dst_port"]},
-            })
-        return reports
+        return feedback_queries.feedback(self, identifier)
 
     def report(self, alert_id, reason, evidence):
-        with self.transaction() as db:
-            db.execute("SELECT id FROM alerts WHERE id=%s FOR UPDATE", (alert_id,))
-            if not db.fetchone():
-                raise ValueError("Alert does not exist.")
-            db.execute("SELECT id FROM false_positive_feedback WHERE alert_id=%s", (alert_id,))
-            existing = db.fetchone()
-            if existing:
-                feedback_id = existing["id"]
-            else:
-                db.execute("INSERT INTO false_positive_feedback (alert_id,reason,evidence_note,status) VALUES (%s,%s,%s,'approved')",
-                           (alert_id, reason, evidence or None))
-                feedback_id = db.lastrowid
-            db.execute(
-                """UPDATE alerts SET status='resolved',
-                   acknowledged_at=COALESCE(acknowledged_at, UTC_TIMESTAMP(6)),
-                   resolved_at=COALESCE(resolved_at, UTC_TIMESTAMP(6)) WHERE id=%s""", (alert_id,),
-            )
-            return f"mysql-{feedback_id}"
+        return feedback_queries.report(self, alert_id, reason, evidence)
 
     def review(self, identifier, status, note):
-        with self.transaction() as db:
-            db.execute(
-                """UPDATE false_positive_feedback SET status=%s,review_note=%s,reviewed_at=UTC_TIMESTAMP(6)
-                   WHERE id=%s AND status='pending'""", (status, note, identifier),
-            )
-            if not db.rowcount:
-                raise ValueError("Feedback is unavailable or already reviewed.")
+        return feedback_queries.review(self, identifier, status, note)

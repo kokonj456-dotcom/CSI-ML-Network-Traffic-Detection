@@ -62,7 +62,9 @@ function ModelManagement({ title, description, tab, tabs }) {
       </div>
       <div className="tabs blocklist-tabs" aria-label="Model management sections">
         {Object.entries(tabs).map(([key, label]) => (
-          <button key={key} type="button" className="tab" aria-pressed={key === tab} data-management="tab" data-value={key}>{label}</button>
+          <button key={key} type="button" className="tab" aria-pressed={key === tab} data-management="tab" data-value={key}>
+            <span className="ui-symbol" aria-hidden="true">{{overview:'◈',feedback:'⚑',train:'☷',registry:'◫'}[key]}</span>{label}
+          </button>
         ))}
       </div>
       <p className="form-error" role="status" id="management-message" />

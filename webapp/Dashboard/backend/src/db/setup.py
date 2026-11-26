@@ -34,6 +34,14 @@ def main():
                 cursor.execute(f"USE `{database}`")
                 for statement in statements:
                     cursor.execute(statement)
+                cursor.execute("SHOW COLUMNS FROM traffic_flows")
+                columns = {row["Field"]: row for row in cursor.fetchall()}
+                if "central_test" not in columns["source_type"]["Type"] or any(
+                    columns[name]["Null"] != "YES" for name in ("src_ip", "dst_ip")
+                ):
+                    cursor.execute("""ALTER TABLE traffic_flows
+                        MODIFY source_type ENUM('live_capture','pcap','central_test') NOT NULL,
+                        MODIFY src_ip VARBINARY(16) NULL, MODIFY dst_ip VARBINARY(16) NULL""")
         with MySQLStore(settings).transaction() as cursor:
             tables = [statement.split()[5] for statement in statements]
             for table in tables:

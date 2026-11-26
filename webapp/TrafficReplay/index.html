@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Traffic Replay</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #142739;
+      --muted: #50667a;
+      --paper: #eff4f8;
+      --line: #d5e0e9;
+      --blue: #153553;
+      --signal: #14634f;
+      --mono: "Cascadia Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.65 "Leelawadee UI", "Segoe UI", sans-serif; }
+    main { max-width: 1180px; margin: auto; padding: clamp(16px, 4vw, 48px) clamp(12px, 3vw, 28px); }
+    header { background: var(--blue); color: #fff; padding: clamp(26px, 5vw, 54px); border-radius: 18px 18px 5px 5px; border-bottom: 4px solid #77dcca; }
+    h1, h2, p { margin: 0; }
+    header p { color: #d7e6f2; margin-top: 8px; }
+    h1 { font: 750 clamp(34px, 6vw, 62px)/1.05 "Segoe UI", sans-serif; letter-spacing: -.04em; }
+    h2 { font-size: 20px; line-height: 1.35; margin-bottom: 10px; }
+    header nav { display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:22px; }
+    header a { color:#e1fff8; text-underline-offset:4px; }
+    .layout { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: 16px; margin-top: 18px; }
+    section { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: clamp(16px, 3vw, 26px); min-width: 0; }
+    section > p { color:var(--muted); }
+    .route { background:#edf5fc; border-left:3px solid #4c82ae; padding:9px 12px; margin:12px 0; overflow-wrap:anywhere; }
+    label { display: block; margin: 12px 0; }
+    input, button { font: inherit; border-radius: 7px; padding: 8px 12px; }
+    input { display: block; width: 100%; margin-top: 4px; border: 1px solid #9eb2c3; background:#f9fbfd; color:var(--ink); }
+    button { border: 1px solid var(--signal); background: var(--signal); color: white; cursor: pointer; font-weight: 650; }
+    #stop, [data-demo-class]:not([data-demo-class=""]) { background:#f4f8fc; color:var(--blue); border-color:#bacddd; }
+    button:not(:disabled):hover { box-shadow: 0 0 0 2px #aac5d5; }
+    button:disabled { opacity: .55; cursor: default; }
+    :focus-visible { outline: 3px solid #126dcc; outline-offset: 3px; }
+    code, #log, td:first-child { font-family: var(--mono); }
+    progress { width: 100%; height: 14px; accent-color: var(--signal); }
+    dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin: 14px 0; }
+    dl div { background:#f0f5fa; border-radius:7px; padding: 8px 10px; }
+    dt { font-size: .82rem; color: var(--muted); }
+    dd { margin: 0; font-size: 24px; font-weight: 700; font-variant-numeric:tabular-nums; }
+    #failed { color:#9c352f; }
+    #log { padding-left: 32px; max-height: 252px; overflow: auto; font-size:.8rem; background:#f5f8fb; border-radius:7px; }
+    #log:empty { display:none; }
+    li { padding: 4px; overflow-wrap: anywhere; }
+    .note { margin-top: 16px; font-size:.88rem; color:var(--muted); }
+    .attack-records { margin-top: 16px; }
+    .demo-controls { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+    .results-scroll { overflow:auto; max-height: 530px; margin-top:10px; border-radius:8px; }
+    table { width:100%; border-collapse:separate; border-spacing:0; text-align:left; font-size:.9rem; }
+    th, td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { position:sticky; top:0; background:#eaf1f7; }
+    td:first-child { overflow-wrap:anywhere; font-size:.8rem; }
+    tr:nth-child(even) td { background:#f8fbfd; }
+    td:nth-child(4) { font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .verdict { display:inline-block; padding:2px 8px; border-radius:6px; background:#edf1f6; font-weight:650; }
+    .verdict.alert { background:#fbe5e3; color:#8d302b; }
+    .verdict.clear { background:#e0f1e9; color:#145541; }
+    @media (max-width: 700px) {
+      .layout { grid-template-columns: 1fr; }
+      table { min-width: 620px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Traffic Replay</h1>
+    <p>ส่ง HTTP ให้ Flowwatch จับ หรือเลือกคลาสจาก CENTRAL Test เพื่อดูผลทำนาย</p>
+    <nav aria-label="ส่วนบนหน้านี้"><a href="#live-replay">ส่ง HTTP</a><a href="#central-demo-title">CENTRAL Test</a><a href="http://127.0.0.1:8794/" target="_blank" rel="noopener">เปิด Flowwatch</a></nav>
+  </header>
+  <div class="layout" id="live-replay">
+    <section>
+      <h2>ตั้งค่ารอบทดสอบ</h2>
+      <p class="route">ปลายทาง <code id="target"></code></p>
+      <p>แต่ละ request ส่งตัวอย่าง Normal จาก CENTRAL Test ใน HTTP response</p>
+      <form id="settings">
+        <label>จำนวน request ต่อรอบ <input id="count" type="number" min="1" max="30" value="5" required></label>
+        <label>เวลาพักระหว่างรายการ (วินาที) <input id="delay" type="number" min="1" max="10" value="1" required></label>
+        <button id="start">เริ่มส่ง</button>
+        <button id="stop" type="button" disabled>หยุด</button>
+      </form>
+      <p class="note">เปิดหน้านี้จาก URL ที่เซิร์ฟเวอร์แสดงเพื่อส่งไปยัง IPv4 ของเครื่องนี้ แล้วดูใน Traffic Explorer โดยเลือก Live Capture และค้นหา IP หรือพอร์ตปลายทางที่แสดงด้านบน</p>
+    </section>
+    <section>
+      <h2>ผลการส่ง</h2>
+      <p id="status" role="status">พร้อมเริ่ม</p>
+      <progress id="progress" value="0" max="5" aria-label="จำนวน request ที่ได้รับผลแล้ว"></progress>
+      <dl>
+        <div><dt>ส่งแล้ว</dt><dd id="sent">0</dd></div>
+        <div><dt>สำเร็จ</dt><dd id="ok">0</dd></div>
+        <div><dt>ผิดพลาด</dt><dd id="failed">0</dd></div>
+      </dl>
+      <ol id="log" aria-label="ประวัติการส่ง"></ol>
+    </section>
+  </div>
+  <section class="attack-records" aria-labelledby="central-demo-title">
+    <h2 id="central-demo-title">CENTRAL Test · โหมดสาธิต</h2>
+    <p>สุ่ม Normal 25 รายการและ Attack 5 คลาส คลาสละ 5 รายการ ให้โมเดลของ Flowwatch ประเมินแบบออฟไลน์</p>
+    <div id="central-demo-controls" class="demo-controls">
+      <button type="button" data-demo-class="">ประเมินรวม 50 รายการ</button>
+      <button type="button" data-demo-class="1">Denial of Service (DoS)</button>
+      <button type="button" data-demo-class="2">Reconnaissance &amp; Probing</button>
+      <button type="button" data-demo-class="3">Exploits &amp; PrivEsc</button>
+      <button type="button" data-demo-class="4">Credential Abuse (R2L)</button>
+      <button type="button" data-demo-class="5">Malware, C2 &amp; Botnet</button>
+    </div>
+    <p id="central-demo-status" role="status"></p>
+    <div class="results-scroll">
+      <table id="central-demo-table" hidden>
+        <thead><tr><th>Record ID</th><th>คลาสจริง</th><th>ผลทำนาย</th><th>Attack score</th><th>Alert ในเดโม</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<script>
+  const element = id => document.getElementById(id);
+  const demoButtons = [...element('central-demo-controls').querySelectorAll('button')];
+  for (const button of demoButtons) button.onclick = async () => {
+    const status = element('central-demo-status');
+    const table = element('central-demo-table');
+    const body = table.tBodies[0];
+    demoButtons.forEach(control => control.disabled = true);
+    table.hidden = true;
+    body.replaceChildren();
+    status.textContent = 'กำลังประเมิน · ' + button.textContent;
+    try {
+      const category = button.dataset.demoClass;
+      const endpoint = category ? '/central-demo?class=' + encodeURIComponent(category) : '/central-demo';
+      const response = await fetch(endpoint, {method: 'POST', cache: 'no-store'});
+      if (!response.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('กรุณารีสตาร์ต Traffic Replay เพื่อโหลดโหมดสาธิต');
+      }
+      const {rows, error} = await response.json();
+      if (!response.ok) throw new Error(error || 'ประเมินไม่สำเร็จ');
+      const percent = value => value == null ? '—' : (value * 100).toFixed(1) + '%';
+      for (const item of rows) {
+        const row = body.insertRow();
+        for (const value of [item.record_id + ' · DB-' + item.flow_id, item.actual, item.predicted, percent(item.score)]) {
+          row.insertCell().textContent = value;
+        }
+        const verdict = document.createElement('span');
+        verdict.className = 'verdict ' + (item.score == null ? '' : item.flagged ? 'alert' : 'clear');
+        verdict.textContent = item.score == null ? 'Not scored' : item.flagged ? 'Suspicious · Alert' : 'No alert';
+        row.insertCell().append(verdict);
+      }
+      table.hidden = false;
+      status.textContent = rows.length + ' รายการ · ' + rows.filter(row => row.flagged).length +
+        ' Alerts ในเดโม · เกณฑ์ ' + percent(rows.find(row => row.threshold != null)?.threshold) +
+        ' · โมเดล ' + (rows[0]?.model ?? '—');
+    } catch (error) {
+      status.textContent = error.message;
+    } finally {
+      demoButtons.forEach(control => control.disabled = false);
+    }
+  };
+  element('target').textContent = location.host + '/sample';
+  let run;
+
+  element('stop').onclick = () => run?.abort();
+
+  element('settings').onsubmit = async event => {
+    event.preventDefault();
+    if (run) return;
+    const total = element('count').valueAsNumber;
+    const delay = element('delay').valueAsNumber * 1000;
+    run = new AbortController();
+    const signal = run.signal;
+    const controls = ['count', 'delay', 'start'].map(element);
+    controls.forEach(control => control.disabled = true);
+    element('stop').disabled = false;
+    element('log').replaceChildren();
+    element('progress').max = total;
+    element('progress').value = 0;
+    for (const name of ['sent', 'ok', 'failed']) element(name).textContent = 0;
+    element('status').textContent = 'กำลังส่ง…';
+
+    let successes = 0;
+    let failures = 0;
+    try {
+      for (let index = 1; index <= total && !signal.aborted; index++) {
+        element('sent').textContent = index;
+        const started = performance.now();
+        let result;
+        try {
+          const response = await fetch('/sample', {
+            cache: 'no-store',
+            signal: AbortSignal.any([signal, AbortSignal.timeout(5000)]),
+          });
+          const sample = await response.json();
+          const source = response.headers.get('X-Replay-Source');
+          result = 'HTTP ' + response.status;
+          if (sample.record_id) result += ' · Normal · ' + sample.record_id;
+          if (sample.error) result += ' · ' + sample.error;
+          if (source) result += ' · ' + source + ' → ' + location.host;
+          if (response.ok) successes++;
+          else failures++;
+        } catch {
+          if (signal.aborted) break;
+          failures++;
+          result = 'หมดเวลาหรือเชื่อมต่อไม่ได้';
+        }
+        element('ok').textContent = successes;
+        element('failed').textContent = failures;
+        element('progress').value = index;
+        const row = document.createElement('li');
+        row.textContent = new Date().toLocaleTimeString('th-TH') + ' · ' + result +
+          ' · ' + Math.round(performance.now() - started) + ' ms';
+        element('log').append(row);
+        if (index < total && !signal.aborted) {
+          await new Promise(resolve => {
+            const finish = () => {
+              clearTimeout(timer);
+              signal.removeEventListener('abort', finish);
+              resolve();
+            };
+            const timer = setTimeout(finish, delay);
+            signal.addEventListener('abort', finish, { once: true });
+          });
+        }
+      }
+      element('status').textContent = signal.aborted ? 'หยุดแล้ว' : 'จบรอบทดสอบ';
+    } finally {
+      run = undefined;
+      controls.forEach(control => control.disabled = false);
+      element('stop').disabled = true;
+    }
+  };
+</script>
+</body>
+</html>

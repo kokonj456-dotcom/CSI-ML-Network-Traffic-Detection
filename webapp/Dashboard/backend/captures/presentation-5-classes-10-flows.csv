@@ -1,0 +1,11 @@
+﻿demo_flow,scenario_label,source_ip,source_port,destination_ip,destination_port,first_frame
+1,Denial of Service,192.0.2.10,41001,198.51.100.20,8080,1
+2,Reconnaissance and Probing,192.0.2.10,41002,198.51.100.20,8080,9
+3,Exploits and Privilege Escalation,192.0.2.10,41003,198.51.100.20,8080,17
+4,Credential Abuse,192.0.2.10,41004,198.51.100.20,8080,25
+5,Malware C2 and Botnet,192.0.2.10,41005,198.51.100.20,8080,33
+6,Denial of Service,192.0.2.10,41006,198.51.100.20,8080,41
+7,Reconnaissance and Probing,192.0.2.10,41007,198.51.100.20,8080,49
+8,Exploits and Privilege Escalation,192.0.2.10,41008,198.51.100.20,8080,57
+9,Credential Abuse,192.0.2.10,41009,198.51.100.20,8080,65
+10,Malware C2 and Botnet,192.0.2.10,41010,198.51.100.20,8080,73

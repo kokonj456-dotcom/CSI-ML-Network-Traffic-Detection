@@ -33,7 +33,7 @@ export function LiveMonitor({ description, filters, presets, sourceOptions, rank
       <div className="metrics" id="metrics" />
       <section className="panel panel-pad overview-trend">
         <div className="panel-head">
-          <div><h2>Traffic and alert trends</h2><p id="trend-range" /></div>
+          <div><h2><span className="ui-symbol" aria-hidden="true">⌁</span>Traffic and alert trends</h2><p id="trend-range" /></div>
           <button className="btn" data-action="summary" data-value="flows">Explore flows ›</button>
         </div>
         <div className="chart-box">
@@ -54,7 +54,7 @@ export function LiveMonitor({ description, filters, presets, sourceOptions, rank
         </section>
         <section className="panel panel-pad alert-ranks">
           <div className="panel-head">
-            <div><h2>Alert Breakdown</h2><p>By predicted category</p></div>
+            <div><h2><span className="ui-symbol" aria-hidden="true">⚑</span>Alert Breakdown</h2><p>By predicted category</p></div>
             <button className="text-button" data-action="summary" data-value="flagged">View alerts ›</button>
           </div>
           <div className="ranks" id="alert-rows" /><div className="latest-alert" id="latest-alert" />

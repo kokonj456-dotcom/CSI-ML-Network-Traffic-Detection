@@ -72,6 +72,7 @@ button.metric:hover{border-color:#bfc5ed;background:#fafaff}
 
 .explorer-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:11px;background:#fff;margin-bottom:14px}
 .explorer-overview div{padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.explorer-overview:not(.alert-summary){grid-template-columns:repeat(3,minmax(0,1fr))}
 .explorer-overview div+div{border-left:1px solid var(--line)}
 .explorer-overview span{font-size:12px;color:var(--muted);font-weight:650}
 .explorer-overview strong{font-size:21px;font-variant-numeric:tabular-nums}
@@ -406,3 +407,51 @@ details[open]>summary.http-body-heading .http-body-label::before{content:"⌄"}
 .flow-table tr.selected-alert>td{background:var(--indigo-light)}
 #alert-selected-count{white-space:nowrap;color:var(--indigo);font-weight:700}
 .management-card pre,.management-version pre{max-height:260px;overflow:auto}
+.drawer:has(.flow-inspector){width:min(550px,100vw)}
+.flow-inspector{--detail-surface:#f7f9fe}
+[data-theme=dark] .flow-inspector{--detail-surface:#202c46}
+.flow-inspector .flow-endpoints>div{padding:12px}
+.flow-inspector .flow-endpoints dd{font-size:13px}
+.flow-inspector-tabs.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;border:1px solid var(--line);border-radius:9px;background:var(--detail-surface)}
+.flow-inspector-tabs .tab{min-height:36px;padding:4px;font-size:12px}
+.flow-inspector-tabs .tab[aria-pressed=true]{box-shadow:inset 0 -2px var(--indigo)}
+.flow-detail-content{display:grid;gap:12px;margin-top:14px;min-width:0}
+.flow-detail-section,.flow-inspector .related-flows,.flow-inspector .feature-contract{margin:0;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--detail-surface);min-width:0}
+.flow-detail-section h3{margin:0 0 8px}
+.flow-detail-section .case-note{margin:6px 0 0}
+.flow-detail-section .fields{margin:0}
+.flow-detail-section .fields div:last-child{border-bottom:0}
+.flow-detail-section .fields div{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);padding:7px 0}
+.flow-detail-metrics{margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.flow-detail-metrics div{padding:9px;background:var(--detail-surface);border:1px solid var(--line);border-radius:8px;min-width:0}
+.flow-detail-metrics dt,.flow-score-label span{color:var(--muted);font-size:12px}
+.flow-detail-metrics dd{margin:3px 0 0;font-size:15px;font-weight:750;overflow-wrap:anywhere}
+.flow-score-label{display:flex;justify-content:space-between;align-items:center}
+.flow-score-label strong{font-size:23px;font-variant-numeric:tabular-nums}
+.flow-score-track{position:relative;height:8px;background:var(--line);border-radius:5px;margin:8px 0}
+.flow-score-track i{display:block;height:100%;border-radius:inherit;background:var(--indigo)}
+.flow-score.is-flagged .flow-score-track i{background:var(--coral)}
+.flow-score-track b{position:absolute;top:-3px;height:14px;width:2px;background:var(--ink);transform:translateX(-50%)}
+.flow-inspector .related-flow{border-radius:5px;background:transparent}
+.flow-inspector .related-flow:is(:hover,:focus-visible){background:var(--indigo-light)}
+.flow-inspector .related-flows ul{margin-bottom:0}
+.flow-detail-content>.primary{justify-self:start}
+.model-category{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.model-category small,.model-category strong{display:block}
+.model-category small{color:var(--muted);margin-bottom:4px}
+.model-category strong{font-size:16px}
+.model-category>div:last-child{text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.model-factors{list-style:none;padding:0;margin:0}
+.model-factor{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;padding:7px 0;overflow-wrap:anywhere}
+.model-factor-track{grid-column:1/-1;height:5px;background:var(--line);border-radius:4px}
+.model-factor-track i{display:block;height:100%;border-radius:inherit;background:currentColor}
+.model-factor.raises strong,.model-factor.raises i,.factor-raises{color:var(--coral)}
+.model-factor.lowers strong,.model-factor.lowers i,.factor-lowers{color:var(--green)}
+.model-fingerprint{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12px}
+.model-fingerprint summary{cursor:pointer;color:var(--muted)}
+.model-fingerprint code{display:block;margin-top:6px;overflow-wrap:anywhere}
+.ui-symbol{display:inline-block;min-width:1em;margin-inline-end:.38em;color:var(--indigo);font:700 1em/1 "Segoe UI Symbol","Segoe UI",sans-serif;text-align:center;vertical-align:baseline}
+.primary .ui-symbol{color:inherit}
+.tab .ui-symbol{color:inherit}
+.flow-detail-metrics dt .ui-symbol{font-size:1.1em}
+@media(max-width:380px){.flow-inspector-tabs .ui-symbol{display:none}}

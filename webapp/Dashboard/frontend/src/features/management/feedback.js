@@ -4,13 +4,13 @@ let feedbackPageIndex=0;
 function feedbackPage() {
   const rows=managementData.feedback;
   feedbackPageIndex=0;
-  if (!rows.length) return '<section class="panel panel-pad"><h2>False positive feedback</h2>'+
+  if (!rows.length) return '<section class="panel panel-pad"><h2>'+uiSymbol('⚑')+'False positive feedback</h2>'+
     '<p class="case-note">No reports yet. Open an alert and choose Report false positive in the Model tab.</p>'+
     button('Open Alerts','navigate','alerts')+'</section>';
 
   const options=(id,label,values)=>'<select id="'+id+'" aria-label="'+label+'"><option value="">All '+label.toLowerCase()+
     '</option>'+values.map(value=>'<option value="'+escape(value)+'">'+escape(value)+'</option>').join('')+'</select>';
-  return '<section class="panel panel-pad"><div class="panel-head"><div><h2>False positive feedback</h2>'+
+  return '<section class="panel panel-pad"><div class="panel-head"><div><h2>'+uiSymbol('⚑')+'False positive feedback</h2>'+
     '<p>Review reported flows and see which ones are available for training.</p></div>'+
     managedButton('Open Train & Tune','tab','train')+'</div>'+
     '<div class="feedback-filters"><label class="search"><span aria-hidden="true">⌕</span><input id="feedback-search" type="search"'+

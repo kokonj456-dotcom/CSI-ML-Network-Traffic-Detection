@@ -46,7 +46,7 @@ function firewallRulesInspector() {
   return drawerHeader('Windows Firewall','Active rules',badge(num(rules.length)+' active','flag'))+
     '<div class="drawer-body"><p class="case-note">These Flowwatch rules block inbound connections in Windows Firewall.</p>'+
     formatFields([['Direction','Inbound'],['Action','Block'],['Protocols and ports','Any']])+
-    '<h3>Blocked source IPs</h3>'+
+    '<h3>'+uiSymbol('⊘')+'Blocked source IPs</h3>'+
     (rules.length?'<ul class="firewall-rule-list">'+rules.map(rule=>'<li><strong class="mono">'+escape(rule.ip)+'</strong>'+
       '<span>'+escape(rule.reason)+'</span><small>Expires '+blockDate(rule.expiresAt)+'</small></li>').join('')+'</ul>':
       '<p class="case-note">There are no active blocks.</p>')+
@@ -65,9 +65,9 @@ function exportBlockIps() {
 }
 function blockPage() {
   return heading(button('View active rules','firewallRules')+button('Export IPs (.txt)','exportBlockIps')+
-    button('+ Block IP','blockIp','[]','primary'))+
+    button('Block IP','blockIp','[]','primary'))+
     '<section class="block-banner"><div><strong>Windows Firewall</strong><p id="firewall-status" role="status">Checking firewall connection…</p></div><span id="block-count" class="badge flag"></span></section>'+
-    '<section class="panel table-panel"><div class="panel-head table-head"><div><h2>IP block rules</h2><p>Temporary blocks and their history</p></div></div>'+
+    '<section class="panel table-panel"><div class="panel-head table-head"><div><h2>'+uiSymbol('⊙')+'IP block rules</h2><p>Temporary blocks and their history</p></div></div>'+
     '<div class="filters"><label class="search"><span aria-hidden="true">⌕</span><input id="block-search" aria-label="Search blocklist" placeholder="Search IP, reason, or alert ID" value="'+escape(blockSearch)+'"></label>'+
     '<select id="block-filter" aria-label="Block status">'+['','Active','Expiry pending','Expired','Unblocked','Disabled'].map(status=>'<option value="'+status+'"'+(blockFilter===status?' selected':'')+'>'+(status||'All statuses')+'</option>').join('')+'</select></div>'+
     '<div class="table-scroll"><table class="flow-table block-table"><thead><tr><th>Source IP</th><th>Status</th><th>Reason / Alert</th><th>Blocked by</th><th>Started</th><th>Expires</th><th>Action</th></tr></thead><tbody id="block-rows"></tbody></table></div></section>';

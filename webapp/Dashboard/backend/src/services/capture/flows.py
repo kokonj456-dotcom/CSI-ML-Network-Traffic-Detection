@@ -114,6 +114,8 @@ def flow_record(flow):
     service_group = "other"
     if flow["dns_events"]:
         service_group = "dns"
+    elif protocol == "tcp" and flow["http"]:
+        service_group = "http"
     elif protocol in ("tcp", "udp"):
         service_group = SERVICES.get(dport, "other")
     state = connection_state(flow)

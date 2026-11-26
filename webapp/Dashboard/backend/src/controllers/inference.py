@@ -9,6 +9,7 @@ from starlette.concurrency import run_in_threadpool
 
 from ..config import CAPTURES, capture_files
 from ..services.capture.pcap import capture_flows
+from ..services.central_test import build_central_test_records
 MAX_CAPTURE_BYTES = 32*1024*1024
 CAPTURE_MAGIC = {bytes.fromhex(value) for value in ("d4c3b2a1","a1b2c3d4","4d3cb2a1","a1b23c4d","0a0d0d0a")}
 
@@ -39,6 +40,14 @@ class InferenceController:
         if not 1<=len(inputs)<=256:
             raise HTTPException(422,"Provide 1–256 flows.")
         return {"predictions":self.manager.predictor.predict(inputs)}
+
+    def save_central_test(self, samples, request):
+        self.require_local_write(request)
+        store = self.require_store()
+        records = build_central_test_records(samples)
+        predictions = self.manager.predictor.predict([record["raw"] for record in records], explain=True)
+        identifiers = store.save_central_test(records, predictions)
+        return {"predictions": predictions, "records": identifiers}
 
     def analyze(self, name, persist=False):
         if name not in capture_files():
