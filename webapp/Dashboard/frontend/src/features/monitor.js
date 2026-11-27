@@ -94,10 +94,17 @@ function drawChart(active=-1) {
   const offset = 7*3600000;
   const start=Math.floor((from+offset)/interval)*interval-offset;
   const count=Math.max(2,Math.ceil((end-start+1)/interval));
-  const bins=Array.from({length:count},(_,i)=>({time:start+i*interval,total:0,flags:0}));
+  const bins=Array.from({length:count},(_,i)=>({time:start+i*interval,total:0,flags:0,bytes:0,packets:0}));
   for (const flow of filtered()) {
     const bin=bins[Math.floor((flow.timestamp-start)/interval)];
-    if (bin) { bin.total++; if (flow.kind==='flag') bin.flags++; }
+    if (bin) {
+      bin.total++;
+      if (flow.kind==='flag') bin.flags++;
+      const fBytes = Number(flow.bytes ?? ((flow.bytes_forward || 0) + (flow.bytes_backward || 0)) ?? flow.raw?.bytes_forward ?? 0);
+      const fPkts = Number(flow.packets ?? ((flow.packets_forward || 0) + (flow.packets_backward || 0)) ?? 1);
+      bin.bytes += fBytes;
+      bin.packets += fPkts;
+    }
   }
   const step=(right-left)/(count-1);
   const x=i=>left+i*step;

@@ -21,8 +21,10 @@
 .time-toolbar{margin-bottom:14px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font-size:12px}
 .time-toolbar strong{margin-right:4px}
 .period[aria-pressed=true]{background:var(--indigo-light);color:var(--indigo);border-color:#bfc4f4}
-.date-fields input{min-height:34px;border:1px solid var(--line);border-radius:7px;padding:0 7px;color:var(--ink);background:#fff}
-.date-fields label{font-size:11px;font-weight:650;color:var(--muted)}
+.date-fields input{min-height:34px;border:1px solid var(--line);border-radius:7px;padding:0 7px;color:var(--ink);background:#fff;cursor:pointer}
+.date-fields input::-webkit-calendar-picker-indicator{cursor:pointer;padding:4px;filter:invert(0.6)}
+[data-theme=dark] .date-fields input::-webkit-calendar-picker-indicator{filter:invert(0.85)}
+.date-fields label{font-size:11px;font-weight:650;color:var(--muted);cursor:pointer}
 #date-error{font-size:11px;color:var(--coral)}
 
 .run-status{margin-left:auto;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -31,7 +33,7 @@ button.metric:hover{border-color:#bfc5ed;background:#fafaff}
 .metric-value,.metric-note{display:block}
 .overview-trend{margin-bottom:14px}
 .overview-trend canvas{height:222px;cursor:crosshair}
-.overview-trend .chart-tooltip{white-space:pre-line;min-width:210px;max-width:min(310px,calc(100% - 8px));line-height:1.5}
+.overview-trend .chart-tooltip{white-space:normal;min-width:215px;max-width:min(280px,calc(100% - 8px));line-height:1.35;background:#111a2e;border:1px solid rgba(255,255,255,0.14);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.5);padding:9px 12px}
 .chart-hint{margin:5px 0 0;color:var(--muted);font-size:11px}
 .overview-ranks{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
 .ranks{display:grid;gap:4px;margin-top:13px}

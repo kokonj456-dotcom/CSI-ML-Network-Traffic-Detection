@@ -218,6 +218,10 @@ document.addEventListener('submit',async event=>{
 document.addEventListener('input',event=>{
   if(event.target.id==='block-search') {blockSearch=event.target.value;renderBlocks();}
   if(event.target.id==='search') {state.filters.search=event.target.value;updateFilters();}
+  if(event.target.dataset?.filter && ['from','to','from_time','to_time'].includes(event.target.dataset.filter)) {
+    state.filters[event.target.dataset.filter]=event.target.value;
+    updateFilters();
+  }
 });
 document.addEventListener('change',event=>{
   const {id,value,dataset}=event.target;
@@ -231,7 +235,7 @@ document.addEventListener('change',event=>{
     changeAlertSelection(event.target);return;
   }
   if (dataset.filter && id!=='search') {
-    if (['range','from','to'].includes(dataset.filter) && state.filters.bucket) {
+    if (['range','from','to','from_time','to_time'].includes(dataset.filter) && state.filters.bucket) {
       delete state.filters.bucket;
       const scope=byId('page').querySelector('.scope-summary');
       if (scope) scope.outerHTML=investigationScope();

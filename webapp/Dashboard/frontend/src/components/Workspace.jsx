@@ -1,5 +1,6 @@
 import { SystemStatus } from '../pages/SystemStatus.jsx';
 import { LiveMonitor } from '../pages/LiveMonitor.jsx';
+import { SecurityAnalytics } from '../pages/SecurityAnalytics.jsx';
 
 function Brand({ login = false }) {
   return (
@@ -66,7 +67,7 @@ function ModelManagement({ title, description, tab, tabs }) {
   );
 }
 
-export function Workspace({ views, view, alerts, theme, locked, modelInfo, captureCount, latestCapture, liveStatus, monitor, management }) {
+export function Workspace({ views, view, alerts, theme, locked, modelInfo, captureCount, latestCapture, liveStatus, monitor, management, flows }) {
   const pageProps = { title: views[view][1], description: views[view][2], modelInfo };
   return (
     <>
@@ -75,7 +76,7 @@ export function Workspace({ views, view, alerts, theme, locked, modelInfo, captu
         <main>
           <Topbar title={views[view][1]} />
           <div key={view} className="content" id="page">
-            {view === 'live' && <LiveMonitor {...monitor} description={pageProps.description} />}
+            {(view === 'live' || view === 'analytics') && <LiveMonitor {...monitor} description={pageProps.description} flows={flows} />}
             {view === 'management' && <ModelManagement {...pageProps} {...management} />}
             {view === 'status' && <SystemStatus {...pageProps} captureCount={captureCount} latestCapture={latestCapture} liveStatus={liveStatus} />}
           </div>
