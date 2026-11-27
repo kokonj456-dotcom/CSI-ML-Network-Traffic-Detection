@@ -1,4 +1,5 @@
 """Prepare training data, run candidate jobs, and record their outcome."""
+
 from datetime import datetime, timezone
 import json
 import subprocess
@@ -14,12 +15,18 @@ from train_flowwatch import CENTRAL, PARAMETERS, normalize_config  # noqa: E402
 
 
 def m9_training_defaults():
-    path = ROOT / "experiments/scaling_and_domain_shift/models/production/optuna_best_params.json"
+    path = (
+        ROOT
+        / "experiments/scaling_and_domain_shift/models/production/optuna_best_params.json"
+    )
     tuned = json.loads(path.read_text(encoding="utf-8"))
-    return normalize_config({
-        "stage1": tuned["binary_best"],
-        "stage2": tuned["multiclass_best"],
-    }, trees=250)
+    return normalize_config(
+        {
+            "stage1": tuned["binary_best"],
+            "stage2": tuned["multiclass_best"],
+        },
+        trees=250,
+    )
 
 
 def now():
@@ -28,10 +35,16 @@ def now():
 
 def dataset_counts():
     try:
-        audit = json.loads((CENTRAL/"reports"/"audit.json").read_text(encoding="utf-8"))
-        return {name:audit["splits"][name]["rows"] for name in ("train","train_smote","validation","test")}
-    except (OSError,ValueError,KeyError):
+        audit = json.loads(
+            (CENTRAL / "reports" / "audit.json").read_text(encoding="utf-8")
+        )
+        return {
+            name: audit["splits"][name]["rows"]
+            for name in ("train", "train_smote", "validation", "test")
+        }
+    except (OSError, ValueError, KeyError):
         return {}
+
 
 def select_training_feedback(manager, db, feedback_ids):
     selected = []
@@ -53,46 +66,70 @@ def select_training_feedback(manager, db, feedback_ids):
         if status != "approved":
             raise ValueError("Choose approved feedback only.")
         if not payload["eligible"]:
-            raise ValueError("Simulator and CENTRAL Test feedback cannot become training data.")
-        selected.append({
-            "id": feedback_id,
-            "source": payload["source"],
-            "raw": payload["snapshot"]["raw"],
-        })
+            raise ValueError(
+                "Simulator and CENTRAL Test feedback cannot become training data."
+            )
+        selected.append(
+            {
+                "id": feedback_id,
+                "source": payload["source"],
+                "raw": payload["snapshot"]["raw"],
+            }
+        )
     return selected
 
+
 def start_training_job(manager, body):
+    """เตรียมข้อมูลของงานเทรน แล้วส่งงานให้ทำเบื้องหลัง."""
     config = normalize_config(body.config)
     identifier = uuid4().hex
-    folder = manager.directory/"jobs"/identifier
+    folder = manager.directory / "jobs" / identifier
     with manager.lock, manager.connect() as db:
         if db.execute("SELECT 1 FROM jobs WHERE status='running'").fetchone():
             raise ValueError("A training job is already running.")
         selected = manager.training_feedback(db, body.feedback_ids)
         folder.mkdir(parents=True)
         config["feedback"] = selected
-        (folder/"run.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
-        db.execute("INSERT INTO jobs VALUES (?,?,?,?,?,?)", (identifier,now(),"running",json.dumps(config),None,None))
-    Thread(target=manager.train, args=(identifier,folder), daemon=True).start()
+        (folder / "run.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
+        db.execute(
+            "INSERT INTO jobs VALUES (?,?,?,?,?,?)",
+            (identifier, now(), "running", json.dumps(config), None, None),
+        )
+    Thread(target=manager.train, args=(identifier, folder), daemon=True).start()
     return identifier
 
+
 def run_training_job(manager, identifier, folder):
+    """รันโปรแกรมเทรนและลงทะเบียนโมเดลที่ได้เป็น candidate."""
     status, error = "failed", None
     try:
         command = [
-            sys.executable, "-u", str(TRAINER),
-            "--run-config", str(folder/"run.json"),
-            "--output", str(manager.registry.bundle_path(identifier)),
+            sys.executable,
+            "-u",
+            str(TRAINER),
+            "--run-config",
+            str(folder / "run.json"),
+            "--output",
+            str(manager.registry.bundle_path(identifier)),
             "--managed-output",
         ]
-        with (folder/"training.log").open("wb") as log:
-            result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+        with (folder / "training.log").open("wb") as log:
+            result = subprocess.run(
+                command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT
+            )
         if result.returncode:
-            raise ValueError(f"Training exited with code {result.returncode}. See job output.")
+            raise ValueError(
+                f"Training exited with code {result.returncode}. See job output."
+            )
         manager.registry.load_candidate(identifier)
-        manager.registry.name_backup(manager.registry.bundle_path(identifier), identifier)
+        manager.registry.name_backup(
+            manager.registry.bundle_path(identifier), identifier
+        )
         status = "completed"
     except Exception as exc:
         error = str(exc)
     with manager.connect() as db:
-        db.execute("UPDATE jobs SET status=?, finished=?, error=? WHERE id=?", (status,now(),error,identifier))
+        db.execute(
+            "UPDATE jobs SET status=?, finished=?, error=? WHERE id=?",
+            (status, now(), error, identifier),
+        )

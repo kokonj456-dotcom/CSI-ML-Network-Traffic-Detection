@@ -1,17 +1,27 @@
 """MySQL persistence for capture analysis and false-positive feedback."""
+
 from contextlib import contextmanager
+
 try:
     from hashlib import file_digest
 except ImportError:
     import hashlib
+
     def file_digest(stream, algo="sha256"):
         h = getattr(hashlib, algo)()
         for chunk in iter(lambda: stream.read(65536), b""):
             h.update(chunk)
+
         class _DigestWrapper:
-            def hexdigest(self): return h.hexdigest()
-            def digest(self): return h.digest()
+            def hexdigest(self):
+                return h.hexdigest()
+
+            def digest(self):
+                return h.digest()
+
         return _DigestWrapper()
+
+
 import json
 from os import environ
 
@@ -62,7 +72,9 @@ class MySQLStore:
                 (original_name or path.name, str(path), fingerprint),
             )
             capture_id = db.lastrowid
-            identifiers = self.save_records(db, records, predictions, capture_id=capture_id)
+            identifiers = self.save_records(
+                db, records, predictions, capture_id=capture_id
+            )
         return capture_id, identifiers
 
     def save_live(self, interface, records, predictions):
@@ -71,14 +83,20 @@ class MySQLStore:
 
     def save_central_test(self, records, predictions):
         with self.transaction() as db:
-            return self.save_records(db, records, predictions, source_type="central_test")
+            return self.save_records(
+                db, records, predictions, source_type="central_test"
+            )
 
     @staticmethod
-    def save_records(db, records, predictions, capture_id=None, interface=None, source_type=None):
+    def save_records(
+        db, records, predictions, capture_id=None, interface=None, source_type=None
+    ):
+        """บันทึก flow ผลทำนาย และ alert ผ่าน transaction ของผู้เรียก."""
         identifiers = []
         for flow, prediction in zip(records, predictions, strict=True):
             raw = flow["raw"]
             first_frame = next(iter(flow["frames"]), None)
+            # หากนำเข้า PCAP เดิม ให้ใช้ flow เดิมจากเลขเฟรมแรก
             existing = None
             if capture_id is not None:
                 db.execute(
@@ -95,11 +113,26 @@ class MySQLStore:
                        src_port, dst_port, transport_protocol, service_group, connection_state,
                        packets_forward, packets_backward, bytes_forward, bytes_backward
                        ) VALUES (%s,%s,%s,%s,%s,%s,INET6_ATON(%s),INET6_ATON(%s),%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                    (capture_id, first_frame, source_type or ('pcap' if capture_id is not None else 'live_capture'),
-                     interface, utc_time(flow["started_at"]), utc_time(flow["ended_at"]),
-                     flow["src"], flow["dst"], flow["sport"], flow["dport"], raw["protocol"],
-                     raw["service_group"], raw["conn_state_group"], flow["packets_forward"],
-                     flow["packets_backward"], raw["bytes_forward"], raw["bytes_backward"]),
+                    (
+                        capture_id,
+                        first_frame,
+                        source_type
+                        or ("pcap" if capture_id is not None else "live_capture"),
+                        interface,
+                        utc_time(flow["started_at"]),
+                        utc_time(flow["ended_at"]),
+                        flow["src"],
+                        flow["dst"],
+                        flow["sport"],
+                        flow["dport"],
+                        raw["protocol"],
+                        raw["service_group"],
+                        raw["conn_state_group"],
+                        flow["packets_forward"],
+                        flow["packets_backward"],
+                        raw["bytes_forward"],
+                        raw["bytes_backward"],
+                    ),
                 )
                 flow_id = db.lastrowid
                 if flow["protocol_events"]:
@@ -107,36 +140,70 @@ class MySQLStore:
                         """INSERT INTO flow_protocol_events
                            (flow_id, observed_at, protocol, frame_number, details_json)
                            VALUES (%s,%s,%s,%s,%s)""",
-                        [(flow_id, utc_time(event["at"]), event["protocol"], event["frame"],
-                          json.dumps(event["details"])) for event in flow["protocol_events"]],
+                        [
+                            (
+                                flow_id,
+                                utc_time(event["at"]),
+                                event["protocol"],
+                                event["frame"],
+                                json.dumps(event["details"]),
+                            )
+                            for event in flow["protocol_events"]
+                        ],
                     )
             db.execute(
                 """INSERT INTO predictions
                    (flow_id, model_id, status, binary_score, threshold_used, is_flagged, category_id,
                    category_score, inputs_json) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
                    ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)""",
-                (flow_id, prediction["model_id"], prediction["status"], prediction.get("binary_score"),
-                 prediction.get("threshold"), prediction.get("flagged"), prediction.get("class_id"),
-                 prediction.get("class_score"), json.dumps({"raw": raw, "prediction": prediction,
-                                                               "frames": flow["frames"],
-                                                               "protocol_observation": flow["protocol_observation"],
-                                                               "dataset": flow.get("dataset")}, allow_nan=False)),
+                (
+                    flow_id,
+                    prediction["model_id"],
+                    prediction["status"],
+                    prediction.get("binary_score"),
+                    prediction.get("threshold"),
+                    prediction.get("flagged"),
+                    prediction.get("class_id"),
+                    prediction.get("class_score"),
+                    json.dumps(
+                        {
+                            "raw": raw,
+                            "prediction": prediction,
+                            "frames": flow["frames"],
+                            "protocol_observation": flow["protocol_observation"],
+                            "dataset": flow.get("dataset"),
+                        },
+                        allow_nan=False,
+                    ),
+                ),
             )
             prediction_id = db.lastrowid
+            # สร้าง alert เฉพาะเมื่อโมเดลระบุว่า flow นี้น่าสงสัย
             alert_id = None
             if prediction.get("flagged"):
                 db.execute(
                     """INSERT INTO alerts (prediction_id) VALUES (%s)
-                       ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)""", (prediction_id,),
+                       ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)""",
+                    (prediction_id,),
                 )
                 alert_id = db.lastrowid
-            identifiers.append({"flow_id": flow_id, "prediction_id": prediction_id, "alert_id": alert_id})
+            identifiers.append(
+                {
+                    "flow_id": flow_id,
+                    "prediction_id": prediction_id,
+                    "alert_id": alert_id,
+                }
+            )
         return identifiers
 
     def flows(self, limit, before_id, capture_id=None, alerts_only=False):
-        prediction_lookup = "SELECT MAX(p2.id) FROM predictions p2 WHERE p2.flow_id=f.id"
+        prediction_lookup = (
+            "SELECT MAX(p2.id) FROM predictions p2 WHERE p2.flow_id=f.id"
+        )
         if alerts_only:
-            prediction_lookup += " AND EXISTS (SELECT 1 FROM alerts a2 WHERE a2.prediction_id=p2.id)"
+            prediction_lookup += (
+                " AND EXISTS (SELECT 1 FROM alerts a2 WHERE a2.prediction_id=p2.id)"
+            )
         with self.transaction() as db:
             db.execute(
                 f"""SELECT f.id, f.source_type, f.started_at, f.ended_at, f.interface_name,
@@ -185,16 +252,14 @@ class MySQLStore:
                 return None
             db.execute(
                 """SELECT observed_at, protocol, frame_number, details_json FROM flow_protocol_events
-                   WHERE flow_id=%s ORDER BY observed_at, id""", (flow_id,),
+                   WHERE flow_id=%s ORDER BY observed_at, id""",
+                (flow_id,),
             )
             rows = db.fetchall()
         for row in rows:
             row["observed_at"] = wire_time(row["observed_at"])
             row["details"] = json.loads(row.pop("details_json"))
         return rows
-
-    def alerts(self, limit, before_id):
-        return alert_queries.alerts(self, limit, before_id)
 
     def set_alert_status(self, alert_id, status):
         return alert_queries.set_alert_status(self, alert_id, status)

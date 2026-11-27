@@ -1,4 +1,5 @@
 """Handle firewall operations requested by the API."""
+
 from ipaddress import ip_address
 from uuid import uuid4
 
@@ -15,7 +16,9 @@ class FirewallController:
     @staticmethod
     def local_write(request):
         if request.headers.get("origin") != str(request.base_url).rstrip("/"):
-            raise HTTPException(403, "Submit firewall changes from the local Flowwatch dashboard.")
+            raise HTTPException(
+                403, "Submit firewall changes from the local Flowwatch dashboard."
+            )
 
     def run(self, action, **fields):
         try:
@@ -52,20 +55,45 @@ class FirewallController:
             try:
                 address = ip_address(target.ip)
             except ValueError as error:
-                raise HTTPException(422, "Enter a single IPv4 or IPv6 address.") from error
+                raise HTTPException(
+                    422, "Enter a single IPv4 or IPv6 address."
+                ) from error
             ipv4 = getattr(address, "ipv4_mapped", None)
             address = ipv4 or address
-            if address.is_loopback or address.is_unspecified or address.is_multicast or getattr(address, "scope_id", None) or str(address) in (self.monitored_ip, "255.255.255.255"):
-                raise HTTPException(422, "This address cannot be used as a remote source IP.")
+            if (
+                address.is_loopback
+                or address.is_unspecified
+                or address.is_multicast
+                or getattr(address, "scope_id", None)
+                or str(address) in (self.monitored_ip, "255.255.255.255")
+            ):
+                raise HTTPException(
+                    422, "This address cannot be used as a remote source IP."
+                )
             ip = str(address)
-            rules.setdefault(ip, {"id": uuid4().hex, "ip": ip, "reason": reason, "createdAt": now,
-                                  "expiresAt": now+body.duration*60_000, "unblockedAt": None,
-                                  "flowId": target.flowId, "flowTime": target.flowTime})
+            rules.setdefault(
+                ip,
+                {
+                    "id": uuid4().hex,
+                    "ip": ip,
+                    "reason": reason,
+                    "createdAt": now,
+                    "expiresAt": now + body.duration * 60_000,
+                    "unblockedAt": None,
+                    "flowId": target.flowId,
+                    "flowTime": target.flowTime,
+                },
+            )
         return self.run("add", rules=list(rules.values()))
 
     def edit(self, identifier, body, request):
         self.local_write(request)
-        return self.run("edit", id=identifier, reason=self.reason_text(body), expiresAt=epoch_ms()+body.duration*60_000)
+        return self.run(
+            "edit",
+            id=identifier,
+            reason=self.reason_text(body),
+            expiresAt=epoch_ms() + body.duration * 60_000,
+        )
 
     def unblock(self, identifier, request):
         self.local_write(request)

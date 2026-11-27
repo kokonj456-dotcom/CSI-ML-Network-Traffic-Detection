@@ -111,6 +111,9 @@ def main():
     raw={ds:raw_manifest(DATASETS_DIR/ds) for ds in DATASETS}
     shutil.copytree(PIPELINE_DIR,root/'data-pipeline',ignore=shutil.ignore_patterns('output','raw','__pycache__','.ipynb_checkpoints'))
     shutil.copy2(PROJECT_ROOT/'README.md',root/'README.md')
+    contract_path = Path('webapp/Dashboard/backend/src/models/central_contract.py')
+    (root/contract_path).parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(PROJECT_ROOT/contract_path, root/contract_path)
     for ds in DATASETS:shutil.copytree(DATASETS_DIR/ds/'raw',root/'data-pipeline/sub-dataset'/ds/'raw')
     cmd=[sys.executable,str(root/'data-pipeline/build_quad_dataset.py'),'--worker','--resampling',args.resampling]
     if args.allow_unverified_data:cmd.append('--allow-unverified-data')

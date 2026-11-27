@@ -1,22 +1,31 @@
 # คู่มือเปิดโค้ด Flowwatch ตอนนำเสนอ
 
-เปิดไฟล์ตามคำถามในตาราง แล้วค้นหาชื่อฟังก์ชันด้วย `Ctrl+F` หรือไปที่เลขบรรทัดด้วย `Ctrl+G` เลขบรรทัดอ้างอิงจากโค้ด ณ วันที่จัดทำคู่มือนี้
+เปิดไฟล์ตามคำถามในตาราง แล้วค้นหาชื่อฟังก์ชันด้วย `Ctrl+F`
+
+## อ่าน Backend จากหนึ่ง flow
+
+1. **รับข้อมูล** — Live Capture อ่านแพ็กเก็ตที่เห็น ส่วน Import PCAP อ่านแพ็กเก็ตจากไฟล์
+2. **รวมแพ็กเก็ต** — แพ็กเก็ตที่วิ่งไปมาระหว่างคู่ปลายทางจะถูกรวมเป็น flow ระบบสรุปข้อมูลอย่างเวลาและจำนวนไบต์เพื่อส่งให้โมเดล
+3. **ทำนาย** — โมเดลให้คะแนนความเป็น attack แล้วระบบเทียบคะแนนกับ threshold หากถูก flag จะแสดงข้อมูลคลาสจากโมเดลขั้นที่สอง
+4. **บันทึก** — MySQL เก็บ flow และผลทำนาย แล้วสร้าง alert เมื่อผลระบุว่า flow ถูก flag
+
+ในโค้ด `routes` คือประตูรับคำขอจากหน้าเว็บ `controllers` จัดลำดับงานตามคำขอ `services` ทำงานอย่างจับแพ็กเก็ตหรือทำนาย ส่วน `db` อ่านและบันทึกข้อมูล
 
 | ถ้าอาจารย์ถามว่า… | เปิดไฟล์และฟังก์ชัน |
 | --- | --- |
-| Backend เริ่มงานที่ไหน | [app.py บรรทัด 26](src/app.py#L26) — `create_app` ประกอบบริการ โมเดล ฐานข้อมูล และ routes |
-| Scapy จับจาก LAN กับ loopback ยังไง | [live_capture.py บรรทัด 149](src/services/live_capture.py#L149) — `start_capture_adapters` และ [บรรทัด 208](src/services/live_capture.py#L208) — `run` ควบคุมรอบการจับและประมวลผล |
-| รวม packet เป็น flow ตรงไหน | [capture/flows.py บรรทัด 34](src/services/capture/flows.py#L34) — `FlowCollector.push` รวมแพ็กเก็ตสองทิศทาง |
-| แปลง flow เป็นฟีเจอร์ตรงไหน | [capture/flows.py บรรทัด 110](src/services/capture/flows.py#L110) — `flow_record` สร้างค่าที่โมเดลใช้ รวมถึงบริการ HTTP ที่อ่านพบในแพ็กเก็ต |
-| Flow ที่สร้างแล้วเข้าโมเดลและฐานข้อมูลยังไง | [live_capture.py บรรทัด 179](src/services/live_capture.py#L179) — `score_pending_flows` ประเมินเป็นชุด ก่อนเรียกตัวบันทึก MySQL |
-| Import PCAP เริ่มตรงไหน | [routes/captures.py](src/routes/captures.py) → [controllers/captures.py](src/controllers/captures.py#L88) — `upload_capture` → [capture/pcap.py บรรทัด 7](src/services/capture/pcap.py#L7) — `capture_flows` |
-| คะแนน Attack, คลาส และ Top factors มาจากไหน | [services/inference.py บรรทัด 52](src/services/inference.py#L52) — `Predictor.predict` ประเมินสองขั้นและคำนวณปัจจัยเมื่อเปิด `explain` |
-| CENTRAL Test Demo เข้าระบบอย่างไร | [controllers/inference.py](src/controllers/inference.py#L21) — `save_central_test` ใช้ [central_test.py บรรทัด 7](src/services/central_test.py#L7) เตรียม Record ID, คลาสจริง และฟีเจอร์สำหรับประเมินโดยตรง |
+| Backend เริ่มงานที่ไหน | [app.py](src/app.py) — `create_app` ประกอบบริการ โมเดล ฐานข้อมูล และ routes |
+| Scapy จับจาก LAN กับ loopback ยังไง | [live_capture.py](src/services/live_capture.py) — `start_capture_adapters` และ [live_capture.py](src/services/live_capture.py) — `run` ควบคุมรอบการจับและประมวลผล |
+| รวม packet เป็น flow ตรงไหน | [capture/flows.py](src/services/capture/flows.py) — `FlowCollector.push` รวมแพ็กเก็ตสองทิศทาง |
+| แปลง flow เป็นฟีเจอร์ตรงไหน | [capture/flows.py](src/services/capture/flows.py) — `flow_record` สร้างค่าที่โมเดลใช้ รวมถึงบริการ HTTP ที่อ่านพบในแพ็กเก็ต |
+| Flow ที่สร้างแล้วเข้าโมเดลและฐานข้อมูลยังไง | [live_capture.py](src/services/live_capture.py) — `score_pending_flows` ประเมินเป็นชุด ก่อนเรียกตัวบันทึก MySQL |
+| Import PCAP เริ่มตรงไหน | [routes/captures.py](src/routes/captures.py) → [controllers/captures.py](src/controllers/captures.py) — `upload_capture` → [capture/pcap.py](src/services/capture/pcap.py) — `capture_flows` |
+| คะแนน Attack, คลาส และ Top factors มาจากไหน | [services/inference.py](src/services/inference.py) — `Predictor.predict` ประเมินสองขั้นและคำนวณปัจจัยเมื่อเปิด `explain` |
+| CENTRAL Test Demo เข้าระบบอย่างไร | [controllers/inference.py](src/controllers/inference.py) — `save_central_test` ใช้ [central_test.py](src/services/central_test.py) เตรียม Record ID, คลาสจริง และฟีเจอร์สำหรับประเมินโดยตรง |
 | API อ่าน Flow และเปลี่ยนสถานะ Alert ตรงไหน | [routes/traffic.py](src/routes/traffic.py) → [controllers/traffic.py](src/controllers/traffic.py) ดู `traffic_flows` และ `update_alert` |
-| สร้าง Alert ที่ไหน | [mysql_store.py บรรทัด 66](src/db/mysql_store.py#L66) — `save_records` บันทึก flow และ prediction แล้วเพิ่ม Alert เมื่อโมเดลคืน `flagged` |
-| หน้า Alerts และ Feedback อ่านหรือแก้ข้อมูลที่ไหน | [alert_queries.py บรรทัด 5](src/db/alert_queries.py#L5) — `alerts` และ `set_alert_status` / [feedback_queries.py บรรทัด 37](src/db/feedback_queries.py#L37) — `report` |
-| กด Train แล้วไปไหน | [routes/management.py บรรทัด 23](src/routes/management.py#L23) → [model_training.py บรรทัด 64](src/services/model_training.py#L64) — `start_training_job` และ [บรรทัด 79](src/services/model_training.py#L79) — `run_training_job` |
-| เปลี่ยนโมเดล Active หรือหาไฟล์ Backup ตรงไหน | [model_management.py บรรทัด 195](src/services/model_management.py#L195) — `activate` และ [model_registry.py บรรทัด 75](src/services/model_registry.py#L75) — `bundle_path` |
+| สร้าง Alert ที่ไหน | [mysql_store.py](src/db/mysql_store.py) — `save_records` บันทึก flow และ prediction แล้วเพิ่ม Alert เมื่อโมเดลคืน `flagged` |
+| หน้า Alerts และ Feedback อ่านหรือแก้ข้อมูลที่ไหน | [alert_queries.py](src/db/alert_queries.py) — `alerts` และ `set_alert_status` / [feedback_queries.py](src/db/feedback_queries.py) — `report` |
+| กด Train แล้วไปไหน | [routes/management.py](src/routes/management.py) → [model_training.py](src/services/model_training.py) — `start_training_job` และ [model_training.py](src/services/model_training.py) — `run_training_job` |
+| เปลี่ยนโมเดล Active หรือหาไฟล์ Backup ตรงไหน | [model_management.py](src/services/model_management.py) — `activate` และ [model_registry.py](src/services/model_registry.py) — `bundle_path` |
 
 ## จุดเปิดโค้ดฝั่งหน้าเว็บ
 

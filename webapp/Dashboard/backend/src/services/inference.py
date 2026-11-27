@@ -1,4 +1,5 @@
 """Load a validated paired model and score normalized flows."""
+
 import hashlib
 import json
 from time import perf_counter
@@ -24,12 +25,14 @@ def _digest(stream):
 
 class Predictor:
     def __init__(self, directory):
-        report = json.loads((directory/"evaluation.json").read_text(encoding="utf-8"))
+        report = json.loads((directory / "evaluation.json").read_text(encoding="utf-8"))
         self.evaluation = {
             name: {"rows": report[name]["rows"], "binary": report[name]["binary"]}
             for name in ("test_full", "test_feature_group_disjoint")
         }
-        self.manifest = json.loads((directory/"manifest.json").read_text(encoding="utf-8"))
+        self.manifest = json.loads(
+            (directory / "manifest.json").read_text(encoding="utf-8")
+        )
         feature_names = self.manifest["feature_names"]
         self.feature_names = feature_names
         self.is_uncut = len(feature_names) == 80
@@ -40,11 +43,11 @@ class Predictor:
         if not 0 <= self.manifest["threshold"] <= 1:
             raise ValueError("Threshold is outside [0, 1]")
         for filename in ("binary.json", "multiclass.json", "preprocessor.joblib"):
-            with (directory/filename).open("rb") as stream:
+            with (directory / filename).open("rb") as stream:
                 actual = _digest(stream)
             if actual != self.manifest["files"][filename]:
                 raise ValueError(f"Fingerprint mismatch: {filename}")
-        self.prep = joblib.load(directory/"preprocessor.joblib")
+        self.prep = joblib.load(directory / "preprocessor.joblib")
         for key in ("fit_record_ids_sha256", "schema_version"):
             if self.prep[key] != self.manifest[key]:
                 raise ValueError(f"Preprocessor does not match manifest: {key}")
@@ -52,19 +55,33 @@ class Predictor:
             raise ValueError("Preprocessor has incorrect feature columns")
         self.binary = xgb.XGBClassifier(n_jobs=2)
         self.multi = xgb.XGBClassifier(n_jobs=2)
-        self.binary.load_model(directory/"binary.json")
-        self.multi.load_model(directory/"multiclass.json")
+        self.binary.load_model(directory / "binary.json")
+        self.multi.load_model(directory / "multiclass.json")
         for model, count in ((self.binary, 2), (self.multi, 6)):
-            if model.get_booster().feature_names != feature_names or list(model.classes_) != list(range(count)):
+            if model.get_booster().feature_names != feature_names or list(
+                model.classes_
+            ) != list(range(count)):
                 raise ValueError("Model has incorrect feature columns or class IDs")
 
     def metadata(self):
-        return {key: self.manifest[key] for key in ("model_id", "threshold", "class_names", "feature_names", "schema_version", "scope")} | {
+        return {
+            key: self.manifest[key]
+            for key in (
+                "model_id",
+                "threshold",
+                "class_names",
+                "feature_names",
+                "schema_version",
+                "scope",
+            )
+        } | {
             "preprocessor_sha256": self.manifest["files"]["preprocessor.joblib"],
-            "captures": capture_files(), "evaluation": self.evaluation,
+            "captures": capture_files(),
+            "evaluation": self.evaluation,
         }
 
     def predict(self, inputs, *, explain=False):
+        """ตรวจข้อมูล แปลงเป็นฟีเจอร์ แล้วคืนผลทำนายตามลำดับเดิม."""
         output = []
         valid = []
         for index, row in enumerate(inputs):
@@ -73,10 +90,17 @@ class Predictor:
                 valid.append((index, item))
                 output.append(None)
             except ValueError:
-                output.append({"status":"not_scored", "reason":"Missing or invalid CENTRAL inputs", "model_id":self.manifest["model_id"]})
+                output.append(
+                    {
+                        "status": "not_scored",
+                        "reason": "Missing or invalid CENTRAL inputs",
+                        "model_id": self.manifest["model_id"],
+                    }
+                )
         if not valid:
             return output
         start = perf_counter()
+        # โมเดล 80 คอลัมน์กับโมเดล CENTRAL เดิมเตรียมข้อมูลต่างกัน
         if self.is_uncut:
             is_imputed = "imputed" in self.manifest.get("candidate", "").lower()
             fill_val = -1.0 if is_imputed else np.nan
@@ -94,10 +118,27 @@ class Predictor:
                 rows_80.append(r)
             features = pd.DataFrame(rows_80)[self.feature_names]
             cat_dtypes = {
-                "protocol": pd.CategoricalDtype(categories=["tcp", "udp", "icmp", "other", "missing"]),
-                "service_group": pd.CategoricalDtype(categories=["dns", "ftp", "http", "https_ssl", "smtp", "ssh", "other", "missing"]),
-                "conn_state_group": pd.CategoricalDtype(categories=["established", "no-reply", "reset", "other", "missing"]),
-                "cic_flow_state": pd.CategoricalDtype(categories=["established", "no-reply", "missing"]),
+                "protocol": pd.CategoricalDtype(
+                    categories=["tcp", "udp", "icmp", "other", "missing"]
+                ),
+                "service_group": pd.CategoricalDtype(
+                    categories=[
+                        "dns",
+                        "ftp",
+                        "http",
+                        "https_ssl",
+                        "smtp",
+                        "ssh",
+                        "other",
+                        "missing",
+                    ]
+                ),
+                "conn_state_group": pd.CategoricalDtype(
+                    categories=["established", "no-reply", "reset", "other", "missing"]
+                ),
+                "cic_flow_state": pd.CategoricalDtype(
+                    categories=["established", "no-reply", "missing"]
+                ),
             }
             for col, dt in cat_dtypes.items():
                 features[col] = features[col].astype(dt)
@@ -105,33 +146,54 @@ class Predictor:
                 if col not in cat_dtypes:
                     features[col] = features[col].astype(float)
         else:
-            raw = pd.DataFrame([item for _, item in valid]).assign(record_id=[str(i) for i, _ in valid])
+            raw = pd.DataFrame([item for _, item in valid]).assign(
+                record_id=[str(i) for i, _ in valid]
+            )
             features = transform_features(raw, self.prep)[NAMES]
-        attack_scores = self.binary.predict_proba(features)[:, 1]
+        # Stage 1 ให้คะแนนความเป็น attack แล้วใช้ threshold ตัดสินว่าจะ flag หรือไม่
+        binary_probabilities = self.binary.predict_proba(features)
+        attack_scores = binary_probabilities[:, 1]
+        # Stage 2 ให้คะแนนแต่ละคลาส ส่วนผลรายงานจะแสดงคลาสเมื่อถูก flag
         category_probabilities = self.multi.predict_proba(features)
         latency = (perf_counter() - start) * 1000 / len(valid)
         contributions = None
         if explain:
-            contributions = self.binary.get_booster().predict(xgb.DMatrix(features), pred_contribs=True)
+            contributions = self.binary.get_booster().predict(
+                xgb.DMatrix(features), pred_contribs=True
+            )
         threshold = self.manifest["threshold"]
 
         for row, (index, item) in enumerate(valid):
             score = float(attack_scores[row])
             flagged = score >= threshold
             probabilities = category_probabilities[row]
-            best = int(probabilities.argmax()) if flagged else None
-            unclear = flagged and best == 0
+            best = None
+            candidate = None
+            unclear = False
             class_id = 0
             if flagged:
-                class_id = None if unclear else best
-            candidate = int(probabilities[1:].argmax()) + 1 if flagged else None
+                best = int(probabilities.argmax())
+                unclear = best == 0
+                if unclear:
+                    class_id = None
+                else:
+                    class_id = best
+                # ข้ามคลาส 0 (Normal) เพื่อหาคลาส attack ที่คะแนนสูงสุด
+                candidate = int(probabilities[1:].argmax()) + 1
 
             top_factors = None
             if contributions is not None:
                 row_contributions = contributions[row]
-                feature_indices = sorted(range(len(self.feature_names)), key=lambda i: abs(row_contributions[i]), reverse=True)
+                feature_indices = sorted(
+                    range(len(self.feature_names)),
+                    key=lambda i: abs(row_contributions[i]),
+                    reverse=True,
+                )
                 top_factors = [
-                    {"feature": self.feature_names[i], "log_odds_delta": float(row_contributions[i])}
+                    {
+                        "feature": self.feature_names[i],
+                        "log_odds_delta": float(row_contributions[i]),
+                    }
                     for i in feature_indices[:5]
                 ]
 
@@ -146,17 +208,26 @@ class Predictor:
                         encoded_dict[name] = str(value)
 
             output[index] = {
-                "status":"scored", "model_id":self.manifest["model_id"], "flagged":bool(flagged),
-                "inference_ms":latency,
-                "binary_score":score, "threshold":threshold, "class_id":class_id,
-                "class_score":float(probabilities[best]) if flagged and not unclear else None,
-                "stage2_top_class_id":best,
-                "stage2_top_score":float(probabilities[best]) if flagged else None,
-                "best_attack_candidate_id":candidate,
-                "best_attack_candidate_score":float(probabilities[candidate]) if flagged else None,
-                "category_unclear":bool(unclear), "raw_inputs":item,
-                "encoded_inputs":encoded_dict,
-                "preprocessor_sha256":self.manifest["files"]["preprocessor.joblib"],
-                "binary_contributions":top_factors,
+                "status": "scored",
+                "model_id": self.manifest["model_id"],
+                "flagged": bool(flagged),
+                "inference_ms": latency,
+                "binary_score": score,
+                "threshold": threshold,
+                "class_id": class_id,
+                "class_score": float(probabilities[best])
+                if flagged and not unclear
+                else None,
+                "stage2_top_class_id": best,
+                "stage2_top_score": float(probabilities[best]) if flagged else None,
+                "best_attack_candidate_id": candidate,
+                "best_attack_candidate_score": float(probabilities[candidate])
+                if flagged
+                else None,
+                "category_unclear": bool(unclear),
+                "raw_inputs": item,
+                "encoded_inputs": encoded_dict,
+                "preprocessor_sha256": self.manifest["files"]["preprocessor.joblib"],
+                "binary_contributions": top_factors,
             }
         return output

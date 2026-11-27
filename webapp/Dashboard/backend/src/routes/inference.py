@@ -1,4 +1,5 @@
 """HTTP endpoints for model scoring and CENTRAL Test."""
+
 from typing import Annotated
 
 from fastapi import Body, Request
@@ -20,12 +21,9 @@ def mount_inference(app, manager, store):
     def model():
         return controller.model()
 
-    @app.post("/api/predict")
-    def predict(inputs: list[dict]):
-        return controller.predict(inputs)
-
     @app.post("/api/traffic/central-test")
     def save_central_test(
-        request: Request, samples: Annotated[list[CentralTestSample], Body(min_length=1, max_length=50)]
+        request: Request,
+        samples: Annotated[list[CentralTestSample], Body(min_length=1, max_length=50)],
     ):
         return controller.save_central_test(samples, request)

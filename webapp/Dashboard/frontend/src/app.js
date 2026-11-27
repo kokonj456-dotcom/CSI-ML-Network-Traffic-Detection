@@ -45,8 +45,6 @@ document.addEventListener('click',async event=>{
       renderTable();
       if (state.view==='explorer') document.querySelector('.explorer-table .table-head').scrollIntoView({block:'nearest'});
       break;
-    case 'loadMoreFlows':
-      await loadMoreTrafficFlows();break;
     case 'explorerDomain':
       state.filters.search='domain:'+value;
       byId('search').value=state.filters.search;

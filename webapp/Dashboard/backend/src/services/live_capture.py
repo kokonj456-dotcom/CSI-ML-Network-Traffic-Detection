@@ -1,4 +1,5 @@
 """Passive Npcap capture, bounded queues and live capacity metrics."""
+
 import json
 from collections import deque
 from ipaddress import ip_address
@@ -22,8 +23,16 @@ LOCALHOST_IPV4 = ip_address("127.0.0.1")
 
 
 class LiveCapture:
-    def __init__(self, store, manager, interface=None, address=None, direction="inbound", capture_https=True,
-                 settings_path=None):
+    def __init__(
+        self,
+        store,
+        manager,
+        interface=None,
+        address=None,
+        direction="inbound",
+        capture_https=True,
+        settings_path=None,
+    ):
         self.store = store
         self.manager = manager
         self.interface = interface
@@ -74,9 +83,11 @@ class LiveCapture:
 
     @staticmethod
     def validate_settings(settings):
-        limits = {"max_flows_per_second": (0, 100000),
-                  "packet_queue_capacity": (64, 262144),
-                  "flow_queue_capacity": (64, 131072)}
+        limits = {
+            "max_flows_per_second": (0, 100000),
+            "packet_queue_capacity": (64, 262144),
+            "flow_queue_capacity": (64, 131072),
+        }
         result = {}
         for key, (minimum, maximum) in limits.items():
             value = int(settings[key])
@@ -84,19 +95,6 @@ class LiveCapture:
                 raise ValueError(f"{key} must be between {minimum} and {maximum}.")
             result[key] = value
         return result
-
-    def configure(self, settings):
-        with self.settings_lock:
-            updated = self.validate_settings({**self.settings, **settings})
-            if self.settings_path:
-                self.settings_path.parent.mkdir(parents=True, exist_ok=True)
-                temporary = self.settings_path.with_suffix(self.settings_path.suffix + ".tmp")
-                temporary.write_text(json.dumps(updated, indent=2) + "\n", encoding="utf-8")
-                temporary.replace(self.settings_path)
-            self.settings = updated
-            with self.packets.mutex:
-                self.packets.maxsize = updated["packet_queue_capacity"]
-        return dict(updated)
 
     def snapshot(self):
         return capture_snapshot(self, LOCALHOST_IPV4)
@@ -151,8 +149,13 @@ class LiveCapture:
         adapter_ready = []
         for adapter in interfaces:
             started = Event()
-            sniffer = AsyncSniffer(iface=adapter, filter=capture_filter, store=False,
-                                   prn=self.receive, started_callback=started.set)
+            sniffer = AsyncSniffer(
+                iface=adapter,
+                filter=capture_filter,
+                store=False,
+                prn=self.receive,
+                started_callback=started.set,
+            )
             sniffer.start()
             sniffers.append(sniffer)
             adapter_ready.append(started)
@@ -160,7 +163,7 @@ class LiveCapture:
 
     def collect_packets(self, collector, targets):
         try:
-            packet = self.packets.get(timeout=.25)
+            packet = self.packets.get(timeout=0.25)
         except Empty:
             packet = None
         if packet is not None:
@@ -187,15 +190,20 @@ class LiveCapture:
             if not batch:
                 break
             cpu_start = process_time()
-            predictions = self.manager.predictor.predict([flow["raw"] for flow in batch], explain=True)
+            predictions = self.manager.predictor.predict(
+                [flow["raw"] for flow in batch], explain=True
+            )
             cpu_used = process_time() - cpu_start
+
             def capture_interface(pair):
                 record, _ = pair
                 if str(LOCALHOST_IPV4) in (record["src"], record["dst"]):
                     return loopback.name
                 return getattr(interface, "name", str(interface))
 
-            for interface_name, group in groupby(zip(batch, predictions, strict=True), capture_interface):
+            for interface_name, group in groupby(
+                zip(batch, predictions, strict=True), capture_interface
+            ):
                 records, results = zip(*group)
                 self.store.save_live(interface_name, records, results)
             self._inference_cpu_seconds += cpu_used
@@ -213,12 +221,20 @@ class LiveCapture:
             target = ip_address(self.address)
             if self.direction not in ("inbound", "both"):
                 raise ValueError("Unsupported capture direction.")
-            interface = conf.ifaces.dev_from_index(int(self.interface)) if self.interface.isdecimal() else self.interface
+            interface = (
+                conf.ifaces.dev_from_index(int(self.interface))
+                if self.interface.isdecimal()
+                else self.interface
+            )
             targets = {target, LOCALHOST_IPV4}
             loopback = conf.ifaces.dev_from_networkname(conf.loopback_name)
-            interfaces = [loopback] if target == LOCALHOST_IPV4 else [interface, loopback]
+            interfaces = (
+                [loopback] if target == LOCALHOST_IPV4 else [interface, loopback]
+            )
             capture_filter = self.capture_filter(target)
-            adapter_ready = self.start_capture_adapters(interfaces, capture_filter, sniffers)
+            adapter_ready = self.start_capture_adapters(
+                interfaces, capture_filter, sniffers
+            )
             next_flush = monotonic()
             while not self.stop_event.is_set():
                 for sniffer in sniffers:

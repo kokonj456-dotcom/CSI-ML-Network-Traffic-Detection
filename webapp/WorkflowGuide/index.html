@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flowwatch | แผนที่โค้ด</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="catalog.js"></script><script defer src="guide.js"></script>
+</head>
+<body>
+<header><a href="#"><strong>Flowwatch</strong> / แผนที่โค้ด</a><span id="counts"></span></header>
+<main>
+<section class="workflows" aria-labelledby="workflow-title">
+<h1 id="workflow-title">Flowwatch ทำงานอย่างไร</h1>
+<p>เลือกงาน แล้วกดขั้นที่อยากดูโค้ด</p>
+<div id="scenarios" class="scenarios"></div><ol id="steps" class="steps"></ol>
+</section>
+<div class="workspace">
+<aside><h2>ไฟล์ในเว็บแอป</h2><label for="search">ค้นหาชื่อไฟล์หรือฟังก์ชัน</label><input id="search" type="search" placeholder="เช่น save_records, live_capture"><nav id="tree" aria-label="สารบัญไฟล์"></nav></aside>
+<article id="reader" tabindex="-1"></article>
+</div>
+</main>
+</body></html>

@@ -1,4 +1,5 @@
 """Shared checks for saved traffic and local writes."""
+
 from fastapi import HTTPException
 
 
@@ -13,5 +14,10 @@ class SavedTrafficController:
 
     @staticmethod
     def require_local_write(request):
-        if request.headers.get("origin") not in (None, str(request.base_url).rstrip("/")):
-            raise HTTPException(403, "Submit changes from the local Flowwatch dashboard.")
+        if request.headers.get("origin") not in (
+            None,
+            str(request.base_url).rstrip("/"),
+        ):
+            raise HTTPException(
+                403, "Submit changes from the local Flowwatch dashboard."
+            )

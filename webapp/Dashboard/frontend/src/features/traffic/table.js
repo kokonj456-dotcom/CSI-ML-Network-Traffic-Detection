@@ -47,16 +47,6 @@ function renderTable() {
   byId('table-prev').disabled = index===0;
   byId('table-next').disabled = (index+1)*pageSize>=rows.length;
   byId('export').disabled = !rows.length;
-  const loadMore=byId('load-more-flows');
-  if (loadMore) {
-    const captureId=state.filters.captureFileId;
-    const cursor=captureId
-      ? alerts?captureAlertFlowCursors[captureId]:captureFlowCursors[captureId]
-      : alerts?alertsNextBeforeId:flowsNextBeforeId;
-    loadMore.disabled=loadingMoreFlows||!cursor;
-    loadMore.hidden=!cursor&&!loadingMoreFlows;
-    loadMore.textContent=loadingMoreFlows?'Loading…':'Load 250 more';
-  }
   const total=state.filters.captureFileId
     ? alerts
       ? (captureAlertFlowCounts[state.filters.captureFileId]??totalAlertFlowCount)
@@ -105,7 +95,6 @@ function tableSection(title, subtitle) {
       '<button type="button" class="btn" id="clear-alert-selection" data-action="clearAlertSelection">Clear selection</button>':'')+
     '</div><div class="pagination">'+(explorer?'<label class="sort-field">Rows <select id="explorer-size" aria-label="Rows per page">'+
     [15,25,50].map(size=>'<option'+(size===state.explorerSize?' selected':'')+'>'+size+'</option>').join('')+'</select></label>':'')+
-    (explorer||alerts?'<button class="btn" id="load-more-flows" data-action="loadMoreFlows">Load 250 more</button>':'')+
     '<button class="btn" id="table-prev" data-action="page" data-value="-1">‹ Previous</button><button class="btn" id="table-next" data-action="page" data-value="1">Next ›</button></div></div></section>';
 }
 

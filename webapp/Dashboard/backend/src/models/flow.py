@@ -1,4 +1,5 @@
 """Input schema for the CENTRAL predictor."""
+
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field

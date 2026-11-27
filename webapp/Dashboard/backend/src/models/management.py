@@ -1,4 +1,5 @@
 """Request schemas for model management."""
+
 from typing import Literal
 
 from pydantic import BaseModel, Field

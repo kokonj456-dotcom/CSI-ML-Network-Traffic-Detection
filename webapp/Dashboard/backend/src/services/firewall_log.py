@@ -1,4 +1,5 @@
 """Format evidence from a Windows Firewall packet log for Notepad."""
+
 from datetime import datetime, timezone
 from ipaddress import ip_address
 
@@ -13,11 +14,22 @@ def format_drop_report(log_path, rules, selected_rule=None):
             ended_ms = selected_rule["expiresAt"]
         ended = ended_ms // 1000 if ended_ms is not None else None
     columns = ("Time", "Source IP", "Destination IP", "Port", "Protocol", "Action")
-    required = ("date", "time", "src-ip", "dst-ip", "dst-port", "protocol", "action", "path")
+    required = (
+        "date",
+        "time",
+        "src-ip",
+        "dst-ip",
+        "dst-port",
+        "protocol",
+        "action",
+        "path",
+    )
     with log_path.open("rb") as stream:
         fields = []
         utc = False
-        for line in stream.read(4096).decode("utf-8-sig", errors="replace").splitlines():
+        for line in (
+            stream.read(4096).decode("utf-8-sig", errors="replace").splitlines()
+        ):
             if line.strip().lower() == "#time format: utc":
                 utc = True
             if line.startswith("#Fields:"):
@@ -62,7 +74,16 @@ def format_drop_report(log_path, rules, selected_rule=None):
                 continue
             if log_second < started or (ended is not None and log_second > ended):
                 continue
-        rows.append((log_time, source, row["dst-ip"], row["dst-port"], row["protocol"], row["action"]))
+        rows.append(
+            (
+                log_time,
+                source,
+                row["dst-ip"],
+                row["dst-port"],
+                row["protocol"],
+                row["action"],
+            )
+        )
         if len(rows) == 100:
             break
 
@@ -70,11 +91,19 @@ def format_drop_report(log_path, rules, selected_rule=None):
     divider = "+" + "+".join("-" * (width + 2) for width in widths) + "+"
     lines = [divider]
     for row in (columns, *rows):
-        lines.append("| " + " | ".join(value.ljust(width) for value, width in zip(row, widths)) + " |")
+        lines.append(
+            "| "
+            + " | ".join(value.ljust(width) for value, width in zip(row, widths))
+            + " |"
+        )
         lines.append(divider)
     if not rows:
         if selected_rule is not None:
-            lines.append(f"No incoming DROP records for {selected_rule['ip']} during this rule's time window in the recent log.")
+            lines.append(
+                f"No incoming DROP records for {selected_rule['ip']} during this rule's time window in the recent log."
+            )
         else:
-            lines.append("No incoming DROP records for IPs in the Flowwatch Blocklist in the recent log.")
+            lines.append(
+                "No incoming DROP records for IPs in the Flowwatch Blocklist in the recent log."
+            )
     return "\n".join(lines) + "\n"

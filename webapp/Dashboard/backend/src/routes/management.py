@@ -1,4 +1,5 @@
 """HTTP endpoints for feedback, training, and activation."""
+
 from fastapi import Request
 
 from ..models.management import Activation, Report, Review, Training

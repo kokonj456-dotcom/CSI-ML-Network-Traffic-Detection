@@ -1,4 +1,5 @@
 """Loopback endpoints for Flowwatch-owned firewall rules."""
+
 from fastapi import Request
 
 from ..models.firewall import BlockOptions, BlockRequest

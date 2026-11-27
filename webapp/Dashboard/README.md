@@ -1,5 +1,7 @@
 # Flowwatch CENTRAL
 
+คู่มือเปิดโค้ดตอนนำเสนอ → [README-PRESENTATION.md](README-PRESENTATION.md)
+
 Run the local inference backend to analyze real .pcap files placed in backend/captures. Set FLOWWATCH_CAPTURE_DIR before startup to use another directory. The dashboard starts with no traffic records.
 
 From the repository root in PowerShell, use the Python environment for this repository. The data-pipeline dependencies provide pandas, scikit-learn, joblib and the data preparation tools. The model and app additionally need xgboost, fastapi, uvicorn and scapy.
@@ -26,7 +28,7 @@ in `webapp/Dashboard/frontend`. Vite serves the React app at
 
 From the Dashboard directory, the compatibility entry point is `..\..\.venv\Scripts\python.exe flowwatch_server.py`.
 
-Open http://127.0.0.1:8794 for the dashboard. Offline capture analysis is also available through the backend API at /api/captures/{name}.
+Open http://127.0.0.1:8794 for the dashboard.
 
 In Traffic Explorer, choose **Import PCAP** to upload a local PCAP or PCAPNG
 and save its flows and alerts to MySQL. Imports are limited to 32 MiB,
@@ -44,8 +46,7 @@ Install the backend requirements from the repository root, then run setup from D
 
 Fill in the MySQL host, database and application credentials in `.env` before setup. The file is ignored by Git. Keep the application account's privileges scoped to the Flowwatch database. If the application account only has data permissions, use `-m backend.mysql_setup --admin-user <admin>` to create the schema with an interactive administrator password prompt. The application account must already exist and have SELECT, INSERT and UPDATE on the Flowwatch database. Run `-m backend.mysql_setup --check` to verify the connection and six tables. Restart FastAPI after changing settings.
 
-- `POST /api/captures/{name}` imports a file already in the capture directory, scores the flows and saves detected alerts. The GET route previews without writes.
-- `GET /api/traffic/flows` and `GET /api/traffic/alerts` return saved records and accept `limit` and `before_id`.
+- `GET /api/traffic/flows` returns saved records and accept `limit` and `before_id`.
 - `GET /api/traffic/flows/{flow_id}/events` returns saved protocol events. DNS fields are extracted when present.
 - `PATCH /api/traffic/alerts/{alert_id}?status=acknowledged` updates an alert. Submit a false-positive report to the existing management API with `flow.alert_id` pointing to the saved alert.
 
